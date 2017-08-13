@@ -70,13 +70,12 @@ uint8_t SdFatWrapper::init(SdFat* p_instance, uint8_t devisor) {
 		return 1;
 	}
 
-	os_enterCS();
 #ifndef SDFAT_AVAILABLE
 	auto res(p_instance->card()->init(devisor));;
 #else
 	auto res(p_instance->init(devisor));
 #endif // ! SDFAT_AVAILABLE
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::init(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
@@ -92,16 +91,15 @@ uint8_t SdFatWrapper::read_block(SdFat* p_instance, uint32_t block, uint8_t* dst
 		return 0;
 	}
 
-/** \todo enter/exit CS should be done in SdCard::read_block() */
-	os_enterCS();
 	const auto starttime(debug_mode ? timer_get_us8() : 0);
 	const auto res(p_instance->card()->read_block(block, dst));
 	const auto endtime(debug_mode ? timer_get_us8() : 0);
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::read_block(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
 	}
+
 	if (debug_mode) {
 		LOG_DEBUG("SdFatWrapper::read_block() took %u us", endtime - starttime);
 		LOG_DEBUG(" cardcommand took %u us", debug_times.cardcommand - starttime);
@@ -120,10 +118,8 @@ uint8_t SdFatWrapper::write_block(SdFat* p_instance, uint32_t block, const uint8
 		return 0;
 	}
 
-/** \todo enter/exit CS should be done in SdCard::write_block() */
-	os_enterCS();
 	const auto res(p_instance->card()->write_block(block, src, static_cast<bool>(sync)));
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::write_block(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
@@ -136,9 +132,8 @@ uint32_t SdFatWrapper::get_size(SdFat* p_instance) {
 		return 0;
 	}
 
-	os_enterCS();
 	const auto res(p_instance->card()->get_size() / 2U);
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::get_size(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
@@ -150,9 +145,9 @@ uint8_t SdFatWrapper::read_csd(SdFat* p_instance, csd_t* p_csd) {
 	if (! p_instance) {
 		return 0;
 	}
-	os_enterCS();
+
 	const auto res(p_instance->card()->read_csd(p_csd));
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::read_csd(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
@@ -164,9 +159,9 @@ uint8_t SdFatWrapper::read_cid(SdFat* p_instance, cid_t* p_cid) {
 	if (! p_instance) {
 		return 0;
 	}
-	os_enterCS();
+
 	const auto res(p_instance->card()->read_cid(p_cid));
-	os_exitCS();
+
 	if (! res) {
 		init_state = false;
 		LOG_ERROR("SdFatWrapper::read_cid(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
@@ -175,6 +170,9 @@ uint8_t SdFatWrapper::read_cid(SdFat* p_instance, cid_t* p_cid) {
 }
 
 #ifdef SDFAT_AVAILABLE
+
+volatile bool FatFileWrapper::busy { false };
+
 uint8_t SdFatWrapper::remove(SdFat* p_instance, const char* path) {
 	if (! p_instance) {
 		return 1;
@@ -205,10 +203,9 @@ uint8_t SdFatWrapper::sync_vol(SdFat* p_instance) {
 	if (! p_instance) {
 		return 1;
 	}
-	os_enterCS();
+
 	const auto res(! p_instance->vol()->cacheSync());
-	os_exitCS();
-	os_exitCS();
+
 	if (res) {
 		LOG_ERROR("SdFatWrapper::sync_vol(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
 	}
@@ -223,9 +220,17 @@ uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mod
 		return 1;
 	}
 	LOG_DEBUG("FatFileWrapper::open(): ptr->open(\"%s\", 0x%x)...", filename, mode);
-	os_enterCS();
+
+	while (busy) {
+		os_exitCS();
+		os_thread_yield();
+		os_enterCS();
+	}
+	busy = true;
 	const auto res(ptr->open(filename, mode));
+	busy = false;
 	os_exitCS();
+
 	LOG_DEBUG("FatFileWrapper::open(): ptr->open()= %u", res);
 	if (res) {
 		*p_file = ptr;
@@ -243,8 +248,11 @@ uint8_t FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin
 		return 1;
 	}
 
-/** \todo enter/exit CS should be done in FatFile::seekX()? best solution might be to synchronize inside FatCache::read(). */
-	os_enterCS();
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	bool res;
 	switch (origin) {
 	case SEEK_SET:
@@ -263,7 +271,8 @@ uint8_t FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin
 		res = 1;
 		break;
 	}
-	os_exitCS();
+
+	busy = false;
 
 	if (res) {
 		LOG_ERROR("FatFileWrapper::seek(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
@@ -277,10 +286,15 @@ int16_t FatFileWrapper::read(FatFile* p_instance, void* buffer, uint16_t length)
 		return -1;
 	}
 
-/** \todo enter/exit CS should be done in FatFile::read() */
-	os_enterCS();
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	const auto res(p_instance->read(buffer, length));
-	os_exitCS();
+
+	busy = false;
+
 	if (res < 0) {
 		LOG_ERROR("FatFileWrapper::read(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
 	}
@@ -293,10 +307,15 @@ int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t 
 		return -1;
 	}
 
-/** \todo enter/exit CS should be done in FatFile::write() */
-	os_enterCS();
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	const auto res(p_instance->write(buffer, length));
-	os_exitCS();
+
+	busy = false;
+
 	if (res < 0) {
 		LOG_ERROR("FatFileWrapper::write(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
 	}
@@ -308,9 +327,16 @@ uint8_t FatFileWrapper::flush(FatFile* p_instance) {
 	if (! p_instance) {
 		return 1;
 	}
-	os_enterCS();
+
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	const auto res(! p_instance->sync());
-	os_exitCS();
+
+	busy = false;
+
 	if (res) {
 		LOG_ERROR("FatFileWrapper::flush(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
 	}
@@ -322,9 +348,16 @@ uint8_t FatFileWrapper::close(FatFile* p_instance) {
 	if (! p_instance) {
 		return 1;
 	}
-	os_enterCS();
+
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	const auto res(! p_instance->close());
-	os_exitCS();
+
+	busy = false;
+
 	if (res) {
 		LOG_ERROR("FatFileWrapper::close(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
 	}
@@ -336,9 +369,18 @@ void FatFileWrapper::free(FatFile* p_instance) {
 	if (! p_instance) {
 		return;
 	}
+
+	while (busy) {
+		os_thread_yield();
+	}
+	busy = true;
+
 	if (p_instance->isOpen()) {
 		close(p_instance);
 	}
+
+	busy = false;
+
 	delete p_instance;
 }
 #endif // SDFAT_AVAILABLE
@@ -351,6 +393,7 @@ uint32_t (*sd_card_get_size)(pSdFat) { SdFatWrapper::get_size };
 uint8_t (*sd_card_get_type)(pSdFat) { SdFatWrapper::get_type };
 uint8_t (*sd_card_get_error_code)(pSdFat) { SdFatWrapper::get_error_code };
 uint8_t (*sd_card_get_error_data)(pSdFat) { SdFatWrapper::get_error_data };
+uint32_t (*sd_card_get_last_error_time)(pSdFat) { SdFatWrapper::get_last_error_time };
 uint8_t (*sd_card_read_csd)(pSdFat, csd_t*) { SdFatWrapper::read_csd };
 uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 

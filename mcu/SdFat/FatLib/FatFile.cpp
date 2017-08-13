@@ -24,9 +24,9 @@
 
 #ifdef SDFAT_AVAILABLE
 // Pointer to cwd directory.
-FatFile* FatFile::m_cwd = 0;
+FatFile* FatFile::m_cwd = nullptr;
 // Callback function for date/time.
-void (*FatFile::m_dateTime)(uint16_t* date, uint16_t* time) = 0;
+void (*FatFile::m_dateTime)(uint16_t* date, uint16_t* time) = nullptr;
 
 // Add a cluster to a file.
 bool FatFile::addCluster() {
@@ -49,20 +49,20 @@ bool FatFile::addDirCluster() {
 		DBG_FAIL_MACRO;
 		goto fail;
 	}
-	if (!addCluster()) {
+	if (! addCluster()) {
 		DBG_FAIL_MACRO;
 		goto fail;
 	}
 	block = m_vol->clusterStartBlock(m_curCluster);
 	pc = m_vol->cacheFetchData(block, FatCache::CACHE_RESERVE_FOR_WRITE);
-	if (!pc) {
+	if (! pc) {
 		DBG_FAIL_MACRO;
 		goto fail;
 	}
 	memset(pc, 0, 512);
 	// zero rest of clusters
 	for (uint8_t i = 1; i < m_vol->blocksPerCluster(); i++) {
-		if (!m_vol->writeBlock(block + i, pc->data)) {
+		if (! m_vol->writeBlock(block + i, pc->data)) {
 			DBG_FAIL_MACRO;
 			goto fail;
 		}
@@ -80,7 +80,7 @@ fail:
 dir_t* FatFile::cacheDirEntry(uint8_t action) {
 	cache_t* pc;
 	pc = m_vol->cacheFetchData(m_dirBlock, action);
-	if (!pc) {
+	if (! pc) {
 		DBG_FAIL_MACRO;
 		goto fail;
 	}
@@ -301,37 +301,37 @@ bool FatFile::mkdir(FatFile* parent, fname_t* fname) {
 	dir_t* dir;
 	cache_t* pc;
 
-	if (!parent->isDir()) {
+	if (! parent->isDir()) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	// create a normal file
-	if (!open(parent, fname, O_CREAT | O_EXCL | O_RDWR)) {
+	if (! open(parent, fname, O_CREAT | O_EXCL | O_RDWR)) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	// convert file to directory
 	m_flags = O_READ;
 	m_attr = FILE_ATTR_SUBDIR;
 
 	// allocate and zero first cluster
-	if (!addDirCluster()) {
+	if (! addDirCluster()) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	m_firstCluster = m_curCluster;
 	// Set to start of dir
 	rewind();
 	// force entry to device
-	if (!sync()) {
+	if (! sync()) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	// cache entry - should already be in cache due to sync() call
 	dir = cacheDirEntry(FatCache::CACHE_FOR_WRITE);
-	if (!dir) {
+	if (! dir) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	// change directory entry  attribute
 	dir->attributes = DIR_ATT_DIRECTORY;
@@ -346,9 +346,9 @@ bool FatFile::mkdir(FatFile* parent, fname_t* fname) {
 	// cache block for '.'  and '..'
 	block = m_vol->clusterStartBlock(m_firstCluster);
 	pc = m_vol->cacheFetchData(block, FatCache::CACHE_FOR_WRITE);
-	if (!pc) {
+	if (! pc) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
 	// copy '.' to block
 	memcpy(&pc->dir[0], &dot, sizeof(dot));
@@ -360,9 +360,6 @@ bool FatFile::mkdir(FatFile* parent, fname_t* fname) {
 	memcpy(&pc->dir[1], &dot, sizeof(dot));
 	// write first block
 	return m_vol->cacheSync();
-
-fail:
-	return false;
 }
 
 bool FatFile::open(FatFileSystem* fs, const char* path, uint8_t oflag) {
@@ -374,10 +371,11 @@ bool FatFile::open(FatFile* dirFile, const char* path, uint8_t oflag) {
 	fname_t fname;
 
 	// error if already open
-	if (isOpen() || !dirFile->isDir()) {
+	if (isOpen() || ! dirFile->isDir()) {
 		DBG_FAIL_MACRO;
-		goto fail;
+		return false;
 	}
+
 	if (isDirSeparator(*path)) {
 		while (isDirSeparator(*path)) {
 			path++;
@@ -385,32 +383,31 @@ bool FatFile::open(FatFile* dirFile, const char* path, uint8_t oflag) {
 		if (*path == 0) {
 			return openRoot(dirFile->m_vol);
 		}
-		if (!tmpDir.openRoot(dirFile->m_vol)) {
+		if (! tmpDir.openRoot(dirFile->m_vol)) {
 			DBG_FAIL_MACRO;
-			goto fail;
+			return false;
 		}
 		dirFile = &tmpDir;
 	}
+
 	while (1) {
-		if (!parsePathName(path, &fname, &path)) {
+		if (! parsePathName(path, &fname, &path)) {
 			DBG_FAIL_MACRO;
-			goto fail;
+			return false;
 		}
 		if (*path == 0) {
 			break;
 		}
-		if (!open(dirFile, &fname, O_READ)) {
+		if (! open(dirFile, &fname, O_READ)) {
 			DBG_FAIL_MACRO;
-			goto fail;
+			return false;
 		}
 		tmpDir = *this;
 		dirFile = &tmpDir;
 		close();
 	}
-	return open(dirFile, &fname, oflag);
 
-fail:
-	return false;
+	return open(dirFile, &fname, oflag);
 }
 
 bool FatFile::open(FatFile* dirFile, uint16_t index, uint8_t oflag) {
@@ -744,6 +741,7 @@ int FatFile::read(void* buf, size_t nbyte) {
 			}
 			block = m_vol->clusterStartBlock(m_curCluster) + blockOfCluster;
 		}
+		const auto lock_set(FatVolume::os_lock());
 		if (offset != 0 || toRead < 512 || block == m_vol->cacheBlockNumber()) {
 			// amount to be read from current block
 			n = 512 - offset;
@@ -753,6 +751,7 @@ int FatFile::read(void* buf, size_t nbyte) {
 			// read block to cache and copy data to caller
 			pc = m_vol->cacheFetchData(block, FatCache::CACHE_FOR_READ);
 			if (! pc) {
+				FatVolume::os_unlock(lock_set);
 				DBG_FAIL_MACRO;
 				goto fail;
 			}
@@ -771,11 +770,13 @@ int FatFile::read(void* buf, size_t nbyte) {
 			if (m_vol->cacheBlockNumber() <= block && block < (m_vol->cacheBlockNumber() + nb)) {
 				// flush cache if a block is in the cache
 				if (! m_vol->cacheSync()) {
+					FatVolume::os_unlock(lock_set);
 					DBG_FAIL_MACRO;
 					goto fail;
 				}
 			}
 			if (! m_vol->readBlocks(block, dst, nb)) {
+				FatVolume::os_unlock(lock_set);
 				DBG_FAIL_MACRO;
 				goto fail;
 			}
@@ -784,10 +785,13 @@ int FatFile::read(void* buf, size_t nbyte) {
 			// read single block
 			n = 512;
 			if (! m_vol->readBlock(block, dst)) {
+				FatVolume::os_unlock(lock_set);
 				DBG_FAIL_MACRO;
 				goto fail;
 			}
 		}
+		FatVolume::os_unlock(lock_set);
+
 		dst += n;
 		m_curPosition += n;
 		toRead -= n;
@@ -1151,12 +1155,15 @@ bool FatFile::sync() {
 		return true;
 	}
 
+	const auto lock_set(FatVolume::os_lock());
 	if (m_flags & F_FILE_DIR_DIRTY) {
 		dir_t* dir = cacheDirEntry(FatCache::CACHE_FOR_WRITE);
 		// check for deleted by another open file object
 		if (! dir || dir->name[0] == DIR_NAME_DELETED) {
 			DBG_FAIL_MACRO;
-			goto fail;
+			m_error |= WRITE_ERROR;
+			FatVolume::os_unlock(lock_set);
+			return false;
 		}
 		// do not set filesize for dir files
 		if (isFile()) {
@@ -1175,14 +1182,13 @@ bool FatFile::sync() {
 		// clear directory dirty
 		m_flags &= ~F_FILE_DIR_DIRTY;
 	}
-	if (m_vol->cacheSync()) {
-		return true;
-	}
-	DBG_FAIL_MACRO;
 
-fail:
-	m_error |= WRITE_ERROR;
-	return false;
+	const auto res(m_vol->cacheSync());
+	if (! res) {
+		DBG_FAIL_MACRO;
+	}
+	FatVolume::os_unlock(lock_set);
+	return res;
 }
 
 bool FatFile::timestamp(FatFile* file) {
@@ -1403,8 +1409,10 @@ int FatFile::write(const void* buf, size_t nbyte) {
 				// rewrite part of block
 				cacheOption = FatCache::CACHE_FOR_WRITE;
 			}
+			const auto lock_set(FatVolume::os_lock());
 			pc = m_vol->cacheFetchData(block, cacheOption);
 			if (! pc) {
+				FatVolume::os_unlock(lock_set);
 				DBG_FAIL_MACRO;
 				goto fail;
 			}
@@ -1413,10 +1421,12 @@ int FatFile::write(const void* buf, size_t nbyte) {
 			if (512 == (n + blockOffset)) {
 				// Force write if block is full - improves large writes.
 				if (! m_vol->cacheSyncData()) {
+					FatVolume::os_unlock(lock_set);
 					DBG_FAIL_MACRO;
 					goto fail;
 				}
 			}
+			FatVolume::os_unlock(lock_set);
 #if USE_MULTI_BLOCK_IO
 		} else if (nToWrite >= 1024) {
 			// use multiple block write command
@@ -1426,10 +1436,15 @@ int FatFile::write(const void* buf, size_t nbyte) {
 				nBlock = maxBlocks;
 			}
 			n = 512 * nBlock;
+
+			const uint8_t sreg = SREG;
+			__builtin_avr_cli();
 			if (m_vol->cacheBlockNumber() <= block && block < (m_vol->cacheBlockNumber() + nBlock)) {
 				// invalidate cache if block is in cache
 				m_vol->cacheInvalidate();
 			}
+			SREG = sreg;
+
 			if (! m_vol->writeBlocks(block, src, nBlock)) {
 				DBG_FAIL_MACRO;
 				goto fail;
@@ -1438,9 +1453,14 @@ int FatFile::write(const void* buf, size_t nbyte) {
 		} else {
 			// use single block write command
 			n = 512;
+
+			const uint8_t sreg = SREG;
+			__builtin_avr_cli();
 			if (m_vol->cacheBlockNumber() == block) {
 				m_vol->cacheInvalidate();
 			}
+			SREG = sreg;
+
 			if (! m_vol->writeBlock(block, src)) {
 				DBG_FAIL_MACRO;
 				goto fail;

@@ -40,6 +40,7 @@
 #include "math_utils.h"
 #include "ir-rc5.h"
 #include "uart.h"
+#include "sdfat_fs.h"
 #include <stdio.h>
 #include <float.h>
 
@@ -603,31 +604,43 @@ int16_t is_obstacle_ahead(int16_t distance) {
 void led_update(void) {
 #ifdef LED_AVAILABLE
 	uint8_t leds = LED_get();
+
 	if (sensTrans != 0) {
 		leds |= LED_GELB;
 	} else {
 		leds = leds & (uint8_t) ~LED_GELB;
 	}
+
 	if (sensError != 0) {
 		leds |= LED_ORANGE;
 	} else {
 		leds = leds & (uint8_t) ~LED_ORANGE;
 	}
+
 	if (sensDistL < 500) {
 		leds |= LED_LINKS;
 	} else {
 		leds = leds & (uint8_t) ~LED_LINKS;
 	}
+
 	if (sensDistR < 500) {
 		leds |= LED_RECHTS;
 	} else {
 		leds = leds & (uint8_t) ~LED_RECHTS;
 	}
+
+#ifdef MMC_AVAILABLE
+	if (TIMER_GET_TICKCOUNT_32 - sd_get_last_error_time() > MS_TO_TICKS(5000UL)) {
+		leds = leds & (uint8_t) ~LED_TUERKIS;
+	}
+#endif // MMC_AVAILABLE
+
 #if defined MCU && defined UART_AVAILABLE
 	if (uart_infifo.overflow == 1) {
 		leds |= LED_TUERKIS;
 	}
 #endif // MCU && UART_AVAILABLE
+
 	LED_set(leds);
 #endif // LED_AVAILABLE
 }

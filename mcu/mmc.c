@@ -312,7 +312,7 @@ void mmc_display(void) {
 	display_clear();
 	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
 
-#if ! defined MMC_WRITE_TEST_AVAILABLE
+#if ! defined MMC_RAW_WRITE_TEST_AVAILABLE
 	cid_t cid;
 	sd_read_cid(&cid);
 	csd_t csd;
@@ -333,9 +333,9 @@ void mmc_display(void) {
 		display_printf("%02x", csd.raw[i]);
 	}
 #endif // ! SDFAT_AVAILABLE
-#endif // ! MMC_WRITE_TEST_AVAILABLE
+#endif // ! MMC_RAW_WRITE_TEST_AVAILABLE
 
-#if ! defined MMC_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
+#if ! defined MMC_RAW_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
 	if (card_size) {
 		const uint8_t result = sdfat_test();
 		if (result) {
@@ -343,9 +343,9 @@ void mmc_display(void) {
 			display_printf("sdfat_test()=%d :(", result);
 		}
 	}
-#endif // ! MMC_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
+#endif // ! MMC_RAW_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
 
-#ifdef MMC_WRITE_TEST_AVAILABLE
+#ifdef MMC_RAW_WRITE_TEST_AVAILABLE
 	static uint8_t buffer[512];
 	if (card_size) {
 		uint8_t result = mmc_test(buffer);
@@ -354,7 +354,7 @@ void mmc_display(void) {
 			display_printf("mmc_test()=%u :(", result);
 		}
 	}
-#endif // MMC_WRITE_TEST_AVAILABLE
+#endif // MMC_RAW_WRITE_TEST_AVAILABLE
 #endif // MMC_INFO_AVAILABLE
 }
 #endif // DISPLAY_MMC_INFO

@@ -108,9 +108,9 @@ constexpr uint32_t const SD_INIT_TIMEOUT = 2000UL;
 /** erase timeout ms */
 constexpr uint32_t const SD_ERASE_TIMEOUT = 10000UL;
 /** read timeout ms */
-constexpr uint32_t const SD_READ_TIMEOUT = 4000UL;
+constexpr uint32_t const SD_READ_TIMEOUT = 600UL;
 /** write time out ms */
-constexpr uint32_t const SD_WRITE_TIMEOUT = 4000UL;
+constexpr uint32_t const SD_WRITE_TIMEOUT = 2000UL;
 
 /* SD card commands */
 /** GO_IDLE_STATE - init card in spi mode if CS low */
