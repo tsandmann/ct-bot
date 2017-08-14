@@ -15,7 +15,7 @@ if [[ "`uname`" == "Linux" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
 		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-linux.tbz2 'https://www.dropbox.com/s/y6429vlagozve0r/armv8l-toolchain-linux.tbz2'; tar xjf armv8l-toolchain-linux.tbz2; }
 	fi
-	export export LD_LIBRARY_PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin
+	export LD_LIBRARY_PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin
 	export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
 fi
 
