@@ -43,11 +43,11 @@
 
 #define LOG_BUFFER_SIZE 65U /**< Groesse des Log-Puffers */
 
-static const char line_str[]	PROGMEM = "[%5u] "; /**< Format-String fuer Zeilennummer */
-static const char debug_str[]	PROGMEM	= "DEBUG "; /**< Log-Typ DEBUG */
-static const char info_str[]	PROGMEM	= "INFO  "; /**< Log-Typ INFO */
-static const char error_str[]	PROGMEM	= "ERROR "; /**< Log-Typ ERROR */
-static PGM_P p_log_type;							/**< Zeiger auf Log-Types im Flash */
+static const char line_str[] PROGMEM = "[%5u] "; /**< Format-String fuer Zeilennummer */
+static const char debug_str[] PROGMEM	= "DEBUG "; /**< Log-Typ DEBUG */
+static const char info_str[] PROGMEM	= "INFO  "; /**< Log-Typ INFO */
+static const char error_str[] PROGMEM	= "ERROR "; /**< Log-Typ ERROR */
+static PGM_P p_log_type;	 /**< Zeiger auf Log-Types im Flash */
 static PGM_P const log_types[] PROGMEM = {debug_str, info_str, error_str}; /**< Log-Typ-Array im Flash */
 static char minilog_buffer[LOG_BUFFER_SIZE]; /**< Log-Puffer */
 

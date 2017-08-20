@@ -19,7 +19,7 @@
  */
 
 /**
- * \file
+ * \file mcu/SdFat/SdFatConfig.h
  * \brief Configuration definitions. Adapted for ct-Bot framework.
  */
 #ifndef SdFatConfig_h

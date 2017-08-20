@@ -141,9 +141,21 @@ int putchar(int);
 #else
 #define PACKED_FORCE __attribute__ ((packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (nicht x86) */
 #endif // __x86_64__ || __i386__
-#else // Doxygen
+#else
 #define PACKED_FORCE
-#endif
+#endif // DOXYGEN
+
+#ifndef DOXYGEN
+#define ALWAYS_INLINE __attribute__((always_inline))
+#else
+#define ALWAYS_INLINE
+#endif // DOXYGEN
+
+#ifndef DOXYGEN
+#define NO_INLINE __attribute__((noinline))
+#else
+#define NO_INLINE
+#endif // DOXYGEN
 
 #ifdef MCU
 #include <avr/pgmspace.h>

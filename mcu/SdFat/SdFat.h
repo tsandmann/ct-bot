@@ -19,7 +19,7 @@
  */
 
 /**
- * \file
+ * \file mcu/SdFat/SdFat.h
  * \brief SdFat class
  */
 
@@ -66,8 +66,8 @@ private:
 	SdCard m_sdCard;
 
 public:
-	/** Initialize SD card and file system.
-	 * \param[in] spi SPI object for the card.
+	/**
+	 * Initialize SD card and file system.
 	 * \param[in] divisor SPI divisor.
 	 * \return true for success else false.
 	 */
@@ -80,7 +80,7 @@ public:
 			m_sdCard.os_unlock(lock_set);
 			return res;
 		}
-#endif
+#endif // SDFAT_AVAILABLE
 		return res;
 	}
 
@@ -90,7 +90,8 @@ public:
 	}
 
 #ifdef SDFAT_AVAILABLE
-	/** Diagnostic call to initialize FatFileSystem - use for
+	/**
+	 * Diagnostic call to initialize FatFileSystem - use for
 	 *  diagnostic purposes only.
 	 *  \return true for success else false.
 	 */
@@ -131,7 +132,8 @@ private:
  */
 class SdFat : public SdFatBase {
 public:
-	/** Initialize SD card and file system.
+	/**
+	 * Initialize SD card and file system.
 	 * \param[in] divisor SPI divisor.
 	 * \return true for success else false.
 	 */

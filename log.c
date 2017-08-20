@@ -98,7 +98,7 @@
 /** Schuetzt den Ausgabepuffer */
 #define LOCK()		pthread_mutex_lock(&log_buffer_mutex);
 /** Hebt den Schutz fuer den Ausgabepuffer wieder auf */
-#define UNLOCK()	pthread_mutex_unlock(&log_buffer_mutex);
+#define UNLOCK()		pthread_mutex_unlock(&log_buffer_mutex);
 #else
 /** Schuetzt den Ausgabepuffer */
 #define LOCK()
@@ -113,11 +113,11 @@ static uint32_t log_file_end = 0;
 #endif // LOG_MMC_AVAILABLE
 
 /* Log-Typen als String, auf MCU im Flash */
-static const char debug_str[] PROGMEM = "- DEBUG -";
-static const char info_str[] PROGMEM = "- INFO -";
-static const char warn_str[] PROGMEM = "- WARNING -";
-static const char error_str[] PROGMEM = "- ERROR -";
-static const char fatal_str[] PROGMEM = "- FATAL -";
+static const char debug_str[] PROGMEM = "- DEBUG -"; /**< Log Typ Debug */
+static const char info_str[] PROGMEM = "- INFO -"; /**< Log Typ Info */
+static const char warn_str[] PROGMEM = "- WARNING -"; /**< Log Typ Warnung */
+static const char error_str[] PROGMEM = "- ERROR -"; /**< Log Typ Fehler */
+static const char fatal_str[] PROGMEM = "- FATAL -"; /**< Log Typ fataler Fehler */
 
 /**
  * Liefert den Log-Typ als String (auf MCU als Flash-Referenz).

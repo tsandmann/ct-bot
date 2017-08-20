@@ -153,7 +153,7 @@ static inline uint8_t test_and_set(uint8_t* var, uint8_t x) {
  * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
  * und os_exitCS() sollte daher kein Funktionsaufruf erfolgen.
  */
-static inline __attribute__((always_inline)) void os_enterCS(void) {
+static inline ALWAYS_INLINE void os_enterCS(void) {
 	os_scheduling_allowed = 0;
 	__asm__ __volatile__("":::"memory");
 }
@@ -164,7 +164,7 @@ static inline __attribute__((always_inline)) void os_enterCS(void) {
  * \see os_enterCS()
  * \return Vorheriger Status: 0 fuer bisher nicht gelockt, 1 fuer Lock bereits gesetzt
  */
-static inline __attribute__((always_inline)) uint8_t os_enterCS_ret(void) {
+static inline ALWAYS_INLINE uint8_t os_enterCS_ret(void) {
 	const uint8_t sreg = SREG;
 	__builtin_avr_cli();
 	const uint8_t old = os_scheduling_allowed;

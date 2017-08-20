@@ -125,8 +125,8 @@ static inline uint8_t sd_get_error_data(void) {
 }
 
 /**
- *
- * \return
+ * Returns the timestamp of the last error
+ * \return Timestamp in ticks [176 us]
  */
 static inline uint32_t sd_get_last_error_time(void) {
 	return sd_card_get_last_error_time(p_sd);
@@ -143,7 +143,7 @@ static inline uint8_t sd_read_csd(csd_t* p_csd) {
 
 /**
  * Reads the SD card's CID register
- * \param[out] p_csd Pointer to buffer for CID content (buffer size >= 16 byte)
+ * \param[out] p_cid Pointer to buffer for CID content (buffer size >= 16 byte)
  * \return Error code: 1 for success, 0 for error of SdCard::read_csd()
  */
 static inline uint8_t sd_read_cid(cid_t* p_cid) {
@@ -176,7 +176,7 @@ extern uint8_t (*sdfat_sync_vol)(pSdFat); /**< \see SdFatWrapper::sync_vol(), im
 
 /**
  * Simple test code for SD Fat library
- * @return 1 in case of success, 0 otherwise
+ * \return 1 in case of success, 0 otherwise
  */
 uint8_t sd_fat_test(void);
 
@@ -243,7 +243,7 @@ uint8_t sdfat_sync_vol(pSdFat p_instance); /**< \see SdFatWrapper::sync_vol() */
 
 /**
  * Simple test code for SD Fat library
- * @return 1 in case of success, 0 otherwise
+ * \return 1 in case of success, 0 otherwise
  */
 void sdfat_test(void);
 

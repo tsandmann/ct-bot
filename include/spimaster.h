@@ -59,9 +59,9 @@ protected:
 	/**
 	 * Receives a byte from the SPI bus
 	 * \return The received data byte
-	 * \note Blocking until data is received, 0xff is sent out
+	 * \note 0xff is sent out
 	 */
-	uint8_t __attribute__((always_inline)) receive() const {
+	uint8_t ALWAYS_INLINE receive() const {
 		SPDR = 0xff;
 		while (! (SPSR & _BV(SPIF))) {}
 		return SPDR;
@@ -116,9 +116,8 @@ protected:
 	/**
 	 * Sends a byte to the SPI bus.
 	 * \param[in] data The data byte to send
-	 * \note Blocking until byte is sent out
 	 */
-	void __attribute__((always_inline)) send(uint8_t data) const {
+	void ALWAYS_INLINE send(uint8_t data) const {
 		SPDR = data;
 		while (!( SPSR & _BV(SPIF))) {}
 	}
@@ -242,9 +241,6 @@ protected:
 	}
 
 private:
-	void receive_sector(void* buf);
-	void send_sector(const void* buf);
-
 	uint8_t m_divisor;
 };
 

@@ -21,26 +21,21 @@
  * \file 	mcu/mmc.c
  * \brief 	Routinen zum Auslesen/Schreiben einer MMC-Karte
  * \author 	Benjamin Benz (bbe@heise.de)
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	07.11.2006
  */
 
 
 /*
  * Die MMC kann auf zwei Weisen angesprochen werden:
- * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss
- * SPI_AVAILABLE in ct-Bot.h AUS sein.
- * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
- * muss die Verbindung zwischen PC5 und dem Display trennen (busy-Leitung wird vom Display-
- * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4
- * vom Radencoder zu trennen (der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss
- * jedoch immer als OUTPUT konfiguriert sein). Schaltet man nun in ct-Bot.h SPI_AVAILABLE
- * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
- * hoehere Transfer-Geschwindigkeit zur MMC (Faktor 2) und es sind ca. 430 Byte weniger im
- * Flash belegt.
- * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch
- * wenn man keine MMC-Unterstuetzung benoetigt, weil die Radencoder-Auswertung die
- * veraenderte Pin-Belegung immer beruecksichtigen muss.
+ * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss SPI_AVAILABLE in include/bot-local.h AUS (//) sein.
+ * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man muss die Verbindung zwischen PC5 und dem Display trennen
+ * (busy-Leitung wird vom Display-Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4 vom Radencoder zu trennen
+ * (der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss jedoch immer als OUTPUT konfiguriert sein). Schaltet man nun in
+ * include/bot-local.h SPI_AVAILABLE AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine hoehere
+ * Transfer-Geschwindigkeit zur MMC (Faktor 2).
+ * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch wenn man keine MMC-Unterstuetzung benoetigt,
+ * weil die Radencoder-Auswertung die veraenderte Pin-Belegung immer beruecksichtigen muss.
  */
 
 #ifdef MCU
@@ -192,6 +187,10 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 }
 
 #ifdef SDFAT_AVAILABLE
+/**
+ * Testet das SdFat Dateisystem auf einer SD-Karte
+ * \return 0, wenn alles ok; Fehlercode sonst
+ */
 static inline uint8_t sdfat_test(void) {
 	static uint8_t buffer[512];
 

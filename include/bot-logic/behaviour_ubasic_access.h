@@ -60,8 +60,7 @@ static inline char ubasic_get_content(void) {
  * Hilfsfunktion fuer set_ptr() und incr_ptr()
  * \param offset neuer Wert fuer ubasic_ptr
  */
-static inline void _ubasic_update_ptr(uint16_t offset) __attribute__((always_inline));
-static inline void _ubasic_update_ptr(uint16_t offset) {
+static inline ALWAYS_INLINE void _ubasic_update_ptr(uint16_t offset) {
 	const uint16_t last_block = ubasic_ptr / SD_BLOCK_SIZE;
 	ubasic_ptr = offset;
 	const uint16_t block = ubasic_ptr / SD_BLOCK_SIZE;

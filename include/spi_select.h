@@ -41,7 +41,7 @@ class SelectEna {
 protected:
 	/**
 	 * Sets CS the line
-	 * \param status New status: true to set CS line high, false to set CS line low
+	 * \param[in] status New status: true to set CS line high, false to set CS line low
 	 */
 	void set_cs(const bool status) const {
 		status ? ENA_off(ENA_MMC) : ENA_on(ENA_MMC);
@@ -56,7 +56,7 @@ class SelectPB4 {
 protected:
 	/**
 	 * Sets CS the line
-	 * \param status New status: true to set CS line high, false to set CS line low
+	 * \param[in] status New status: true to set CS line high, false to set CS line low
 	 */
 	void set_cs(const bool status) const {
 		status ? PORTB |= _BV(PB4) : PORTB &= ~_BV(PB4);

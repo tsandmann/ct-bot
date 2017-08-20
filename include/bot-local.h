@@ -31,7 +31,7 @@
 
 /*** Bot-Geometrie ***/
 
-#define BOT_DIAMETER			120	/**< Bot-Durchmesser [mm] */
+#define BOT_DIAMETER				120	/**< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60	/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
 #define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades (Sim) [mm] */
@@ -59,7 +59,7 @@
 #define PID_Kd				20	/**< PID-Parameter differential */
 #define PID_Ta				1	/**< Abtastzeit */
 #define PID_SHIFT			4	/**< Rechtsshift der Stellgroessenkorrektur */
-#define PID_TIME			333	/**< max. Aufrufinterval [ms] */
+#define PID_TIME				333	/**< max. Aufrufinterval [ms] */
 #define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW	/**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #define PWMMAX				511	/**< Maximaler PWM-Wert */
 #define PWMMIN				0	/**< Minimaler PWM-Wert */
@@ -75,7 +75,7 @@
 #define MOUSE_FULL_TURN	1484	/**< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
 #else // MCU
 #define MOUSE_CPI		415		/**< CPI-Wert aus Kalibrierung */
-#define MOUSE_FULL_TURN	1600	/**< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define MOUSE_FULL_TURN	1600		/**< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #endif // PC
 
 #define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/**< Abstand eines Rades zur Mitte des Bots [mm] */
@@ -127,7 +127,7 @@
 /*** Einstellungen fuer die Verhaltensregeln ***/
 
 /* bot_avoid_border_behaviour() */
-#define BORDER_DANGEROUS	0x3A0	/**< Wert, ab dem wir sicher sind, dass es eine Kante ist */
+#define BORDER_DANGEROUS		0x3A0	/**< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 /* bot_avoid_col_behaviour() */
 #define COL_CLOSEST			200		/**< Abstand [mm], den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
@@ -145,10 +145,10 @@
 /* bot_follow_line_behaviour() */
 #ifdef PC
 /* Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
-#define LINE_SENSE		0x350	/**< Linie im Sim = 0x350 */
+#define LINE_SENSE			0x350	/**< Linie im Sim = 0x350 */
 #else
 /* Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
-#define LINE_SENSE		0x200	/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
+#define LINE_SENSE			0x200	/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
 #endif // PC
 
 /* bot_catch_pillar_behaviour() */

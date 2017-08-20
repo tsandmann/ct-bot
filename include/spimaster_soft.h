@@ -60,7 +60,7 @@ protected:
 	/**
 	 * Receives a byte from the SPI bus
 	 * \return The received data byte
-	 * \note Blocking until data is received, 0xff is sent out
+	 * \note 0xff is sent out
 	 */
 	uint8_t receive() const {
 		disable_servo();
@@ -124,9 +124,9 @@ protected:
 	/**
 	 * Receives n byte from the SPI bus
 	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least n byte)
-	 * \param[in] n Number of bytes to be received
+	 * \param[in] n Number of bytes to receive
 	 */
-	void __attribute__((always_inline)) receive(uint8_t* buf, size_t n) const {
+	void ALWAYS_INLINE receive(uint8_t* buf, size_t n) const {
 		if (n != 512) {
 			receive_n(buf, n);
 		} else {
@@ -137,7 +137,6 @@ protected:
 	/**
 	 * Sends a byte to the SPI bus.
 	 * \param[in] data The data byte to send
-	 * \note Blocking until byte is sent out
 	 */
 	void send(uint8_t data) const {
 		disable_servo();
@@ -147,8 +146,8 @@ protected:
 			"in %0, %2		; load PORTB 		\n\t"
 			"cbr %0, %6		; PB3 low			\n\t"
 			"cbr %0, %5		; CLK low			\n\t"
-			"bst %1, 7		; send bit 7		\n\t"
-			"bld %0, %3		; data to DO		\n\t"
+			"bst %1, 7		; send bit 7			\n\t"
+			"bld %0, %3		; data to DO			\n\t"
 			"out %2, %0		; send data	 		\n\t"
 			"sbi %2, %4		; CLK  high			\n\t"
 			"bst %1, 6		; bit 6				\n\t"
@@ -175,7 +174,7 @@ protected:
 			"bld %0, %3							\n\t"
 			"out %2, %0							\n\t"
 			"sbi %2, %4							\n\t"
-			"bst %1, 0		; bit 0 			\n\t"
+			"bst %1, 0		; bit 0 				\n\t"
 			"bld %0, %3							\n\t"
 			"out %2, %0							\n\t"
 			"sbi %2, %4							\n\t"
@@ -191,7 +190,7 @@ protected:
 	 * \param[in] buf Pointer to buffer for data to send
 	 * \param[in] n Number of bytes to send
 	 */
-	void __attribute__((always_inline)) send(const uint8_t* buf, size_t n) const {
+	void ALWAYS_INLINE send(const uint8_t* buf, size_t n) const {
 		if (n != 512) {
 			send_n(buf, n);
 		} else {
@@ -227,7 +226,7 @@ protected:
 
 	/**
 	 * Sets the SPI bus speed to fraction of F_CPU: speed = F_CPU / (2 * divisor)
-	 * \note Currently not implemented!
+	 * \note Currently not implemented for SpiMasterSoft!
 	 */
 	void set_speed(uint8_t) {}
 
@@ -251,66 +250,66 @@ private:
 		disable_servo();
 
 		__asm__ __volatile__(
-			"2:									\n\t"
-			"in	r20, %0		; load PORTB 		\n\t"
-			"cbr r20, %6	; PB3 low			\n\t"
-			"cbr r20, %1	; CLK low			\n\t"
-			"sbr r20, %5	; MOSI high			\n\t"
-			"out %0, r20	; CLK low			\n\t"
-			"mov r19, r20	; CLK high			\n\t"
+			"2:								\n\t"
+			"in	r20, %0		; load PORTB 	\n\t"
+			"cbr r20, %6		; PB3 low		\n\t"
+			"cbr r20, %1		; CLK low		\n\t"
+			"sbr r20, %5		; MOSI high		\n\t"
+			"out %0, r20		; CLK low		\n\t"
+			"mov r19, r20	; CLK high		\n\t"
 			"sbr r19, %1						\n\t"
 			"ldi r18, 2		; load loop-var 	\n\t"
 			"clr r24							\n\t"
-			"1:									\n\t"
-			"in r26, %3		; load bit 7 		\n\t"
-			"out %0, r19	; CLK edge			\n\t"
+			"1:								\n\t"
+			"in r26, %3		; load bit 7 	\n\t"
+			"out %0, r19		; CLK edge		\n\t"
 			"out %0, r20						\n\t"
-			"bst r26, %2	; store bit 7 		\n\t"
-			"bld r25, 7							\n\t"
-			"in r26, %3		; bit 6				\n\t"
+			"bst r26, %2		; store bit 7 	\n\t"
+			"bld r25, 7						\n\t"
+			"in r26, %3		; bit 6			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 6							\n\t"
-			"in r26, %3		; bit 5				\n\t"
+			"bld r25, 6						\n\t"
+			"in r26, %3		; bit 5			\n\t"
 			"out %0, r19						\n\t"
 			"out %0 ,r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 5							\n\t"
-			"in r26, %3		; bit 4				\n\t"
+			"bld r25, 5						\n\t"
+			"in r26, %3		; bit 4			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 4							\n\t"
-			"in r26, %3		; bit 3				\n\t"
+			"bld r25, 4						\n\t"
+			"in r26, %3		; bit 3			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 3							\n\t"
-			"in r26, %3		; bit 2				\n\t"
+			"bld r25, 3						\n\t"
+			"in r26, %3		; bit 2			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 2							\n\t"
-			"in r26, %3		; bit 1				\n\t"
+			"bld r25, 2						\n\t"
+			"in r26, %3		; bit 1			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 1							\n\t"
-			"in r26, %3		; bit 0				\n\t"
+			"bld r25, 1						\n\t"
+			"in r26, %3		; bit 0			\n\t"
 			"out %0, r19						\n\t"
 			"out %0, r20						\n\t"
 			"bst r26, %2						\n\t"
-			"bld r25, 0							\n\t"
-			"st Y+, r25		; copy byte to SRAM \n\t"
+			"bld r25, 0						\n\t"
+			"st Y+, r25	; copy byte to SRAM \n\t"
 			"inc r24		; r24++				\n\t"
 			"breq 2f		; r24 == 0?			\n\t"
 			"rjmp 1b							\n\t"
-			"2:									\n\t"
+			"2:								\n\t"
 			"dec r18		; r18--				\n\t"
 			"breq 3f		; r18 == 0?			\n\t"
 			"rjmp 1b							\n\t"
-			"3:									\n\t"
+			"3:								\n\t"
 			"out %0, r19	; CLK high				"
 			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB6) /* %2 */, "M" (_SFR_IO_ADDR(PINB)) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB5)) /* %5 */, "M" (_BV(PB3)) /* %6 */
 			: "r18", "r19", "r20", "r24", "r25", "r26", "memory"
@@ -337,51 +336,51 @@ private:
 
 		__asm__ __volatile__(
 			"in r26, %0		; load PORTB 			\n\t"
-			"cbr r26, %5	; PB3 low				\n\t"
-			"cbr r26, %1	; CLK low				\n\t"
+			"cbr r26, %5		; PB3 low				\n\t"
+			"cbr r26, %1		; CLK low				\n\t"
 			"ldi r18, 2		; r18 = 2				\n\t"
-			"clr r27		; r27 = 0				\n\t"
+			"clr r27			; r27 = 0				\n\t"
 			"1:										\n\t"
 			"ld r25, Z+		; load byte from SRAM 	\n\t"
-			"bst r25, 7		; send bit 7			\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26	; send data				\n\t"
+			"bst r25, 7		; send bit 7				\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26		; send data				\n\t"
 			"sbi %0, %3		; CLK high				\n\t"
 			"bst r25, 6		; bit 6					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 5		; bit 5					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 4		; bit 4					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 3		; bit 3					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 2		; bit 2					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 1		; bit 1					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
 			"bst r25, 0		; bit 0					\n\t"
-			"bld r26, %2							\n\t"
-			"out %0, r26							\n\t"
+			"bld r26, %2								\n\t"
+			"out %0, r26								\n\t"
 			"sbi %0, %3								\n\t"
-			"inc r27		; r27++					\n\t"
-			"breq 2f		; r27 == 0?				\n\t"
-			"rjmp 1b								\n\t"
+			"inc r27			; r27++					\n\t"
+			"breq 2f			; r27 == 0?				\n\t"
+			"rjmp 1b									\n\t"
 			"2:										\n\t"
-			"dec r18		; r18--					\n\t"
-			"breq 3f		; r18 == 0?				\n\t"
-			"rjmp 1b								\n\t"
+			"dec r18			; r18--					\n\t"
+			"breq 3f			; r18 == 0?				\n\t"
+			"rjmp 1b									\n\t"
 			"3:										\n\t"
 			"sbi %0, %2		; DO high					"
 			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "z" (buf) /* %4 */, "M" (_BV(PB3)) /* %5 */

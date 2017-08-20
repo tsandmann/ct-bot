@@ -18,7 +18,7 @@
  */
 
 /**
- * \file 	sdfat_fs_pc.c
+ * \file 	pc/sdfat_fs_pc.c
  * \brief 	FAT-Dateisystem Unterstuetzung
  * \author 	Timo Sandmann
  * \date 	06.11.2016

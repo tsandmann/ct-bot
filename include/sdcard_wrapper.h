@@ -104,9 +104,9 @@ public:
 	}
 
 	/**
-	 *
-	 * \param[in] p_instance
-	 * \return
+	 * Returns the timestamp of the last error
+	 * \param[in] p_instance Pointer to SdFat instance (for C bindings)
+	 * \return Timestamp in ticks [176 us]
 	 */
 	static uint32_t get_last_error_time(SdFat* p_instance) {
 		return p_instance ? p_instance->card()->get_last_error_time() : 0;
@@ -123,7 +123,7 @@ public:
 	/**
 	 * Reads the SD card's CID register
 	 * \param[in] p_instance Pointer to SdFat instance (for C bindings)
-	 * \param[out] p_csd Pointer to buffer for CID content (buffer size >= 16 byte)
+	 * \param[out] p_cid Pointer to buffer for CID content (buffer size >= 16 byte)
 	 * \return Error code: 1 for success, 0 for error of SdCard::read_csd()
 	 */
 	static uint8_t read_cid(SdFat* p_instance, cid_t* p_cid);
@@ -203,9 +203,9 @@ public:
 	}
 
 	/**
-	 *
-	 * @param[in] p_instance
-	 * @return
+	 * Returns the first block of a file on the underlying device
+	 * \param[in] p_instance Pointer to FatFile instance returned by FatFileWrapper::open() (for C bindings)
+	 * \return Block of file
 	 */
 	static uint32_t get_first_block(FatFile* p_instance) {
 		return p_instance->volume()->clusterStartBlock(p_instance->firstCluster());

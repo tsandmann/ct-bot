@@ -87,11 +87,7 @@ void abl_push(void);
  * \param value Der Wert, der auf den Stack soll
  */
 
-static inline
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-void abl_push_value(uint16_t value) {
+static inline ALWAYS_INLINE void abl_push_value(uint16_t value) {
 	abl_params[0].u16 = value;
 	abl_push();
 }
