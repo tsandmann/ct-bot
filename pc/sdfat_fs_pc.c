@@ -71,6 +71,10 @@ uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 }
 
 uint8_t sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin) {
+	if (! p_file) {
+		return 1;
+	}
+
 	if (fseek(p_file, offset, origin)) {
 		LOG_ERROR("sdfat_seek(): fseek(%d, %u) failed:", offset, origin);
 		perror(NULL);
@@ -80,6 +84,10 @@ uint8_t sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin) {
 }
 
 int32_t sdfat_tell(pFatFile p_file) {
+	if (! p_file) {
+		return 0xffff;
+	}
+
 	int pos = ftell(p_file);
 	return pos >= 0 ? pos : 0xffff;
 }
@@ -90,10 +98,16 @@ uint32_t sdfat_get_first_block(pFatFile p_file) {
 }
 
 void sdfat_rewind(pFatFile p_file) {
-	sdfat_seek(p_file, 0, SEEK_SET);
+	if (p_file) {
+		sdfat_seek(p_file, 0, SEEK_SET);
+	}
 }
 
 int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length) {
+	if (! p_file) {
+		return -1;
+	}
+
 	const size_t res = fread(buffer, 1, length, p_file);
 	if (res != length) {
 		LOG_ERROR("sdfat_read(): fread(%d) = %d failed:", length, res);
@@ -103,6 +117,10 @@ int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length) {
 }
 
 int16_t sdfat_write(pFatFile p_file, const void* buffer, uint16_t length) {
+	if (! p_file) {
+		return -1;
+	}
+
 	return fwrite(buffer, 1, length, p_file);
 }
 
@@ -121,6 +139,10 @@ uint8_t sdfat_flush(pFatFile p_file) {
 }
 
 uint8_t sdfat_close(pFatFile p_file) {
+	if (! p_file) {
+		return 1;
+	}
+
 	return ! fclose(p_file) ? 0 : 1;
 }
 
@@ -129,6 +151,10 @@ void sdfat_free(pFatFile p_file) {
 }
 
 uint32_t sdfat_get_filesize(pFatFile p_file) {
+	if (! p_file) {
+		return -1;
+	}
+
 	size_t pos = ftell(p_file);
 	fseek(p_file, 0, SEEK_END);
 	size_t size = ftell(p_file);
