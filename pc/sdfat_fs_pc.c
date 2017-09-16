@@ -64,7 +64,7 @@ uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 
 	*p_file = fopen(filename, file_mode);
 	if (! *p_file) {
-		LOG_ERROR("sdfat_open(\"%s\"): fopen failed:", filename);
+		LOG_ERROR("sdfat_open(\"%s\", %s): fopen failed:", filename, file_mode);
 		perror(NULL);
 	}
 	return *p_file ? 0 : 1;

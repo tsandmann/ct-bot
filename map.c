@@ -276,7 +276,14 @@ static int8_t init(uint8_t clean_map) {
 	map_current_block.updated = 0xff; // Die MMC-Karte ist erstmal nicht verfuegbar
 
 	LOG_DEBUG("map::init(): sdfat_open(\"%s\")...", MAP_FILENAME);
-	uint8_t res = sdfat_open(MAP_FILENAME, &map_file_desc, 0x1 | 0x2 | 0x40);
+
+	uint8_t mode = 0x1 | 0x2 | 0x40;
+	if (sdfat_open(MAP_FILENAME, &map_file_desc, 0x1)) {
+		LOG_DEBUG("map::init(): Datei existiert noch nicht, wird neu erzeugt");
+		mode = 0x13 | 0x40;
+	}
+
+	uint8_t res = sdfat_open(MAP_FILENAME, &map_file_desc, mode);
 	LOG_DEBUG("map::init(): sdfat_open()=%d", res);
 	if (res != 0) {
 		LOG_DEBUG("map::init(): Dateioeffnen lieferte %d", res);
