@@ -36,6 +36,18 @@ extern "C" {
 #endif
 
 #define SD_BLOCK_SIZE 512U /**< Size of a block in byte */
+#define SDFAT_O_READ 0x1 /** open() oflag for reading */
+#define SDFAT_O_RDONLY SDFAT_O_READ /** open() oflag - same as O_IN */
+#define SDFAT_O_WRITE 0x2 /** open() oflag for write */
+#define SDFAT_O_WRONLY SDFAT_O_WRITE /** open() oflag - same as O_WRITE */
+#define SDFAT_O_RDWR (SDFAT_O_READ | SDFAT_O_WRITE) /** open() oflag for reading and writing */
+#define SDFAT_O_ACCMODE (SDFAT_O_READ | SDFAT_O_WRITE) /** open() oflag mask for access modes */
+#define SDFAT_O_APPEND 0x04 /** The file offset shall be set to the end of the file prior to each write */
+#define SDFAT_O_SYNC 0x08 /** synchronous writes - call sync() after each write */
+#define SDFAT_O_TRUNC 0x10 /** truncate the file to zero length */
+#define SDFAT_O_AT_END 0x20 /** set the initial position at the end of the file */
+#define SDFAT_O_CREAT 0x40 /** create the file if nonexistent */
+#define SDFAT_O_EXCL 0x80 /** If O_CREAT and O_EXCL are set, open() shall fail if the file exists */
 
 #ifdef MCU
 #ifdef MMC_AVAILABLE

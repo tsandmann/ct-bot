@@ -34,26 +34,43 @@
 
 uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 	char* file_mode;
+
+	if ((mode & SDFAT_O_CREAT) == SDFAT_O_CREAT) {
+		FILE* f = fopen(filename, "rb");
+		if (! f) {
+			f = fopen(filename, "wb");
+			if (! f) {
+				LOG_ERROR("sdfat_open(\"%s\", 0x%x): fopen failed:", filename, mode);
+				perror(NULL);
+				return 1;
+			} else {
+				fclose(f);
+			}
+		} else {
+			fclose(f);
+		}
+	}
+
 	switch (mode & 0x3f) {
-	case 0x1:
+	case SDFAT_O_READ:
 		file_mode = "rb";
 		break;
 
-	case 0x2:
+	case SDFAT_O_WRITE:
 		file_mode = "wb";
 		break;
 
-	case 0x3:
+	case SDFAT_O_RDWR:
 		file_mode = "r+b";
 		break;
 
-	case 0x4:
-	case 0x5:
-	case 0x7:
+	case SDFAT_O_APPEND:
+	case (SDFAT_O_APPEND | SDFAT_O_READ):
+	case (SDFAT_O_APPEND | SDFAT_O_READ | SDFAT_O_WRITE):
 		file_mode = "a+b";
 		break;
 
-	case 0x13:
+	case (SDFAT_O_TRUNC | SDFAT_O_READ | SDFAT_O_WRITE):
 		file_mode = "w+b";
 		break;
 

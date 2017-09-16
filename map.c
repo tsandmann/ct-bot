@@ -277,12 +277,7 @@ static int8_t init(uint8_t clean_map) {
 
 	LOG_DEBUG("map::init(): sdfat_open(\"%s\")...", MAP_FILENAME);
 
-	uint8_t mode = 0x1 | 0x2 | 0x40;
-	if (sdfat_open(MAP_FILENAME, &map_file_desc, 0x1)) {
-		LOG_DEBUG("map::init(): Datei existiert noch nicht, wird neu erzeugt");
-		mode = 0x13 | 0x40;
-	}
-
+	const uint8_t mode = SDFAT_O_RDWR | SDFAT_O_CREAT;
 	uint8_t res = sdfat_open(MAP_FILENAME, &map_file_desc, mode);
 	LOG_DEBUG("map::init(): sdfat_open()=%d", res);
 	if (res != 0) {
