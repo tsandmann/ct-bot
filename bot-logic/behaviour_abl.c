@@ -20,7 +20,7 @@
 /**
  * \file 	behaviour_abl.c
  * \brief 	Abstract Bot Language Interpreter
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	28.11.2007
  *
  *
@@ -218,6 +218,7 @@ static int8_t init(void) {
 		LOG_ERROR("ABL: Datei \"%s\" nicht vorhanden", last_file);
 		return -1;
 	}
+	sdfat_rewind(abl_file);
 	p_abl_i_data = abl_prg_data;
 #else // EEPROM
 	p_abl_i_data = abl_prg_data;
@@ -230,6 +231,12 @@ static int8_t init(void) {
  * \param direction Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
  */
 static void load_program(int8_t direction) {
+#ifdef DEBUG_ABL
+	const int32_t pos = sdfat_tell(abl_file);
+	const int32_t size = sdfat_get_filesize(abl_file);
+	LOG_DEBUG("load_program(%d): file pos=%d size=%d", direction, pos, size);
+#endif // DEBUG_ABL
+
 #ifdef SDFAT_AVAILABLE
 	if (direction > 0) {
 		sdfat_seek(abl_file, SD_BLOCK_SIZE, SEEK_CUR);
@@ -238,7 +245,7 @@ static void load_program(int8_t direction) {
 	}
 	const int16_t res = sdfat_read(abl_file, p_abl_i_data, SD_BLOCK_SIZE);
 	if (res != SD_BLOCK_SIZE) {
-		LOG_DEBUG("load_program(): sdfat_read() failed: %d", res);
+		LOG_ERROR("load_program(): sdfat_read() failed: %d", res);
 		p_abl_i_data = NULL;
 		return;
 	}

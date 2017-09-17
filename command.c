@@ -876,6 +876,9 @@ int8_t command_evaluate(void) {
 						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, SD_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
+							if (type == 1) { // ABL
+								sdfat_close(prog_file);
+							}
 							LOG_DEBUG("->fertig");
 						}
 					}
@@ -899,7 +902,6 @@ int8_t command_evaluate(void) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				case 1:
 					/* ABL */
-					sdfat_close(prog_file);
 					bot_abl(NULL, NULL);
 					break;
 #endif // BEHAVIOUR_ABL_AVAILABLE

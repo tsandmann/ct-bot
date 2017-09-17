@@ -20,7 +20,7 @@
 /**
  * \file 	behaviour_abl.h
  * \brief 	Abstract Bot Language Interpreter
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	28.11.2007
  */
 
@@ -50,9 +50,9 @@ void bot_abl_behaviour(Behaviour_t * data);
 /**
  * Botenfunktion des ABL-Interpreters.
  * Laedt das erste Programm-Segment, initialisiert Pointer und startet das Verhalten.
- * Nicht per Remote-Call aufrufbar, da das Verhalten selbst Remote-Calls absetzt.
  * \param *caller Zeiger auf den Verhaltensdatensatz des Aufrufers
  * \param *filename	Programmdatei oder NULL, falls EEPROM / vorherige Programmdatei
+ * \note Nicht per Remote-Call aufrufbar, da das Verhalten selbst Remote-Calls absetzt.
  */
 void bot_abl(Behaviour_t * caller, const char * filename);
 

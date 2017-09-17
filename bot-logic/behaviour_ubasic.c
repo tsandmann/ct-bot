@@ -71,7 +71,7 @@ char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
 static uint8_t result_behav; /**< Puffer fuer Verhaltens-Ergebnis */
 
 /**
- * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * Laedt ein uBasic-Programm aus deiner SdFat-Datei
  * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */

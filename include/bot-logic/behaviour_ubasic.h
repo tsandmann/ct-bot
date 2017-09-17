@@ -71,12 +71,12 @@ void ubasic_set_speed(int16_t speedLeft, int16_t speedRight);
 /**
  * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
  * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
- * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
+ * \return != 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
  */
 uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour);
 
 /**
- * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * Laedt ein uBasic-Programm aus deiner SdFat-Datei
  * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */
