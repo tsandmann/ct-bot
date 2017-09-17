@@ -22,20 +22,20 @@
 #include <string.h>
 #include "FatVolume.h"
 
-cache_t* FatCache::read(uint32_t lbn, uint8_t option) {
-	if (m_lbn != lbn) {
+cache_t* FatCache::read(uint32_t lbn_, uint8_t option) {
+	if (m_lbn != lbn_) {
 		if (! sync()) {
 			DBG_FAIL_MACRO;
 			return 0;
 		}
 		if (! (option & CACHE_OPTION_NO_READ)) {
-			if (! m_vol->readBlock(lbn, m_block.data)) {
+			if (! m_vol->readBlock(lbn_, m_block.data)) {
 				DBG_FAIL_MACRO;
 				return 0;
 			}
 		}
 		m_status = 0;
-		m_lbn = lbn;
+		m_lbn = lbn_;
 	}
 	m_status |= option & CACHE_STATUS_MASK;
 
@@ -429,7 +429,7 @@ int32_t FatVolume::freeClusterCount() {
 }
 
 bool FatVolume::init(uint8_t part) {
-	uint32_t clusterCount;
+	uint32_t clusterCount_;
 	uint32_t totalBlocks;
 	uint32_t volumeStartBlock = 0;
 	fat32_boot_t* fbs;
@@ -451,7 +451,7 @@ bool FatVolume::init(uint8_t part) {
 			return false;
 		}
 		pc = cacheFetchData(0, FatCache::CACHE_FOR_READ);
-		if (!pc) {
+		if (! pc) {
 			DBG_FAIL_MACRO;
 			return false;
 		}
@@ -464,7 +464,7 @@ bool FatVolume::init(uint8_t part) {
 		volumeStartBlock = p->firstSector;
 	}
 	pc = cacheFetchData(volumeStartBlock, FatCache::CACHE_FOR_READ);
-	if (!pc) {
+	if (! pc) {
 		DBG_FAIL_MACRO;
 		return false;
 	}
@@ -504,23 +504,23 @@ bool FatVolume::init(uint8_t part) {
 	// total blocks for FAT16 or FAT32
 	totalBlocks = fbs->totalSectors16 ? fbs->totalSectors16 : fbs->totalSectors32;
 	// total data blocks
-	clusterCount = totalBlocks - (m_dataStartBlock - volumeStartBlock);
+	clusterCount_ = totalBlocks - (m_dataStartBlock - volumeStartBlock);
 
 	// divide by cluster size to get cluster count
-	clusterCount >>= m_clusterSizeShift;
-	m_lastCluster = clusterCount + 1;
+	clusterCount_ >>= m_clusterSizeShift;
+	m_lastCluster = clusterCount_ + 1;
 
 	// Indicate unknown number of free clusters.
 	setFreeClusterCount(-1);
 
 	// FAT type is determined by cluster count
-	if (clusterCount < 4085) {
+	if (clusterCount_ < 4085) {
 		m_fatType = 12;
 		if (! FAT12_SUPPORT) {
 			DBG_FAIL_MACRO;
 			return false;
 		}
-	} else if (clusterCount < 65525) {
+	} else if (clusterCount_ < 65525) {
 		m_fatType = 16;
 	} else {
 		m_rootDirStart = fbs->fat32RootCluster;
