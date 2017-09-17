@@ -304,7 +304,7 @@ void sensor_update(void) {
 			sr = diffEncR * ((float) WHEEL_PERIMETER / ENCODER_MARKS);
 
 			/* Winkel berechnen */
-			dHead = (sr - sl) / WHEEL_TO_WHEEL_DIAMETER;
+			dHead = (sr - sl) / (float) WHEEL_TO_WHEEL_DIAMETER;
 			/* Winkel ist hier noch im Bogenmass */
 			/* Position berechnen */
 			/* dazu Betrag des Vektors berechnen */
@@ -352,7 +352,7 @@ void sensor_update(void) {
 			direction_t dir_change = {{0, 0}};
 			dir_change.raw = direction.raw ^ last_dir.raw;
 
-			float head_diff = 0.0f;
+			float head_diff = 0.f;
 			const int16_t x_enc_int = (int16_t) x_enc;
 			const int16_t y_enc_int = (int16_t) y_enc;
 
@@ -361,10 +361,10 @@ void sensor_update(void) {
 				last_dir = direction;
 				if (dir_change.left && dir_change.right) {
 					/* Drehrichtung beider Raeder hat sich geaendert */
-					head_diff = (float) WHEEL_PERIMETER / ENCODER_MARKS / WHEEL_TO_WHEEL_DIAMETER * 2.0f;
+					head_diff = (float) WHEEL_PERIMETER / (float) ENCODER_MARKS / (float) WHEEL_TO_WHEEL_DIAMETER * 2.f;
 				} else {
 					/* Drehrichtung eines Rads hat sich geaendert */
-					head_diff = (float) WHEEL_PERIMETER / ENCODER_MARKS / WHEEL_TO_WHEEL_DIAMETER;
+					head_diff = (float) WHEEL_PERIMETER / (float) ENCODER_MARKS / (float) WHEEL_TO_WHEEL_DIAMETER;
 				}
 
 //				LOG_DEBUG("head_diff=%f Grad", deg(head_diff));
@@ -419,7 +419,7 @@ void sensor_update(void) {
 		x_pos = (int16_t) (G_POS * x_mou + (1 - G_POS) * x_enc);
 		y_pos = (int16_t) (G_POS * y_mou + (1 - G_POS) * y_enc);
 		/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
-		if (fabs(heading_mou - heading_enc) > 180) {
+		if (fabsf(heading_mou - heading_enc) > 180) {
 			/* wir nutzen zum Rechnen zwei Drehrichtungen */
 			heading = heading_mou <= 180 ? heading_mou * G_POS : (heading_mou - 360) * G_POS;
 			heading += heading_enc <= 180 ? heading_enc * (1 - G_POS) : (heading_enc - 360) * (1 - G_POS);
@@ -434,7 +434,7 @@ void sensor_update(void) {
 			heading -= 360;
 		}
 		heading_int = (int16_t) heading;
-		heading_10_int = (int16_t) (heading * 10.0f);
+		heading_10_int = (int16_t) (heading * 10.f);
 		const float h = rad(heading);
 		heading_sin = sinf(h);
 		heading_cos = cosf(h);
@@ -484,8 +484,8 @@ void sensor_update(void) {
 			}
 
 			/* Steigungen berechnen */
-			s1 = -tan(rad(oldHead));
-			s2 = -tan(rad(heading_mou));
+			s1 = -tanf(rad(oldHead));
+			s2 = -tanf(rad(heading_mou));
 
 			/* Geradeausfahrt? (s1==s2) */
 			if (s1 == s2) {
@@ -513,8 +513,8 @@ void sensor_update(void) {
 				/* Geschwindigkeiten berechnen */
 				right_radius = radius + WHEEL_DISTANCE;
 				left_radius = radius - WHEEL_DISTANCE;
-				v_mou_right = (int16_t) (lastHead * right_radius * ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
-				v_mou_left = (int16_t) (lastHead * left_radius * ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
+				v_mou_right = (int16_t) (lastHead * right_radius * (float) ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
+				v_mou_left = (int16_t) (lastHead * left_radius * (float) ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
 			}
 			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
 			if (modifiedAngles) {

@@ -505,7 +505,7 @@ bool FatFile::openCachedEntry(FatFile* dirFile, uint16_t dirIndex, uint8_t oflag
 	m_dirBlock = m_vol->cacheBlockNumber();
 
 	// copy first cluster number for directory fields
-	firstCluster = ((uint32_t) dir->firstClusterHigh << 16) | dir->firstClusterLow;
+	firstCluster = (static_cast<uint32_t>(dir->firstClusterHigh) << 16) | dir->firstClusterLow;
 
 	if (oflag & O_TRUNC) {
 		if (firstCluster && !m_vol->freeChain(firstCluster)) {

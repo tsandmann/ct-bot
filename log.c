@@ -269,6 +269,8 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 #endif // PC
 
 #ifdef PC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 /**
  * Schreibt die eigentliche Ausgabeinformation in den Puffer.
  * \param format Format
@@ -281,6 +283,7 @@ void log_printf(const char * format, ...) {
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
 	va_end(args);
 }
+#pragma GCC diagnostic pop
 #else // MCU
 /**
  * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.

@@ -129,10 +129,10 @@ Behaviour_t* bot_drive_square_len(Behaviour_t* caller, int16_t length) {
 	edges[3].y = y_pos;
 	edges[0].x = x_pos + (int16_t) (len * heading_cos);
 	edges[0].y = y_pos + (int16_t) (len * heading_sin);
-	edges[1].x = edges[0].x + (int16_t) (len * cos(fmod(heading + 90, 360.f) * DEG2RAD));
-	edges[1].y = edges[0].y + (int16_t) (len * sin(fmod(heading + 90, 360.f) * DEG2RAD));
-	edges[2].x = edges[1].x + (int16_t) (len * cos(fmod(heading + 180, 360.f) * DEG2RAD));
-	edges[2].y = edges[1].y + (int16_t) (len * sin(fmod(heading + 180, 360.f) * DEG2RAD));
+	edges[1].x = edges[0].x + (int16_t) (len * cosf(fmodf(heading + 90.f, 360.f) * DEG2RAD));
+	edges[1].y = edges[0].y + (int16_t) (len * sinf(fmodf(heading + 90.f, 360.f) * DEG2RAD));
+	edges[2].x = edges[1].x + (int16_t) (len * cosf(fmodf(heading + 180.f, 360.f) * DEG2RAD));
+	edges[2].y = edges[1].y + (int16_t) (len * sinf(fmodf(heading + 180.f, 360.f) * DEG2RAD));
 
 	return switch_to_behaviour(caller, bot_drive_square_behaviour, BEHAVIOUR_OVERRIDE);
 }

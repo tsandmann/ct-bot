@@ -21,7 +21,7 @@
  * \file 	behaviour_scan_beacons.c
  * \brief 	Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * 			aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	01.05.2009
  */
 
@@ -139,11 +139,11 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 #endif
 			if (disappeared_counter > 1 /*2*/) {
 				/* Landmarke nicht mehr sichtbar */
-				float diff = heading - appearance_heading;
-				if (diff < 0.0f) {
-					diff += 360.0f;
+				float diff_ = heading - appearance_heading;
+				if (diff_ < 0.0f) {
+					diff_ += 360.0f;
 				}
-				last_beacon_heading = heading - diff / 2.0f;
+				last_beacon_heading = heading - diff_ / 2.f;
 				if (last_beacon_heading < 0.0f) {
 					last_beacon_heading += 360.0f;
 				}
@@ -226,13 +226,13 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 		position_t last_beacon = get_position_from_id(lastb_id);
 		float head = atan2f(last_beacon.y - n.y, last_beacon.x - n.x);
 		if (head < 0) {
-			head += (2.0f * M_PI);
+			head += (2.f * M_PI_F);
 		}
-		head = fmodf(head + M_PI_2, 2.0f * M_PI); // Sensor zeigt nach -90 Grad
+		head = fmodf(head + (float) M_PI_2, 2.f * M_PI_F); // Sensor zeigt nach -90 Grad
 		if (turn_mode == 1) {
 			/* Botmittelpunkt berechnen aus Position des linken Rades */
-			const float dX = sinf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.0f);
-			const float dY = cosf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.0f);
+			const float dX = sinf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.f);
+			const float dY = cosf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.f);
 			n.x += iroundf(dX);
 			n.y += iroundf(dY);
 		}

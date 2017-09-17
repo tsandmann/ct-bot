@@ -163,8 +163,8 @@ void log_end(void);
  */
 #define LOG_DEBUG(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_DEBUG);	\
-									static const char data[] PROGMEM = format;			\
-									log_flash_printf(data, ## __VA_ARGS__);				\
+									static const char _data[] PROGMEM = format;			\
+									log_flash_printf(_data, ## __VA_ARGS__);				\
 									log_end();											\
 }
 
@@ -174,8 +174,8 @@ void log_end(void);
  */
 #define LOG_INFO(format, ...) {		static const char _file[] PROGMEM = __FILE__;	\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_INFO);	\
-									static const char data[] PROGMEM = format;		\
-									log_flash_printf(data, ## __VA_ARGS__);			\
+									static const char _data[] PROGMEM = format;		\
+									log_flash_printf(_data, ## __VA_ARGS__);			\
 									log_end();										\
 }
 
@@ -184,8 +184,8 @@ void log_end(void);
  */
 #define LOG_WARN(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_WARN); \
-									log_flash_printf(data, ## __VA_ARGS__);			\
-									static const char data[] PROGMEM = format;		\
+									static const char _data[] PROGMEM = format;		\
+									log_flash_printf(_data, ## __VA_ARGS__);			\
 									log_end();										\
 }
 
@@ -194,8 +194,8 @@ void log_end(void);
  */
 #define LOG_ERROR(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_ERROR); 	\
-									static const char data[] PROGMEM = format;			\
-									log_flash_printf(data, ## __VA_ARGS__);				\
+									static const char _data[] PROGMEM = format;			\
+									log_flash_printf(_data, ## __VA_ARGS__);				\
 									log_end();											\
 }
 
@@ -204,8 +204,8 @@ void log_end(void);
  */
 #define LOG_FATAL(format, ...) { 	static const char _file[] PROGMEM = __FILE__;		\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_FATAL); 	\
-									static const char data[] PROGMEM = format;			\
-									log_flash_printf(data, ## __VA_ARGS__);				\
+									static const char _data[] PROGMEM = format;			\
+									log_flash_printf(_data, ## __VA_ARGS__);				\
 									log_end();											\
 }
 

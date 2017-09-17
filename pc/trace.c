@@ -88,14 +88,16 @@ void trace_add_sensors(void) {
 		time_overflow++;
 	}
 	long time = simultime + time_overflow * 10000;
-	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tencL=\t%+d\tencR=\t%+d\tsensDistL=\t%+d\tsensDistR=\t%+d\tRC5_Code=\t0x%04x", time, sensEncL, sensEncR, sensDistL, sensDistR, RC5_Code);
+	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tencL=\t%+d\tencR=\t%+d\tsensDistL=\t%+d\tsensDistR=\t%+d\tRC5_Code=\t0x%04x",
+		time, sensEncL, sensEncR, sensDistL, sensDistR, RC5_Code);
 #ifdef BPS_AVAILABLE
 	if (n < TRACEBUFFER_SIZE) {
 		n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tsensBPS=\t%u", sensBPS);
 	}
 #endif // BPS_AVAILABLE
 	if (n < TRACEBUFFER_SIZE) {
-		n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\theading=\t%+.12f\tx_enc=\t%+.12f\ty_enc=\t%+.12f\tx_pos=\t%+d\ty_pos=\t%+d\n", heading, x_enc, y_enc, x_pos, y_pos);
+		n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\theading=\t%+.12f\tx_enc=\t%+.12f\ty_enc=\t%+.12f\tx_pos=\t%+d\ty_pos=\t%+d\n",
+			(double) heading, (double) x_enc, (double) y_enc, x_pos, y_pos);
 	}
 
 	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));

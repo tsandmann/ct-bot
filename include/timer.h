@@ -199,7 +199,7 @@ static inline ALWAYS_INLINE uint32_t timer_get_us32(void) {
  */
 static inline uint8_t ALWAYS_INLINE timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
 	uint32_t ticks = TIMER_GET_TICKCOUNT_32;
-	if ((uint32_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+	if (ticks - *old_ticks > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -216,7 +216,7 @@ static inline uint8_t ALWAYS_INLINE timer_ms_passed_32(uint32_t * old_ticks, uin
  */
 static inline uint8_t ALWAYS_INLINE timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
 	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-	if ((uint16_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+	if (ticks - *old_ticks > (uint16_t) MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}

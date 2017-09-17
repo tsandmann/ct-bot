@@ -72,10 +72,10 @@ void display_clear(void) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 
@@ -113,10 +113,10 @@ void display_cursor(int16_t row, int16_t column) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 
@@ -157,6 +157,8 @@ void display_init(void) {
 	display_clear();
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 /**
  * Schreibt einen String auf das Display.
  * \param *format	Format, wie beim printf
@@ -174,6 +176,7 @@ uint8_t display_printf(const char * format, ...) {
 
 	return len;
 }
+#pragma GCC diagnostic pop
 
 /**
  * Gibt einen String auf dem Display aus
@@ -206,10 +209,10 @@ uint8_t display_puts(const char * text) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 

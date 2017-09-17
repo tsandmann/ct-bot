@@ -278,7 +278,7 @@ uint32_t SdCard::get_size() {
 		const uint8_t c_size_mult((csd.v1.c_size_mult_high << 1) | csd.v1.c_size_mult_low);
 		return static_cast<uint32_t>(c_size + 1) << (c_size_mult + read_bl_len - 7);
 	} else if (csd.v2.csd_ver == 1) {
-		const uint32_t c_size(0x10000L * csd.v2.c_size_high + 0x100L * (uint32_t) csd.v2.c_size_mid + csd.v2.c_size_low);
+		const uint32_t c_size(0x10000L * csd.v2.c_size_high + 0x100L * static_cast<uint32_t>(csd.v2.c_size_mid) + csd.v2.c_size_low);
 		return (c_size + 1) << 10;
 	} else {
 		set_error(SD_CARD_ERROR_BAD_CSD);
@@ -358,11 +358,11 @@ bool SdCard::read_data(uint8_t* dst, size_t count, bool& lock_set) {
 	const uint16_t timeout_ticks(SD_READ_TIMEOUT * (1000U / TIMER_STEPS + 1));
 	while ((m_status = SPI::receive()) == 0xff) {
 		const auto now16(TIMER_GET_TICKCOUNT_16);
-		if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
+		if (now16 - starttime > timeout_ticks) {
 			return error_handler(SD_CARD_ERROR_READ_TIMEOUT, lock_set);
 		}
 
-		if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+		if (now16 - yield_start_time > 1 * (1000U / TIMER_STEPS + 1)) {
 			os_exitCS();
 //			LOG_DEBUG("read_data(): yieldtime: %u", now16 - yield_start_time);
 			os_enterCS();

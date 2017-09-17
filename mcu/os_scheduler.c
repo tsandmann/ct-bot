@@ -199,10 +199,10 @@ void os_idle(void) {
 
 			/* next Zeiger updaten */
 			ptr = os_delayed_func_search_next();
-			const uint8_t sreg = SREG;
+			const uint8_t sreg2 = SREG;
 			__builtin_avr_cli();
 			os_delayed_next_p = ptr;
-			SREG = sreg;
+			SREG = sreg2;
 		}
 
 #ifndef OS_KERNEL_LOG_AVAILABLE

@@ -315,7 +315,7 @@ void bot_sens(void) {
 			slog_file_dirty = 1;
 		}
 #endif // SDFAT_AVAILABLE
-		const uint8_t sreg = SREG;
+		const uint8_t sreg2 = SREG;
 		__builtin_avr_cli();
 		uint8_t diff = (uint8_t) (slog_i[0] - max);
 		if (diff) {
@@ -328,7 +328,7 @@ void bot_sens(void) {
 			memmove(&slog->data[1][0], &slog->data[1][max], sizeof(slog_data_t) * diff);
 		}
 		slog_i[1] = diff;
-		SREG = sreg;
+		SREG = sreg2;
 	} else {
 		SREG = sreg;
 #ifdef SDFAT_AVAILABLE

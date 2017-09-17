@@ -228,19 +228,19 @@ static int8_t init(void) {
 
 /**
  * Laedt einen Programmteil aus Datei / EEPROM
- * \param direction Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
+ * \param dir Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
  */
-static void load_program(int8_t direction) {
+static void load_program(int8_t dir) {
 #ifdef DEBUG_ABL
 	const int32_t pos = sdfat_tell(abl_file);
 	const int32_t size = sdfat_get_filesize(abl_file);
-	LOG_DEBUG("load_program(%d): file pos=%d size=%d", direction, pos, size);
+	LOG_DEBUG("load_program(%d): file pos=%d size=%d", dir, pos, size);
 #endif // DEBUG_ABL
 
 #ifdef SDFAT_AVAILABLE
-	if (direction > 0) {
+	if (dir > 0) {
 		sdfat_seek(abl_file, SD_BLOCK_SIZE, SEEK_CUR);
-	} else if (direction < 0) {
+	} else if (dir < 0) {
 		sdfat_seek(abl_file, -SD_BLOCK_SIZE, SEEK_CUR);
 	}
 	const int16_t res = sdfat_read(abl_file, p_abl_i_data, SD_BLOCK_SIZE);
@@ -253,7 +253,7 @@ static void load_program(int8_t direction) {
 #else // EEPROM
 #if defined __AVR_ATmega1284P__ || defined PC
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
-	if (direction > 0 && addr < 3584 - 512) {
+	if (dir > 0 && addr < 3584 - 512) {
 		addr += 512;
 	} else if (direction < 0 && addr >= 512) {
 		addr -= 512;
@@ -262,7 +262,7 @@ static void load_program(int8_t direction) {
 	}
 #elif defined MCU_ATMEGA644X
 	/* on ATmega644(P) we have 1536 Bytes EEPROM for ABL */
-	if (direction > 0 && addr < 1536 - 512) {
+	if (dir > 0 && addr < 1536 - 512) {
 		addr += 512;
 	} else if (direction < 0 && addr >= 512) {
 		addr -= 512;
@@ -271,7 +271,7 @@ static void load_program(int8_t direction) {
 	}
 #else
 	/* on ATmega32 we have 512 Bytes EEPROM for ABL */
-	(void) direction;
+	(void) dir;
 	if (addr > 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
