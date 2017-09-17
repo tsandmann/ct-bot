@@ -775,7 +775,7 @@ int8_t command_evaluate(void) {
 #ifdef SDFAT_AVAILABLE
 					/* Datei anlegen */
 					LOG_DEBUG(" prog_size=%u", prog_size);
-					if (sdfat_open(filename, &prog_file, 0x1 | 0x2 | 0x10 | 0x40)) {
+					if (sdfat_open(filename, &prog_file, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT)) {
 						LOG_ERROR("Fehler beim Dateizugriff");
 						prog_size = 0;
 						break;

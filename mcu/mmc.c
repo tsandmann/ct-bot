@@ -202,7 +202,7 @@ static inline uint8_t sdfat_test(void) {
 
 	uint32_t start_ticks, end_ticks;
 	pFatFile file;
-	const uint8_t result = sdfat_open("test.bin", &file, 0x1 | 0x2 | 0x10 | 0x40);
+	const uint8_t result = sdfat_open("test.bin", &file, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT);
 	if (result) {
 		LOG_ERROR("sdfat_test(): sdfat_open() failed: %d", result);
 		return result;

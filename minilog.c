@@ -130,7 +130,7 @@ void minilog_printf(const char* format, ...) {
 
 #ifdef LOG_MMC_AVAILABLE
 void log_mmc_init(void) {
-	if (sdfat_open(LOG_FILE_NAME, &log_file, 0x1 | 0x2 | 0x10 | 0x40)) {
+	if (sdfat_open(LOG_FILE_NAME, &log_file, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT)) {
 #ifdef PC
 		printf("log_mmc_init(): sdfat_open(%s) failed.", LOG_FILE_NAME);
 #endif

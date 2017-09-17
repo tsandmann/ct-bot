@@ -214,7 +214,7 @@ static int8_t init(void) {
 		LOG_ERROR("ABL: Keine Datei gesetzt");
 		return -1;
 	}
-	if (sdfat_open(last_file, &abl_file, 0x1)) {
+	if (sdfat_open(last_file, &abl_file, SDFAT_O_READ)) {
 		LOG_ERROR("ABL: Datei \"%s\" nicht vorhanden", last_file);
 		return -1;
 	}

@@ -163,7 +163,7 @@ void bot_sens_init(void) {
 #ifdef SPEED_LOG_AVAILABLE
 #ifdef SDFAT_AVAILABLE
 	/* Datei oeffnen / anlegen */
-	if (sdfat_open(SPEEDLOG_FILE_NAME, &speedlog_file, 2 | 0x10 | 0x40) != 0) {
+	if (sdfat_open(SPEEDLOG_FILE_NAME, &speedlog_file, SDFAT_O_WRITE | SDFAT_O_TRUNC | SDFAT_O_CREAT) != 0) {
 		LOG_ERROR("sdfat_open(%s) failed", SPEEDLOG_FILE_NAME);
 	}
 

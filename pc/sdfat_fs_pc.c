@@ -193,7 +193,7 @@ uint8_t sdfat_sync_vol(pSdFat p_instance) {
 
 void sdfat_test(void) {
 	pFatFile file;
-	if (sdfat_open("test.txt", &file, 0x10) != 0) {
+	if (sdfat_open("test.txt", &file, SDFAT_O_RDWR | SDFAT_O_TRUNC) != 0) {
 		LOG_ERROR("sdfat_open(%s) failed", "test.txt");
 		return;
 	}
@@ -211,7 +211,7 @@ void sdfat_test(void) {
 		return;
 	}
 
-	if (sdfat_open("test.txt", &file, 0x1) != 0) {
+	if (sdfat_open("test.txt", &file, SDFAT_O_READ) != 0) {
 		LOG_ERROR("sdfat_open(%s) failed", "test.txt");
 		return;
 	}

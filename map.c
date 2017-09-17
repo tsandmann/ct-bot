@@ -376,7 +376,7 @@ static int8_t init(uint8_t clean_map) {
 #endif
 
 #ifdef MAP_2_SIM_AVAILABLE
-	if (sdfat_open(MAP_FILENAME, &map_2_sim_file_desc, 0x1)) {
+	if (sdfat_open(MAP_FILENAME, &map_2_sim_file_desc, SDFAT_O_READ)) {
 		LOG_DEBUG("map::init(): Mapdatei konnte nicht fuer Map-2-Sim geoeffnet werden");
 		return 9;
 	}
@@ -1568,7 +1568,7 @@ int8_t map_save_to_file(const char* file) {
 	LOG_INFO("map_save_to_file(): map_min_x=%u, map_max_x=%u, map_min_y=%u, map_max_y=%u", map_min_x, map_max_x, map_min_y, map_max_y);
 
 	pFatFile dest;
-	if (sdfat_open(file, &dest, 0x1 | 0x2 | 0x10 | 0x40)) {
+	if (sdfat_open(file, &dest, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT)) {
 		LOG_ERROR("map_save_to_file(): file create failed");
 		return 1;
 	}
@@ -1619,7 +1619,7 @@ int8_t map_load_from_file(const char* file) {
 
 	/* Quelldatei oeffnen */
 	pFatFile src_file;
-	uint8_t res = sdfat_open(file, &src_file, 0x1);
+	uint8_t res = sdfat_open(file, &src_file, SDFAT_O_READ);
 	if (res) {
 		LOG_DEBUG("map_load_from_file(): sdfat_open(\"%s\")=%u", file, res);
 		LOG_ERROR("map_load_from_file(): sdfat_open() failed");
