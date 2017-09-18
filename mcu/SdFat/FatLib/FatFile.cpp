@@ -473,14 +473,14 @@ fail:
 	return false;
 }
 
-bool FatFile::openCachedEntry(FatFile* dirFile, uint16_t dirIndex, uint8_t oflag, uint8_t lfnOrd) {
-	uint32_t firstCluster;
+bool FatFile::openCachedEntry(FatFile* dirFile, uint16_t dirIndex_, uint8_t oflag, uint8_t lfnOrd) {
+	uint32_t firstCluster_;
 	memset(this, 0, sizeof(FatFile));
 	// location of entry in cache
 	m_vol = dirFile->m_vol;
-	m_dirIndex = dirIndex;
+	m_dirIndex = dirIndex_;
 	m_dirCluster = dirFile->m_firstCluster;
-	dir_t* dir = &m_vol->cacheAddress()->dir[0XF & dirIndex];
+	dir_t* dir = &m_vol->cacheAddress()->dir[0XF & dirIndex_];
 
 	// Must be file or subdirectory.
 	if (!DIR_IS_FILE_OR_SUBDIR(dir)) {
@@ -505,17 +505,17 @@ bool FatFile::openCachedEntry(FatFile* dirFile, uint16_t dirIndex, uint8_t oflag
 	m_dirBlock = m_vol->cacheBlockNumber();
 
 	// copy first cluster number for directory fields
-	firstCluster = (static_cast<uint32_t>(dir->firstClusterHigh) << 16) | dir->firstClusterLow;
+	firstCluster_ = (static_cast<uint32_t>(dir->firstClusterHigh) << 16) | dir->firstClusterLow;
 
 	if (oflag & O_TRUNC) {
-		if (firstCluster && !m_vol->freeChain(firstCluster)) {
+		if (firstCluster_ && !m_vol->freeChain(firstCluster_)) {
 			DBG_FAIL_MACRO;
 			goto fail;
 		}
 		// need to update directory entry
 		m_flags |= F_FILE_DIR_DIRTY;
 	} else {
-		m_firstCluster = firstCluster;
+		m_firstCluster = firstCluster_;
 		m_fileSize = dir->fileSize;
 	}
 	if ((oflag & O_AT_END) && !seekSet(m_fileSize)) {
