@@ -53,8 +53,8 @@ bool FatCache::sync() {
 		}
 		// mirror second FAT
 		if (m_status & CACHE_STATUS_MIRROR_FAT) {
-			uint32_t lbn = m_lbn + m_vol->blocksPerFat();
-			if (! m_vol->writeBlock(lbn, m_block.data)) {
+			uint32_t lbn_ = m_lbn + m_vol->blocksPerFat();
+			if (! m_vol->writeBlock(lbn_, m_block.data)) {
 				FatVolume::os_unlock(lock_set);
 				DBG_FAIL_MACRO;
 				return false;
@@ -533,7 +533,7 @@ bool FatVolume::init(uint8_t part) {
 bool FatVolume::wipe(print_t* pr) {
 	cache_t* cache;
 	uint16_t count;
-	uint32_t lbn;
+	uint32_t lbn_;
 	if (! m_fatType) {
 		DBG_FAIL_MACRO;
 		goto fail;
@@ -546,26 +546,26 @@ bool FatVolume::wipe(print_t* pr) {
 	memset(cache->data, 0, 512);
 	// Zero root.
 	if (m_fatType == 32) {
-		lbn = clusterStartBlock(m_rootDirStart);
+		lbn_ = clusterStartBlock(m_rootDirStart);
 		count = m_blocksPerCluster;
 	} else {
-		lbn = m_rootDirStart;
+		lbn_ = m_rootDirStart;
 		count = m_rootDirEntryCount / 16;
 	}
 	for (uint32_t n = 0; n < count; n++) {
-		if (!writeBlock(lbn + n, cache->data)) {
+		if (!writeBlock(lbn_ + n, cache->data)) {
 			DBG_FAIL_MACRO;
 			goto fail;
 		}
 	}
 	// Clear FATs.
 	count = 2 * m_blocksPerFat;
-	lbn = m_fatStartBlock;
+	lbn_ = m_fatStartBlock;
 	for (uint32_t nb = 0; nb < count; nb++) {
 		if (pr && (nb & 0XFF) == 0) {
 			pr->write('.');
 		}
-		if (! writeBlock(lbn + nb, cache->data)) {
+		if (! writeBlock(lbn_ + nb, cache->data)) {
 			DBG_FAIL_MACRO;
 			goto fail;
 		}
