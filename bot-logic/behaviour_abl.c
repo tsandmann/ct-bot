@@ -111,9 +111,9 @@ char EEPROM abl_eeprom_data[512] = ABL_PROG; /**< 512 Byte grosser EEPROM-Bereic
 #include <string.h>
 
 
-//#define DEBUG_ABL				/**< Schalter um recht viel Debug-Code anzumachen */
+//#define DEBUG_ABL			/**< Schalter um recht viel Debug-Code anzumachen */
 #define ERROR_CHECKS			/**< aktiviert syntaxbezogene Fehlerpruefungen */
-//#define FLOAT_PARAMS			/**< aktiviert float als moeglichen Parametertyp (ca. +250 Bytes im Flash) */
+//#define FLOAT_PARAMS		/**< aktiviert float als moeglichen Parametertyp (ca. +250 Bytes im Flash) */
 
 #ifdef MCU
 #undef DEBUG_ABL
@@ -299,14 +299,14 @@ static remote_call_data_t parameter_parse(const char * start, const char * end) 
 	if (point != NULL && point <= end) {
 		param.fl32 = param.s16;
 		int16_t tmp = atoi(++point);
-		param.fl32 += (float) tmp / 10.0 / (float) (end - point);
+		param.fl32 += (float) tmp / 10.f / (float) (end - point);
 	}
 #endif // FLOAT_PARAMS
 
 	LOG_DEBUG("parsed parameter (d) is: %d", param.s16);
 	LOG_DEBUG("parsed parameter (x) is: 0x%x", param.u16);
 #if defined PC && defined FLOAT_PARAMS
-	LOG_DEBUG("parsed parameter (f) is: %f", param.fl32);
+	LOG_DEBUG("parsed parameter (f) is: %f", (double) param.fl32);
 #endif
 	return param;
 }
@@ -400,7 +400,7 @@ static instruction_t i_fetch(void) {
 	do {
 		ip++;
 	} while (ip <= &p_abl_i_data[510] /*&& ip >= p_abl_i_data*/ && (*ip == 0x20 || *ip == 0x9));
-	LOG_DEBUG("ip=0x%04x i_start=0x%04x", ip - p_abl_i_data, i_start - abl_i_cache);
+	LOG_DEBUG("ip=0x%04zx i_start=0x%04zx", (size_t) (ip - p_abl_i_data), (size_t) (i_start - abl_i_cache));
 	/* ip becomes start of this instruction */
 	const char * old_ip = ip;
 	uint8_t len;
@@ -448,7 +448,7 @@ static instruction_t i_fetch(void) {
 	/* copy instruction into i-cache */
 	memcpy(i_start, old_ip, len);
 	i_start[len] = '\0';
-	LOG_DEBUG("fetched instruction \"%s\" is %u bytes long", abl_i_cache, &i_start[len] - abl_i_cache);
+	LOG_DEBUG("fetched instruction \"%s\" is %zu bytes long", abl_i_cache, (uintptr_t) (&i_start[len] - abl_i_cache));
 	i_start = abl_i_cache; // correct start of i-cache (if we came here recursively)
 	/* decode this instruction */
 	return i_decode();
@@ -870,7 +870,7 @@ void abl_stack_trace(void) {
 	char * const ptr = strchr(abl_i_cache, ')');
 	if (ptr != NULL) {
 		*(ptr + 1) = '\0';
-		display_printf("%- 20s", abl_i_cache);
+		display_printf("%-20s", abl_i_cache);
 	}
 
 #ifdef RC5_AVAILABLE

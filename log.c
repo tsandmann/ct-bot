@@ -70,28 +70,18 @@
 #ifdef LOG_AVAILABLE
 #ifndef USE_MINILOG
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-
 #include "log.h"
-#include "display.h"
 #include "command.h"
 #include "uart.h"
 #include "bot-2-sim.h"
 
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 #ifdef PC
 #include <pthread.h>
 #endif
-
-#ifdef LOG_DISPLAY_AVAILABLE
-/** Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
-#define LOG_BUFFER_SIZE		(DISPLAY_LENGTH + 1)
-#else
-/** Groesse des Puffers fuer die Logausgaben ueber UART und ueber TCP/IP. */
-#define LOG_BUFFER_SIZE		200
-#endif // LOG_DISPLAY_AVAILABLE
 
 
 #ifdef PC
@@ -104,7 +94,7 @@
 #define LOCK()
 /** Hebt den Schutz fuer den Ausgabepuffer wieder auf */
 #define UNLOCK()
-#endif	/* PC */
+#endif // PC
 
 #ifdef LOG_MMC_AVAILABLE
 static uint32_t log_file;
@@ -127,7 +117,7 @@ static const char fatal_str[] PROGMEM = "- FATAL -"; /**< Log Typ fataler Fehler
 static const char * log_get_type_str(LOG_TYPE log_type);
 
 /** Puffer fuer das Zusammenstellen einer Logausgabe */
-static char log_buffer[LOG_BUFFER_SIZE];
+char log_buffer[LOG_BUFFER_SIZE];
 
 #ifdef PC
 /** Schuetzt den Ausgabepuffer */
@@ -243,7 +233,7 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 #else // !LOG_DISPLAY_AVAILABLE
 	/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
 	char flash_filen[80];
-	get_str_from_flash(filename, flash_filen, 40/2);
+	get_str_from_flash(filename, flash_filen, 40 / 2);
 
 	/* Zeichen des Strings fuer Typ wortweise aus dem Flash holen */
 	char flash_type[12];
@@ -268,42 +258,26 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 }
 #endif // PC
 
-#ifdef PC
-#pragma GCC diagnostic push
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
-/**
- * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * \param format Format
- */
-void log_printf(const char * format, ...) {
-	va_list	args;
-	unsigned int len = strlen(log_buffer);
-
-	va_start(args, format);
-	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
-	va_end(args);
-}
-#pragma GCC diagnostic pop
-#else // MCU
+#ifdef MCU
 /**
  * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.
  * \param format Format
  */
 void log_flash_printf(const char * format, ...) {
-	char flash_str[LOG_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
-	get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE/2+2);	// String aus dem Flash holen
+	char flash_str[LOG_BUFFER_SIZE + 4]; // bissel groesser, weil die % ja noch mit drin sind
+	get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE / 2 + 2); // String aus dem Flash holen
 
 	va_list	args;
-	unsigned int len = strlen(log_buffer);
+	uint16_t len = strlen(log_buffer);
 
 	va_start(args, format);
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
 	va_end(args);
 }
-#endif // PC
+#endif // MCU
 
 /**
- * Gibt den Puffer entsprechend aus.
+ * Gibt den Puffer entsprechend aus
  */
 void log_end(void) {
 #ifdef LOG_UART_AVAILABLE
@@ -327,7 +301,7 @@ void log_end(void) {
 
 #ifdef LOG_DISPLAY_AVAILABLE
 	/* aktuelle Log-Zeile in Ausgabepuffer kopieren */
-	memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
+	memcpy(screen_output[log_line - 1], log_buffer, strlen(log_buffer));
 	/* Zeile weiterschalten */
 	log_line++;
 	if (log_line > 4) {
@@ -340,7 +314,6 @@ void log_end(void) {
  * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
  */
 #ifdef LOG_STDOUT_AVAILABLE
-//	printf("%s\n", log_buffer);
 	puts(log_buffer);
 #endif // LOG_STDOUT_AVAILABLE
 

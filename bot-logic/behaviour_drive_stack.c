@@ -19,13 +19,13 @@
 
 
 /**
- * @file 	behaviour_drive_stack.c
- * @brief 	Anfahren aller auf dem Stack befindlichen Punkte
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	13.12.2007
+ * \file 	behaviour_drive_stack.c
+ * \brief 	Anfahren aller auf dem Stack befindlichen Punkte
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	13.12.2007
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #include "ui/available_screens.h"
@@ -44,9 +44,9 @@
 #define DEBUG
 
 /* bot_save_waypos()-Parameter */
-#define STACK_SIZE		64	/**< Groesse des Positionsspeichers */
-#define MAX_GRADIENT	10	/**< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
-#define MAX_POS_DIFF	(200L * 200L)	/**< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
+#define STACK_SIZE		64 /**< Groesse des Positionsspeichers */
+#define MAX_GRADIENT		10 /**< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
+#define MAX_POS_DIFF		(200L * 200L) /**< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
 
 #if STACK_SIZE > POS_STORE_SIZE
 #undef STACK_SIZE
@@ -72,7 +72,7 @@ static pos_store_t * pos_store = NULL;	/**< Positionsspeicher, den das Verhalten
 
 /**
  * Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte, wobei das Fahr-Unterverhalten bot_goto_pos benutzt wird
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_drive_stack_behaviour(Behaviour_t * data) {
 	uint8_t get_pos;
@@ -109,9 +109,9 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 
 /**
  * Botenfunktion: Verhalten zum Anfahren aller auf dem Stack X befindlichen Punkte
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param stack		Nummer des Stacks, der abgefahren werden soll
- * @param mode		0: Stack, 1: FIFO
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param stack		Nummer des Stacks, der abgefahren werden soll
+ * \param mode		0: Stack, 1: FIFO
  */
 void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	pos_store_t * store = pos_store_from_index(stack);
@@ -136,7 +136,7 @@ void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 
 /**
  * Ermittelt den Index des Positionsspeichers vom Wayposverhalten
- * @return	Indexwert oder 255, falls kein Positionsspeicher angelegt
+ * \return	Indexwert oder 255, falls kein Positionsspeicher angelegt
  */
 static uint8_t get_waypos_index(void) {
 	pos_store_t * store = pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour));
@@ -149,7 +149,7 @@ static uint8_t get_waypos_index(void) {
 
 /**
  * Botenfunktion: Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
  */
 void bot_drive_stack(Behaviour_t * caller) {
 	bot_drive_stack_x(caller, get_waypos_index(), 0);
@@ -157,7 +157,7 @@ void bot_drive_stack(Behaviour_t * caller) {
 
 /**
  * Botenfunktion: Verhalten zum Anfahren aller in der FIFO-Queue befindlichen Punkte
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
  */
 void bot_drive_fifo(Behaviour_t * caller) {
 	bot_drive_stack_x(caller, get_waypos_index(), 1);
@@ -166,14 +166,14 @@ void bot_drive_fifo(Behaviour_t * caller) {
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 /**
  * Schickt den Positionsspeicher per Bot-2-Bot-Kommunikation an einen anderen Bot
- * @param *caller Der Verhaltensdatensatz des Aufrufers
- * @param bot Adresse des Zielbots
+ * \param *caller Der Verhaltensdatensatz des Aufrufers
+ * \param bot Adresse des Zielbots
  */
 void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	struct {
 		unsigned subresult:3;
 	} result = {BEHAVIOUR_SUBFAIL};
-	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
+	LOG_DEBUG("pos_store_send_to_bot(0x%zx, %u)", (uintptr_t) pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0, (remote_call_data_t) 0) == 0) {
 			result.subresult = BEHAVIOUR_SUBSUCCESS;
@@ -192,8 +192,8 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 
 /**
  * Sichern der aktuellen Botposition auf den Stack
- * @param *caller	einfach nur Zeiger, damit remotecall verwendbar
- * @param stack		Nummer des Stacks, auf den gepusht werden soll
+ * \param *caller	einfach nur Zeiger, damit remotecall verwendbar
+ * \param stack		Nummer des Stacks, auf den gepusht werden soll
  */
 void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 	position_t pos_;
@@ -208,7 +208,7 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 
 static uint8_t waypos_state = 0; 		/**< Status des drive_stack-Push-Verhaltens */
 static position_t last_pos = { 0, 0 };	/**< letzte gemerkte Position */
-static int16_t last_heading = 0;		/**< letzte gemerkte Botausrichtung */
+static int16_t last_heading = 0;			/**< letzte gemerkte Botausrichtung */
 
 #define DIST_FOR_PUSH 14400         /**< Quadrat des Abstandes [mm^2] zum letzten Punkt, ab dem gepush wird */
 #define DIST_FOR_PUSH_TURN 3600     /**< Quadrat des Abstandes [mm^2] nach erreichen eines Drehwinkels zum letzten Punkt */
@@ -225,8 +225,8 @@ static void set_pos_to_last(void) {
 
 /**
  * Speichern der uebergebenen Koordinaten auf dem Stack
- * @param pos_x	X-Koordinate
- * @param pos_y	Y-Koordinate
+ * \param pos_x	X-Koordinate
+ * \param pos_y	Y-Koordinate
  */
 static void bot_push_pos(int16_t pos_x, int16_t pos_y) {
 	// sichern der Koordinaten in den Stack
@@ -240,7 +240,7 @@ static void bot_push_pos(int16_t pos_x, int16_t pos_y) {
  * Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine
  * ein Endlosverhalten und sammelt bis zur Deaktivierung die Wegepunkte; deaktiviert wird es via Notaus oder direkt mit Befehl zum Zurueckfahren und
  * damit Start des Stack-Fahrverhaltens
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_save_waypos_behaviour(Behaviour_t * data) {
 	static uint8_t skip_count = 0;
@@ -371,8 +371,8 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 
 /**
  * Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param optimize	Optimierungslevel (unnoetige Stackeintraege werden automatisch geloescht)
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param optimize	Optimierungslevel (unnoetige Stackeintraege werden automatisch geloescht)
  */
 void bot_save_waypos(Behaviour_t * caller, uint8_t optimize) {
 	optimized_push = optimize;
@@ -442,5 +442,5 @@ void drive_stack_display(void) {
 
 	drivestack_disp_key_handler(); // Aufruf des Key-Handlers
 }
-#endif	// DISPLAY_DRIVE_STACK_AVAILABLE
+#endif // DISPLAY_DRIVE_STACK_AVAILABLE
 #endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE

@@ -198,8 +198,9 @@ static inline ALWAYS_INLINE uint32_t timer_get_us32(void) {
  * }
  */
 static inline uint8_t ALWAYS_INLINE timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
-	uint32_t ticks = TIMER_GET_TICKCOUNT_32;
-	if (ticks - *old_ticks > MS_TO_TICKS(ms)) {
+	const uint32_t ticks = TIMER_GET_TICKCOUNT_32;
+	const uint32_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -215,8 +216,9 @@ static inline uint8_t ALWAYS_INLINE timer_ms_passed_32(uint32_t * old_ticks, uin
  * \return				True oder False
  */
 static inline uint8_t ALWAYS_INLINE timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
-	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-	if (ticks - *old_ticks > (uint16_t) MS_TO_TICKS(ms)) {
+	const uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+	const uint16_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -232,8 +234,9 @@ static inline uint8_t ALWAYS_INLINE timer_ms_passed_16(uint16_t * old_ticks, uin
  * \return				True oder False
  */
 static inline uint8_t ALWAYS_INLINE timer_ms_passed_8(uint8_t * old_ticks, uint16_t ms) {
-	uint8_t ticks = TIMER_GET_TICKCOUNT_8;
-	if ((uint8_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+	const uint8_t ticks = TIMER_GET_TICKCOUNT_8;
+	const uint8_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}

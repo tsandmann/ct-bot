@@ -35,12 +35,11 @@
 #include "log.h"
 #include "tcp.h"
 #include <stdarg.h>
-#include <stdio.h>
 #include <string.h>
 
 uint8_t display_screen = 0; /**< zurzeit aktiver Displayscreen */
 
-static char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
+char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
 static int16_t last_row = 0;
 static int16_t last_column = 0;
 
@@ -156,27 +155,6 @@ void display_init(void) {
 
 	display_clear();
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
-/**
- * Schreibt einen String auf das Display.
- * \param *format	Format, wie beim printf
- * \param ... 		Variable Argumentenliste, wie beim printf
- * \return			Anzahl der geschriebenen Zeichen
- */
-uint8_t display_printf(const char * format, ...) {
-	va_list	args;
-
-	va_start(args, format);
-	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
-	va_end(args);
-
-	display_puts(display_buf);
-
-	return len;
-}
-#pragma GCC diagnostic pop
 
 /**
  * Gibt einen String auf dem Display aus

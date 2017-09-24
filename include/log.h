@@ -72,6 +72,8 @@
 #ifdef LOG_AVAILABLE
 
 #ifndef USE_MINILOG
+#include "display.h"
+
 /** Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
 	LOG_TYPE_DEBUG = 0,	/**< Allgemeines Debugging */
@@ -82,13 +84,34 @@ typedef enum {
 	LOG_TYPE_RAW,		/**< Reine Datenausgabe */
 } PACKED LOG_TYPE;
 
+#ifdef LOG_DISPLAY_AVAILABLE
+/** Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
+#define LOG_BUFFER_SIZE		(DISPLAY_LENGTH + 1)
+#else
+/** Groesse des Puffers fuer die Logausgaben ueber UART und ueber TCP/IP. */
+#define LOG_BUFFER_SIZE		200
+#endif // LOG_DISPLAY_AVAILABLE
+
 #ifdef PC
+#include <stdio.h>
+
+/** Puffer fuer das Zusammenstellen einer Logausgabe */
+extern char log_buffer[LOG_BUFFER_SIZE];
+
+/**
+ * Hilfsmakro um den Format-String als Literal an snprintf() uebergeben zu koennen
+ */
+#define LOG_PRINTF(...) {	unsigned int _len = strlen(log_buffer);							\
+							snprintf(&log_buffer[_len], LOG_BUFFER_SIZE - _len, __VA_ARGS__);	\
+						}
+
+
 /**
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
-#define LOG_DEBUG(...) {	log_begin(__FILE__, __LINE__, LOG_TYPE_DEBUG); 	\
-							log_printf(__VA_ARGS__);						\
+#define LOG_DEBUG(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_DEBUG); 	\
+							LOG_PRINTF(__VA_ARGS__);							\
 							log_end();										\
 }
 
@@ -97,7 +120,7 @@ typedef enum {
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
 #define LOG_INFO(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_INFO); 	\
-							log_printf(__VA_ARGS__);						\
+							LOG_PRINTF(__VA_ARGS__);							\
 							log_end();										\
 }
 
@@ -105,32 +128,32 @@ typedef enum {
  * Auftreten einer unerwarteten Situation.
  */
 #define LOG_WARN(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_WARN); 	\
-							log_printf(__VA_ARGS__);						\
+							LOG_PRINTF(__VA_ARGS__);							\
 							log_end();										\
 }
 
 /**
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
-#define LOG_ERROR(...) {	log_begin(__FILE__, __LINE__, LOG_TYPE_ERROR); 	\
-							log_printf(__VA_ARGS__);						\
+#define LOG_ERROR(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_ERROR); 	\
+							LOG_PRINTF(__VA_ARGS__);							\
 							log_end();										\
 }
 
 /**
  * Kritischer Fehler, Programmabbruch.
  */
-#define LOG_FATAL(...) {	log_begin(__FILE__, __LINE__, LOG_TYPE_FATAL); 	\
-							log_printf(__VA_ARGS__);						\
+#define LOG_FATAL(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_FATAL); 	\
+							LOG_PRINTF(__VA_ARGS__);							\
 							log_end();										\
 }
 
 /**
  * Reine Datenausgabe
  */
-#define LOG_RAW(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_RAW); 	\
-							log_printf(__VA_ARGS__);						\
-							log_end();										\
+#define LOG_RAW(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_RAW); \
+							LOG_PRINTF(__VA_ARGS__);						\
+							log_end();									\
 }
 
 /**
@@ -144,12 +167,6 @@ typedef enum {
 void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type);
 
 /**
- * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * \param format Format
- */
-void log_printf(const char * format, ...);
-
-/**
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
@@ -161,8 +178,8 @@ void log_end(void);
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
-#define LOG_DEBUG(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
-									log_flash_begin(_file, __LINE__, LOG_TYPE_DEBUG);	\
+#define LOG_DEBUG(format, ...) {		static const char _file[] PROGMEM = __FILE__;		\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_DEBUG);		\
 									static const char _data[] PROGMEM = format;			\
 									log_flash_printf(_data, ## __VA_ARGS__);				\
 									log_end();											\
@@ -182,7 +199,7 @@ void log_end(void);
 /**
  * Auftreten einer unerwarteten Situation.
  */
-#define LOG_WARN(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
+#define LOG_WARN(format, ...) {		static const char _file[] PROGMEM = __FILE__;	\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_WARN); \
 									static const char _data[] PROGMEM = format;		\
 									log_flash_printf(_data, ## __VA_ARGS__);			\
@@ -192,7 +209,7 @@ void log_end(void);
 /**
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
-#define LOG_ERROR(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
+#define LOG_ERROR(format, ...) {		static const char _file[] PROGMEM = __FILE__;		\
 									log_flash_begin(_file, __LINE__, LOG_TYPE_ERROR); 	\
 									static const char _data[] PROGMEM = format;			\
 									log_flash_printf(_data, ## __VA_ARGS__);				\
@@ -237,6 +254,13 @@ void log_display(void);
 #endif // LOG_DISPLAY_AVAILABLE
 
 #else // USE_MINILOG
+#include <stdio.h>
+#include <string.h>
+
+#define LOG_BUFFER_SIZE 65U /**< Groesse des Log-Puffers */
+
+extern char minilog_buffer[LOG_BUFFER_SIZE]; /**< Log-Puffer */
+
 /** Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
 	LOG_TYPE_DEBUG = 0,	/**< Allgemeines Debugging */
@@ -245,31 +269,46 @@ typedef enum {
 	LOG_TYPE_RAW,		/**< Nur Datenausgabe */
 } PACKED LOG_TYPE;
 
-#define LOG_WARN	LOG_INFO
+#define LOG_WARN		LOG_INFO
 #define LOG_FATAL	LOG_ERROR
+
+/**
+ * Hilfsmakro um den Format-String als Literal an snprintf() uebergeben zu koennen
+ */
+#define MINILOG_PRINTF(...) {	const uint16_t _n = strlen(minilog_buffer);							\
+								char* p_buffer = minilog_buffer + _n;								\
+								p_buffer += snprintf_P(p_buffer, LOG_BUFFER_SIZE - _n, __VA_ARGS__);	\
+								if (p_buffer > &minilog_buffer[LOG_BUFFER_SIZE - 1]) {				\
+									p_buffer = &minilog_buffer[LOG_BUFFER_SIZE - 1];					\
+								}																	\
+								*p_buffer = 0;														\
+							}
 
 /**
  * Allgemeines Debugging
  */
-#define LOG_DEBUG(format, ...) { minilog_begin(__LINE__, LOG_TYPE_DEBUG); 		\
+#define LOG_DEBUG(format, ...) { minilog_begin(__LINE__, LOG_TYPE_DEBUG); 	\
 								static const char __data[] PROGMEM = format;	\
-								minilog_printf(__data, ## __VA_ARGS__);			\
+								MINILOG_PRINTF(__data, ## __VA_ARGS__);		\
+								minilog_end();								\
 }
 
 /**
  * Info-Logging
  */
-#define LOG_INFO(format, ...) {	minilog_begin(__LINE__, LOG_TYPE_INFO);			\
+#define LOG_INFO(format, ...) {	minilog_begin(__LINE__, LOG_TYPE_INFO);		\
 								static const char __data[] PROGMEM = format;	\
-								minilog_printf(__data, ## __VA_ARGS__);			\
+								MINILOG_PRINTF(__data, ## __VA_ARGS__);		\
+								minilog_end();								\
 }
 
 /**
  * Fehler-Logging
  */
-#define LOG_ERROR(format, ...) { minilog_begin(__LINE__, LOG_TYPE_ERROR); 		\
-								 static const char __data[] PROGMEM = format;	\
-								 minilog_printf(__data, ## __VA_ARGS__);		\
+#define LOG_ERROR(format, ...) { minilog_begin(__LINE__, LOG_TYPE_ERROR); 	\
+								static const char __data[] PROGMEM = format;	\
+								MINILOG_PRINTF(__data, ## __VA_ARGS__);		\
+								minilog_end();								\
 }
 
 /**
@@ -277,7 +316,8 @@ typedef enum {
  */
 #define LOG_RAW(format, ...) {	minilog_begin(0, LOG_TYPE_RAW); 				\
 								static const char __data[] PROGMEM = format;	\
-								minilog_printf(__data, ## __VA_ARGS__);			\
+								MINILOG_PRINTF(__data, ## __VA_ARGS__);		\
+								minilog_end();								\
 }
 
 /**
@@ -289,10 +329,8 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
 
 /**
  * Schreibt den Log-Text in den Log-Puffer und versendet die Daten
- * \param format	Format-String, wie bei printf
- * \param ... 		Variable Argumentenliste, wie bei printf
  */
-void minilog_printf(const char* format, ...);
+void minilog_end(void);
 #endif // USE_MINILOG
 
 #ifdef LOG_MMC_AVAILABLE

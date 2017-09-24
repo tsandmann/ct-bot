@@ -20,7 +20,7 @@
 /**
  * \file 	trace.h
  * \brief 	Trace-Modul
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	01.06.2009
  */
 
