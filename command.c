@@ -876,6 +876,7 @@ int8_t command_evaluate(void) {
 						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, SD_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
+							sdfat_flush(prog_file);
 							if (type == 1) { // ABL
 								sdfat_close(prog_file);
 							}
