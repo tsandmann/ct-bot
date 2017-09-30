@@ -315,7 +315,7 @@ CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CXXFLAGS += $(CXXSTANDARD)
 CXXFLAGS += -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast
 ifeq ($(DEVICE),PC)
-CFLAGS += -Wdouble-promotion
+CXXFLAGS += -Wdouble-promotion
 endif
 ifdef SAVE_TEMPS
 CXXFLAGS += -save-temps -fverbose-asm -dA

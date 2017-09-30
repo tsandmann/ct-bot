@@ -709,7 +709,7 @@ void odometric_display(void) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	display_printf("v_c: %3d err: %5d", v_center, pos_error_radius);
 #else
-	display_printf("v_c: %3d s:%3u | %3u", v_center, servo_get_pos(SERVO1), servo_get_pos(SERVO2));
+	display_printf("v_c: %3d s:%3u|%3u", v_center, servo_get_pos(SERVO1), servo_get_pos(SERVO2));
 #endif // MEASURE_POSITION_ERRORS_AVAILABLE
 #endif // BPS_AVAILABLE
 }
