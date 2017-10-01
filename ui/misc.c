@@ -136,11 +136,11 @@ void reset_info_display(void) {
  *	-----------------------------------------------------------------
  * 	| regs | i/o | [ext. i/o] | data | bss | heap > | (!) | < stack |
  * 	-----------------------------------------------------------------
- * 	^      ^     ^            ^      ^     ^        ^     ^         ^
- *  |      |     |            |      |     |        |     |         |
- * 	0x0    0x20  0x60         __data_start |        __brkval        RAMEND
- *                                   |     |              |
- *                                   __bss_start          SP
+ * 	^      ^     ^            ^      ^     ^        ^         ^     ^
+ *  |      |     |            |      |     |        |         |     |
+ * 	0x0    0x20  0x60         __data_start |        __brkval  |     RAMEND
+ *                                   |     |                  |
+ *                                   __bss_start              SP
  *                                         |
  *                                         __heap_start
  */

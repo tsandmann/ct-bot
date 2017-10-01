@@ -37,6 +37,8 @@ uint8_t EEPROM resetsEEPROM = 0; /**< Reset-Counter im EEPROM */
 #include "ena.h"
 #include "uart.h"
 #include "motor.h"
+#include "sensor-low.h"
+#include "sdcard_wrapper.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
@@ -143,9 +145,11 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 
 	_delay_ms(100);
 
-#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	uint8_t resets = (uint8_t) (ctbot_eeprom_read_byte(&resetsEEPROM) + 1);
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	ctbot_eeprom_write_byte(&resetsEEPROM, resets);
+#else
+	(void) resets;
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef OS_AVAILABLE
@@ -154,10 +158,9 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 
 	os_create_thread((void*) SP, NULL); // Hauptthread anlegen
 #ifdef OS_DEBUG
-	const uint16_t heap_free = SP - (size_t) __brkval - 1024;
-	void* ptr = malloc(heap_free);
+	void* ptr = malloc(1);
 	if (ptr) {
-		os_mask_stack(ptr, heap_free);
+		os_mask_stack(ptr + __malloc_margin, SP - (size_t) ptr);
 		free(ptr);
 	}
 #endif // OS_DEBUG
@@ -187,8 +190,8 @@ void ctbot_init_low_last(void) {
 #endif // OS_AVAILABLE
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-   ENA_off(ENA_WIPORT); // Der WiPort ist (vorlaeufig) standardmaessig ausgeschaltet.
-   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist (vorlaeufig) standardmaessig eingeschaltet.
+   ENA_on(ENA_VOLTAGE_3V3); // Die 3,3V Versorgung ist standardmaessig eingeschaltet.
+   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist standardmaessig eingeschaltet.
 #endif
 }
 
@@ -196,9 +199,12 @@ void ctbot_init_low_last(void) {
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
+#if defined SDFAT_AVAILABLE && defined SPEED_LOG_AVAILABLE
+	sdfat_close(speedlog_file);
+#endif
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-	ENA_off(ENA_WIPORT); // WiPort aus
+	ENA_off(ENA_VOLTAGE_3V3); // 3,3V Versorgung aus
 	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
 #endif
 

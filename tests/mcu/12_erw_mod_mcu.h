@@ -60,7 +60,7 @@
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
 #define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 #define EXPANSION_BOARD_MOD_AVAILABLE
 
 /* Hardware-Treiber */

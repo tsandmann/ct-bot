@@ -28,10 +28,9 @@
 #define BEHAVIOUR_UBASIC_H_
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#include "botfs_config.h"
-#include "botfs_types.h"
+#include "sdfat_fs.h"
 
-extern botfs_file_descr_t ubasic_prog_file; /**< Basic-Programmdatei */
+extern pFatFile ubasic_prog_file; /**< Basic-Programmdatei */
 extern Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
 extern char ubasic_content; /**< aktuelles Zeichen des Basic-Programms */
 extern uint16_t ubasic_ptr; /**< aktuelle Position im Basic-Programm */
@@ -72,16 +71,16 @@ void ubasic_set_speed(int16_t speedLeft, int16_t speedRight);
 /**
  * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
  * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
- * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
+ * \return != 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
  */
 uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour);
 
 /**
- * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * Laedt ein uBasic-Programm aus deiner SdFat-Datei
  * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */
-void bot_ubasic_load_file(char * filename, botfs_file_descr_t * file);
+void bot_ubasic_load_file(char* filename, pFatFile* file);
 
 /**
  * Display fuer das uBasic-Verhalten

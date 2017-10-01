@@ -49,6 +49,10 @@ void uart_init(void) {
     fifo_init(&uart_infifo, inbuf, UART_BUFSIZE_IN);
     fifo_init(&uart_outfifo, outbuf, UART_BUFSIZE_OUT);
 
+#ifdef ENABLE_RX0_PULLUP
+    PORTD |= PIND0; // Pullup an
+#endif
+
 	/* Interrupts kurz deaktivieren */
     uint8_t sreg = SREG;
     __builtin_avr_cli();
@@ -114,7 +118,7 @@ void uart_init(void) {
 /**
  * Sendet Daten per UART im Little Endian
  * \param *data		Zeiger auf Datenpuffer
- * \param length	Groesse des Datenpuffers in Bytes
+ * \param length		Groesse des Datenpuffers in Bytes
  * \return			Anzahl der geschriebenen Bytes
  */
 int16_t uart_write(const void * data, int16_t length) {
@@ -129,7 +133,9 @@ int16_t uart_write(const void * data, int16_t length) {
 	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {}
 
 	/* Daten in Ausgangs-FIFO kopieren */
-	fifo_put_data(&uart_outfifo, data, (uint8_t) length);
+	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length)) {
+		return 0;
+	}
 
 	/* Interrupt an */
 	UCSRB |= (1 << UDRIE);

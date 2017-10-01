@@ -163,7 +163,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1659071247" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.156999295" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -flto -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.156999295" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.354570131" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.1936367648" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.std.1176824901" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
@@ -175,7 +175,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.2077322762" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1759687793" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.1365020864" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.other.other.595385134" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -flto -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.595385134" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wmissing-declarations" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.134856103" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -203,14 +203,14 @@
 								<option id="gnu.cpp.link.option.libs.2079051916" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.127715831" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.127715831" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1291926494" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1816835863" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.131722941" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -flto -DPC" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.131722941" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.828003147" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -248,7 +248,7 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644" errorParsers="" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371" name="Debug-MCU-m644" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644 ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644" errorParsers="" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371" name="Debug-MCU-m644" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644 ct-Bot.elf | grep &quot;bytes&quot;">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.743522646" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1660446662" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -290,7 +290,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1186149255" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.141658349" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1973099187" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.dialect.flags.1930559419" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.flags.1930559419" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.1216719228" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.886791719" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.other.other.1984865103" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644 -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections" valueType="string"/>
@@ -302,6 +302,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1311814044" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -378,7 +379,7 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437" name="Debug-MCU-m644p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644p ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437" name="Debug-MCU-m644p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.442076656" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1593374653" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -424,11 +425,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1714723" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.flags.1810857499" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.flags.1810857499" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.174622853" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.1090889406" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.other.other.1870281014" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644p -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections" valueType="string"/>
@@ -505,7 +507,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.1159595898" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.base" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1518976846" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -553,9 +555,10 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.699476605" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.dialect.flags.1323880319" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.flags.1323880319" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1636021516" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
@@ -648,7 +651,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1751730851" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.476171028" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -flto -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.476171028" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.936274821" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.687697266" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.warnings.extrawarn.1859414718" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -670,7 +673,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.607752930" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.1588810575" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.other.other.264238715" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -flto -fmessage-length=0 -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.264238715" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -fmessage-length=0 -Wmissing-declarations" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.178819833" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.758246334" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.426098189" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -693,14 +696,14 @@
 									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1979034246" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1979034246" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1179715954" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool command="arm-linux-gnueabihf-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.713025655" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1282995448" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -x assembler-with-cpp -c -DPC -flto" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1282995448" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4 -x assembler-with-cpp -c -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.2105241420" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -752,7 +755,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.759650945" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.2130077288" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -flto -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.2130077288" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.856690442" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.770150820" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.warnings.extrawarn.1774815196" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -774,7 +777,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.1871848097" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.806362721" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.other.other.536232117" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -flto -fmessage-length=0 -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.536232117" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wmissing-declarations" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.820840190" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.1564302492" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1342216148" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -797,14 +800,14 @@
 									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1923622329" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1923622329" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.465958562" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool command="armv8l-linux-gnueabihf-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1571294472" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1978411079" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -x assembler-with-cpp -c -DPC -flto" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1978411079" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -x assembler-with-cpp -c -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.244664196" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -843,6 +846,27 @@
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cSource" language="org.eclipse.cdt.core.gcc"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxHeader" language="org.eclipse.cdt.core.g++"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxSource" language="org.eclipse.cdt.core.g++"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard_wrapper.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdfat_fs.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdinfo.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spi_select.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster_soft.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatApiConstants.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFile.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFileSystem.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatLib.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatLibConfig.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatStructs.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatVolume.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FmtNumber.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/Print.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/Printable.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFat.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFatConfig.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/WString.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/ctbot_comp.h"/>
 		</project-mappings>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">

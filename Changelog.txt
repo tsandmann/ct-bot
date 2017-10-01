@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2017-10-01: Release 25 (v1.25)
+
+2017-03-12: Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf SD-Karten. Wird von Map, Log, uBasic, ABL, Speedlog verwendet. Unterstuetzung fuer SDHC-Karten. 
+
 2017-03-12: Release 24 (v1.24)
 
 2017-03-12: Dokumentation fuer Technisat TTS35AI Fernbedienung erweitert

@@ -33,7 +33,6 @@
 #include "bot-local.h"
 #include "os_scheduler.h"
 #include "os_thread.h"
-#include "os_utils.h"
 #include "uart.h"
 #include "sensor.h"
 #include "ui/available_screens.h"

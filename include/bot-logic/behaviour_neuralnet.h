@@ -92,8 +92,8 @@ void fill_pattern_in_lernarray (float *sectorarray, int16_t index, uint8_t out0,
 
 /**
  * Auslesen der Outputneuronen aus dem Netz
- * \param *out0        Outputneuron 0
  * \param *out1        Outputneuron 1
+ * \param *out2        Outputneuron 2
  */
 void net_get_test_out (uint8_t *out1, uint8_t *out2);
 

@@ -45,7 +45,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #include "bot-2-bot.h"
 #include "os_thread.h"
 #include "map.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "botcontrol.h"
 #include "init.h"
 #include "motor.h"
@@ -353,6 +353,9 @@ int8_t receive_until_frame(uint8_t frame) {
  * \return		Anzahl der gesendete Bytes
  */
 static int16_t send_cmd(command_t * cmd) {
+	if (! cmd_functions.write) {
+		return 0;
+	}
 #if defined PC && BYTE_ORDER == BIG_ENDIAN
 	command_t le_cmd;
 
@@ -374,15 +377,17 @@ static int16_t send_cmd(command_t * cmd) {
 }
 
 /**
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
+ * Uebertraegt ein KomSDFAT_AVAILABLE
+ * mando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
  * \param command		Kennung zum Command
  * \param subcommand	Kennung des Subcommand
  * \param to			Adresse des Empfaengers
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * \return				Fehlercode, 0 falls alles ok
  */
-void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
+uint8_t command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	request_t request;
 	request.command = command;
 
@@ -412,7 +417,11 @@ void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, 
 	cmd_functions.crc_calc(&cmd_to_send);
 #endif // CRC_CHECK
 
-	send_cmd(&cmd_to_send);
+	if (send_cmd(&cmd_to_send) != sizeof(command_t)) {
+		return 1;
+	}
+
+	return 0;
 }
 
 /**
@@ -483,6 +492,9 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t 
  * \param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
+	if (! cmd_functions.write) {
+		return;
+	}
 	os_enterCS();
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
@@ -490,8 +502,9 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
 		set_bot_2_sim();
 	}
 #endif // ARM_LINUX_BOARD
-	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
-	cmd_functions.write(data, payload);
+	if (! command_write_to_internal(command, subcommand, to, data_l, data_r, payload)) {
+		cmd_functions.write(data, payload);
+	}
 #ifdef PC
 	if (command == CMD_BOT_2_BOT) {
 		flushSendBuffer();
@@ -515,7 +528,7 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * \param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
-	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r,	payload, data);
+	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload, data);
 }
 
 /**
@@ -614,9 +627,9 @@ int8_t command_evaluate(void) {
 	static uint16_t RC5_Last_Toggle = 0xffff;
 #endif
 #if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
-#ifdef BOT_FS_AVAILABLE
-	static botfs_file_descr_t prog_file;
-#endif
+#ifdef SDFAT_AVAILABLE
+	static pFatFile prog_file;
+#endif // SDFAT_AVAILABLE
 	static uint16_t prog_size = 0;
 #endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 	int8_t analyzed = 1;
@@ -758,27 +771,24 @@ int8_t command_evaluate(void) {
 					/* OK */
 					filename[len] = 0;
 					LOG_DEBUG(" Datei:\"%s\"", filename);
-					void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
-#ifdef BOT_FS_AVAILABLE
-					/* Datei loeschen, falls vorhanden */
-					botfs_unlink(filename, buffer);
+					void* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
+#ifdef SDFAT_AVAILABLE
 					/* Datei anlegen */
-					const uint16_t size = prog_size / BOTFS_BLOCK_SIZE + (uint16_t) (prog_size % BOTFS_BLOCK_SIZE != 0 ? 1 : 0);
-					LOG_DEBUG(" size=%u", size);
-					if (botfs_create(filename, size, 0, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
+					LOG_DEBUG(" prog_size=%u", prog_size);
+					if (sdfat_open(filename, &prog_file, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT)) {
 						LOG_ERROR("Fehler beim Dateizugriff");
 						prog_size = 0;
 						break;
 					}
-#endif //BOT_FS_AVAILABLE
-					memset(buffer, 0, BOTFS_BLOCK_SIZE);
+#endif // SDFAT_AVAILABLE
+					memset(buffer, 0, SD_BLOCK_SIZE);
 					/* falls uBasic / ABL laeuft, abbrechen */
 #if defined BEHAVIOUR_UBASIC_AVAILABLE && defined BEHAVIOUR_ABL_AVAILABLE
-					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : get_behaviour(bot_abl_behaviour);
+					Behaviour_t* const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : get_behaviour(bot_abl_behaviour);
 #elif defined BEHAVIOUR_UBASIC_AVAILABLE
-					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : NULL;
+					Behaviour_t* const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : NULL;
 #elif defined BEHAVIOUR_ABL_AVAILABLE
-					Behaviour_t * const beh = type == 0 ? NULL : get_behaviour(bot_abl_behaviour);
+					Behaviour_t* const beh = type == 0 ? NULL : get_behaviour(bot_abl_behaviour);
 #endif
 					deactivate_called_behaviours(beh);
 					deactivate_behaviour(beh);
@@ -816,8 +826,8 @@ int8_t command_evaluate(void) {
 				const uint16_t done = (uint16_t) received_command.data_r;
 				const uint8_t type = (uint8_t) received_command.data_l;
 				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload, received_command.payload + done);
-				void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
-				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
+				void* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
+				const uint16_t index = (uint16_t) done % SD_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
@@ -834,18 +844,18 @@ int8_t command_evaluate(void) {
 				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
 					/* OK */
 //					puts(buffer);
-					if (index + (uint16_t) n == BOTFS_BLOCK_SIZE || prog_size == 0) {
+					if (index + (uint16_t) n == SD_BLOCK_SIZE || prog_size == 0) {
 						/* Puffer in Datei schreiben */
 						LOG_DEBUG(" Puffer rausschreiben...");
-#ifdef BOT_FS_AVAILABLE
-						if (botfs_write(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer)) != 0) {
+#ifdef SDFAT_AVAILABLE
+						if (sdfat_write(prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), SD_BLOCK_SIZE) != SD_BLOCK_SIZE) {
 							/* Fehler */
 							LOG_ERROR("Fehler beim Dateizugriff");
 							prog_size = 0;
 							break;
 						}
 #else // EEPROM
-						const uint16_t block = (uint16_t) done / BOTFS_BLOCK_SIZE;
+						const uint16_t block = (uint16_t) done / SD_BLOCK_SIZE;
 #if defined __AVR_ATmega1284P__ || defined PC
 						if (block > 6) {
 #elif defined MCU_ATMEGA644X
@@ -862,13 +872,14 @@ int8_t command_evaluate(void) {
 #ifdef LED_AVAILABLE
 						LED_off(LED_ROT);
 #endif
-#endif // BOT_FS_AVAILABLE
-						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, BOTFS_BLOCK_SIZE);
+#endif // SDFAT_AVAILABLE
+						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, SD_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
-#ifdef BOT_FS_AVAILABLE
-							botfs_flush_used_blocks(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer));
-#endif
+							sdfat_flush(prog_file);
+							if (type == 1) { // ABL
+								sdfat_close(prog_file);
+							}
 							LOG_DEBUG("->fertig");
 						}
 					}

@@ -72,13 +72,13 @@
 
 
 /* Umgebungskarte */
-#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_AVAILABLE						/**< Aktiviert die Kartographie; wenn aktiviert, funktioniert ui/available-screens.h/DISPLAY_MMC_INFO nicht */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
-/* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+/* MMC-/SD-Karte als Speichererweiterung (opt. Erweiterungsmodul) */
+//#define MMC_AVAILABLE						/**< Aktiviert Unterstuetzung von MMC/SD-Karten im Erweiterungsmodul */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
 /* Hardware-Treiber */
@@ -100,16 +100,11 @@
 //#define BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
 
-/* Veraltete Optionen */
-//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
-
-
 
 /*** Abhaengigkeiten ***/
 
 #include "global.h" // ct-Bot Datentypen
-#include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen
+#include "bot-local.h" // Hardwarekonfigurationen, die bei den Bots verschieden sein koennen
 
 
 #if ! (defined PC && defined ARM_LINUX_BOARD && defined __arm__ && defined __gnu_linux__)
@@ -128,6 +123,21 @@
 
 #if ! defined RC5_CODE_DOT || ! defined RC5_CODE_STOP || ! defined RC5_CODE_PLAY
 #undef KEYPAD_AVAILABLE
+#endif
+
+#ifdef PC
+#undef EXPANSION_BOARD_MOD_AVAILABLE
+#endif
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE // Anpassungen fuer modifiziertes Erweiterungsboard
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
+#undef ENABLE_RX0_PULLUP // Verwendung von Pull-down fuer RX0, also Kurzschluss verhindern
+#undef MOUSE_AVAILABLE // deaktiviert Maus-Sensor wegen Nutzung der ATMega SPI-Schnittstelle fuer den SD-Schacht
+#define SPI_AVAILABLE // Hardware-SPI-Modus des Controllers für die Anbindung des SD-Schachts.
+#endif // EXPANSION_BOARD_AVAILABLE
+
+#ifdef EXPANSION_BOARD_AVAILABLE
+#undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #endif
 
 #ifndef MOUSE_AVAILABLE
@@ -153,7 +163,8 @@
 #undef CMPS03_AVAILABLE
 #undef SP03_AVAILABLE
 #undef BOT_2_RPI_AVAILABLE
-#endif
+#undef BOOTLOADER_AVAILABLE
+#endif // ! DOXYGEN
 
 #if !defined BOT_2_SIM_AVAILABLE && ! defined ARM_LINUX_BOARD
 #define BOT_2_SIM_AVAILABLE // simulierte Bots brauchen immer Kommunikation zum Sim
@@ -202,8 +213,12 @@
 #undef DISPLAY_REMOTE_AVAILABLE
 #endif
 
-#undef EEPROM_EMU_AVAILABLE
 #undef CREATE_TRACEFILE_AVAILABLE
+
+#if ! defined __AVR_ATmega1284P__ && ! defined __AVR_ATmega644__ && ! defined __AVR_ATmega644P__
+#undef MMC_AVAILABLE
+#undef SDFAT_AVAILABLE
+#endif // ATmega1284P / ATmega644X
 #endif // MCU
 
 #ifndef SPEED_CONTROL_AVAILABLE
@@ -213,24 +228,18 @@
 #ifndef MMC_AVAILABLE
 #ifdef MCU
 #undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
-#undef MMC_VM_AVAILABLE
-#undef BOT_FS_AVAILABLE
+#undef SDFAT_AVAILABLE
 #endif // MCU
 #endif // ! MMC_AVAILABLE
 
-#if !defined BEHAVIOUR_AVAILABLE && defined POS_STORE_AVAILABLE
+#if ! defined BEHAVIOUR_AVAILABLE && defined POS_STORE_AVAILABLE
 #undef POS_STORE_AVAILABLE
 #warning "POS_STORE_AVAILABLE benoetigt BEHAVIOUR_AVAILABLE"
 #endif
 
-#if !defined OS_AVAILABLE && defined BOT_FS_AVAILABLE
-#undef BOT_FS_AVAILABLE
-#warning "BOT_FS_AVAILABLE benoetigt OS_AVAILABLE"
-#endif
-
-#if defined MMC_VM_AVAILABLE && defined BOT_FS_AVAILABLE
-#warning "MMC_VM_AVAILABLE und BOT_FS_AVAILABLE nicht gleichzeitig moeglich! MMC_VM_AVAILABLE wird deaktiviert. Wenn benoetigt, BOT_FS_AVAILABLE ausschalten"
-#undef MMC_VM_AVAILABLE
+#if ! defined OS_AVAILABLE && defined SDFAT_AVAILABLE
+#undef SDFAT_AVAILABLE
+#warning "SDFAT_AVAILABLE benoetigt OS_AVAILABLE"
 #endif
 
 #ifdef PC
@@ -248,7 +257,7 @@
 #undef LOG_CTSIM_AVAILABLE
 #endif // ! BOT_2_RPI_AVAILABLE
 #endif // BOT_2_SIM_AVAILABLE
-#else // PC
+#else // ! MCU
 #undef LOG_RPI_AVAILABLE
 #endif // MCU
 
@@ -257,9 +266,14 @@
 #undef LOG_DISPLAY_AVAILABLE
 #endif
 
-#if ! defined BOT_FS_AVAILABLE && defined USE_MINILOG
+#if ! defined SDFAT_AVAILABLE && defined USE_MINILOG
 #undef LOG_MMC_AVAILABLE
-#endif // BOT_FS_AVAILABLE && USE_MINILOG
+#endif // SDFAT_AVAILABLE && USE_MINILOG
+
+#ifndef SDFAT_AVAILABLE
+#undef SPEED_LOG_AVAILABLE
+#undef MAP_AVAILABLE
+#endif
 
 #ifndef BOT_2_RPI_AVAILABLE
 #undef LOG_RPI_AVAILABLE
@@ -338,8 +352,9 @@
 #undef LOG_MMC_AVAILABLE
 #endif
 
-#ifndef BOT_FS_AVAILABLE
+#ifndef SDFAT_AVAILABLE
 #undef LOG_MMC_AVAILABLE
+#undef SPEED_LOG_AVAILABLE
 #endif
 
 #if ! defined LOG_CTSIM_AVAILABLE && ! defined LOG_DISPLAY_AVAILABLE && ! defined LOG_UART_AVAILABLE && \

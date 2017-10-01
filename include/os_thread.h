@@ -20,7 +20,7 @@
 /**
  * \file 	os_thread.h
  * \brief 	Threadmanagement fuer BotOS
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	02.10.2007
  */
 
@@ -131,18 +131,53 @@ void os_kernel_log_init(void);
 void os_idle(void) OS_TASK_ATTR;
 
 /**
+ * Setzt die Variable var auf den Wert x und gibt den alten Wert von var zurueck.
+ * Die Operation ist atomar also interrupt- und threadsicher
+ * \param *var	Zeiger auf die Variable (8 Bit)
+ * \param x		Wert, der anschliessend in var stehen soll
+ * \return		alter Wert von var
+ */
+static inline uint8_t test_and_set(uint8_t* var, uint8_t x) {
+	uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	uint8_t old = *var;
+	*var = x;
+	__asm__ __volatile__("":::"memory");
+	SREG = sreg;
+	return old;
+}
+
+/**
  * Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
  * und os_exitCS() sollte daher kein Funktionsaufruf erfolgen.
  */
-#define os_enterCS() { \
-	os_scheduling_allowed = 0; \
-	__asm__ __volatile__("":::"memory"); \
+static inline ALWAYS_INLINE void os_enterCS(void) {
+	os_scheduling_allowed = 0;
+	__asm__ __volatile__("":::"memory");
 }
 
 /**
- * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
+ * Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.
+ * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
+ * \see os_enterCS()
+ * \return Vorheriger Status: 0 fuer bisher nicht gelockt, 1 fuer Lock bereits gesetzt
+ */
+static inline ALWAYS_INLINE uint8_t os_enterCS_ret(void) {
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	const uint8_t old = os_scheduling_allowed;
+	if (old == 1) {
+		os_scheduling_allowed = 0;
+	}
+	__asm__ __volatile__("":::"memory");
+	SREG = sreg;
+	return old == 1 ? 0 : 1;
+}
+
+/**
+ * Beendet den kritischen Abschnitt wieder, der mit os_enterCS() began.
  * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void);

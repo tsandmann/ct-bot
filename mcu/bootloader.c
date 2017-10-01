@@ -217,17 +217,17 @@ typedef uint8_t pagebuf_t; /**< Seitengroesse */
 static uint8_t gBuffer[SPM_PAGESIZE];	/**< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
-inline static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
+inline static void ALWAYS_INLINE sendchar(uint8_t data) {
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
 	UART_DATA = data;
 }
 
-inline static uint8_t __attribute__ ((always_inline)) recvchar(void) {
+inline static uint8_t ALWAYS_INLINE recvchar(void) {
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
-inline static void __attribute__ ((always_inline)) eraseFlash(void) {
+inline static void ALWAYS_INLINE eraseFlash(void) {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
 	while (APP_END > addr) {
@@ -238,7 +238,7 @@ inline static void __attribute__ ((always_inline)) eraseFlash(void) {
 	boot_rww_enable();
 }
 
-inline static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
+inline static void ALWAYS_INLINE recvBuffer(pagebuf_t size) {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
@@ -246,7 +246,7 @@ inline static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
 		*tmp++ = (uint8_t) ((cnt < size) ? recvchar() : 0xff);
 }
 
-inline static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size) {
+inline static uint16_t ALWAYS_INLINE writeFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t pagestart = (uint32_t)waddr<<1;
 	uint32_t baddr = pagestart;
 	uint16_t data;
@@ -268,7 +268,7 @@ inline static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t w
 	return (uint16_t) (baddr >> 1);
 }
 
-inline static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size) {
+inline static uint16_t ALWAYS_INLINE writeEEpromPage(uint16_t address, pagebuf_t size) {
 	uint8_t *tmp = gBuffer;
 
 	do {
@@ -292,7 +292,7 @@ inline static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t 
 	return address;
 }
 
-inline static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size) {
+inline static uint16_t ALWAYS_INLINE readFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t baddr = (uint32_t)waddr<<1;
 	uint16_t data;
 
@@ -311,7 +311,7 @@ inline static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t wa
 	return (uint16_t) (baddr >> 1);
 }
 
-inline static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size) {
+inline static uint16_t ALWAYS_INLINE readEEpromPage(uint16_t address, pagebuf_t size) {
 	do {
 		EEARL = (uint8_t) address; // Setup EEPROM address
 		EEARH = (uint8_t) (address >> 8);
@@ -327,7 +327,7 @@ inline static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t a
 }
 
 #if defined(ENABLEREADFUSELOCK)
-static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr) {
+static uint8_t ALWAYS_INLINE read_fuse_lock(uint16_t addr) {
 	uint8_t mode = (1<<BLBSET) | (1<<SPMEN);
 	uint8_t retval;
 
@@ -347,7 +347,7 @@ static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr) {
 }
 #endif
 
-inline static void __attribute__ ((always_inline)) send_boot(void) {
+inline static void ALWAYS_INLINE send_boot(void) {
 	sendchar('A');
 	sendchar('V');
 	sendchar('R');

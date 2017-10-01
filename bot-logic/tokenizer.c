@@ -34,7 +34,7 @@
 
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#include "botfs.h"
+#include "sdfat_fs.h"
 
 #include "ubasic_config.h"
 

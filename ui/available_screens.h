@@ -36,8 +36,7 @@
 #define DISPLAY_ODOMETRIC_INFO				/**< zeigt Positions- und Geschwindigkeitsdaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/**< Gibt Debug-Infos der Motorregelung aus */
 //#define DISPLAY_MISC_AVAILABLE			/**< aehm ja, der Rest irgendwie... */
-#define DISPLAY_MMC_INFO					/**< Zeigt die Daten der MMC-Karte an */
-//#define DISPLAY_MINIFAT_INFO				/**< Zeigt Ausgaben des MiniFAT-Treibers an */
+#define DISPLAY_MMC_INFO                                        /**< Zeigt die Daten der MMC-Karte an; funktioniert nicht, wenn ct-Bot.h/MAP_AVAILABLE aktiviert ist */
 //#define DISPLAY_RESET_INFO_AVAILABLE		/**< Zeigt Informationen ueber Resets an */
 #define DISPLAY_NEURALNET_AVAILABLE		    /**< Screen des neuronalen Netzes */
 #define DISPLAY_DRIVE_NEURALNET_AVAILABLE	/**< Screen des Fahrverhaltens des neuronalen Netzes */

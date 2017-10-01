@@ -31,7 +31,6 @@
 #include "bot-logic/bot-logic.h"
 #include "os_scheduler.h"
 #include "ui/available_screens.h"
-#include "os_utils.h"
 #include "os_thread.h"
 #include "sensor.h"
 #include "rc5-codes.h"
@@ -423,6 +422,9 @@ void os_display(void) {
 #ifdef MAP_AVAILABLE
 #ifdef OS_DEBUG
 		os_stack_dump(&os_threads[1], &map_update_stack[MAP_UPDATE_STACK_SIZE - 1], MAP_UPDATE_STACK_SIZE);
+#ifdef MAP_2_SIM_AVAILABLE
+		os_stack_dump(&os_threads[2], &map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE - 1], MAP_2_SIM_STACK_SIZE);
+#endif // MAP_2_SIM_AVAILABLE
 #endif
 #endif // MAP_AVAILABLE
 		RC5_Code = 0;

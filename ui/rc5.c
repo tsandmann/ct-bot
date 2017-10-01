@@ -37,7 +37,6 @@
 #include "rc5-codes.h"
 #include "gui.h"
 #include "mmc.h"
-#include "mmc-vm.h"
 #include "command.h"
 #include "pos_store.h"
 #include "timer.h"
@@ -58,11 +57,7 @@ ir_data_t rc5_ir_data = {
  * Setzt das Display auf eine andere Ausgabe.
  * \param screen Parameter mit dem zu setzenden Screen.
  */
-static void
-#ifndef DOXYGEN
-__attribute__((noinline))
-#endif
-rc5_screen_set(uint8_t screen) {
+static void NO_INLINE rc5_screen_set(uint8_t screen) {
 #ifdef DISPLAY_AVAILABLE
 	if (screen == DISPLAY_SCREEN_TOGGLE) {
 		display_screen++; // zappen
@@ -153,7 +148,11 @@ static inline void bot_reset(void) {
  * Kamera-Steuerung fuer Servo 2
  * \param diff Wert, um den die Servo-Position veraendert wird
  */
-static void __attribute__ ((unused)) rc5_change_servo2(int16_t diff) {
+static void
+#ifndef DOXYGEN
+__attribute__ ((unused))
+#endif
+rc5_change_servo2(int16_t diff) {
 	static uint8_t old_pos = CAM_CENTER / 10 * 10;
 
 	int16_t new_pos = old_pos + diff;

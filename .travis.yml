@@ -7,12 +7,17 @@ os:
   - linux
   - osx
 
+env:
+  - MINGW=false
+  - MINGW=true
+  
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y g++-arm-linux-gnueabihf; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get -qq update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get install -y mingw-w64; fi
 
 script:
-  - ./tests/run_tests_pc.sh
-  - ./tests/run_tests_mcu.sh
-  - ./tests/run_tests_rpi2.sh
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./tests/run_tests_rpi3.sh; fi
+  - if [[ "$MINGW" == "false" ]]; then ./tests/run_tests_pc.sh; fi
+  - if [[ "$MINGW" == "false" ]]; then ./tests/run_tests_mcu.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then ./tests/run_tests_mingw.sh; fi

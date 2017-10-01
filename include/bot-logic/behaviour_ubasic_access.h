@@ -29,8 +29,10 @@
 
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "init.h"
+#include "log.h"
+#include <stdio.h>
 
 typedef uint16_t PTR_TYPE;
 #define PROG_PTR 					ubasic_get_ptr()
@@ -58,16 +60,17 @@ static inline char ubasic_get_content(void) {
  * Hilfsfunktion fuer set_ptr() und incr_ptr()
  * \param offset neuer Wert fuer ubasic_ptr
  */
-static inline void _ubasic_update_ptr(uint16_t offset) __attribute__((always_inline));
-static inline void _ubasic_update_ptr(uint16_t offset) {
-	const uint16_t last_block = ubasic_ptr / BOTFS_BLOCK_SIZE;
+static inline ALWAYS_INLINE void _ubasic_update_ptr(uint16_t offset) {
+	const uint16_t last_block = ubasic_ptr / SD_BLOCK_SIZE;
 	ubasic_ptr = offset;
-	const uint16_t block = ubasic_ptr / BOTFS_BLOCK_SIZE;
-	const uint16_t index = ubasic_ptr % BOTFS_BLOCK_SIZE;
+	const uint16_t block = ubasic_ptr / SD_BLOCK_SIZE;
+	const uint16_t index = ubasic_ptr % SD_BLOCK_SIZE;
 
 	if (block != last_block) {
-		botfs_seek(&ubasic_prog_file, (int16_t) block, SEEK_SET);
-		botfs_read(&ubasic_prog_file, GET_MMC_BUFFER(ubasic_buffer));
+		sdfat_seek(ubasic_prog_file, block * SD_BLOCK_SIZE, SEEK_SET);
+		if (sdfat_read(ubasic_prog_file, GET_MMC_BUFFER(ubasic_buffer), SD_BLOCK_SIZE) != SD_BLOCK_SIZE) {
+			LOG_ERROR("_ubasic_update_ptr(): sdfat_read() failed.");
+		}
 	}
 
 	ubasic_content = (char) GET_MMC_BUFFER(ubasic_buffer)[index];

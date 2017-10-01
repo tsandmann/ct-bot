@@ -27,22 +27,22 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-//#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/**< Prototyp fuer neue Verhalten */
+//#define BEHAVIOUR_PROTOTYPE_AVAILABLE 				/**< Prototyp fuer neue Verhalten */
 
 /* Demo-Verhalten */
-//#define BEHAVIOUR_SIMPLE_AVAILABLE				/**< Beispielverhalten */
+//#define BEHAVIOUR_SIMPLE_AVAILABLE					/**< Beispielverhalten */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
 
 /* Notfall-Verhalten */
 //#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen */
-//#define BEHAVIOUR_AVOID_COL_AVAILABLE 			/**< Hindernis ausweichen */
+//#define BEHAVIOUR_AVOID_COL_AVAILABLE 				/**< Hindernis ausweichen */
 //#define BEHAVIOUR_HANG_ON_AVAILABLE 				/**< Erkennen des Haengenbleibens als Notfallverhalten */
 
 /* Positionierungs-Verhalten */
 #define BEHAVIOUR_TURN_AVAILABLE 					/**< Dreh Verhalten */
-//#define BEHAVIOUR_TURN_TEST_AVAILABLE 			/**< Test des Dreh Verhaltens */
+//#define BEHAVIOUR_TURN_TEST_AVAILABLE 				/**< Test des Dreh Verhaltens */
 #define BEHAVIOUR_GOTO_POS_AVAILABLE 				/**< Position anfahren */
-//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 		/**< Abstand zu Hindernis einhalten */
+//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 			/**< Abstand zu Hindernis einhalten */
 //#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 			/**< Abfahren der auf dem Stack gesicherten Koordinaten */
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
 
@@ -55,15 +55,15 @@
 //#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
 //#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE 		/**< Transport-Pillar Verhalten */
-//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 		/**< verfolge ein (bewegliches) Objekt */
+//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 			/**< verfolge ein (bewegliches) Objekt */
 //#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 			/**< Follow Wall Explorer Verhalten */
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE 			/**< flaechendeckendes Fahren mit Map */
-//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 	/**< Linienfolger ueber Kreuzungen zum Ziel */
+//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 		/**< Linienfolger ueber Kreuzungen zum Ziel */
 //#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/**< Schach fuer den Bot */
 //#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
 //#define BEHAVIOUR_UBASIC_AVAILABLE 				/**< uBasic Verhalten */
 //#define BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
-//#define BEHAVIOUR_NEURALNET_AVAILABLE 			/**< neuronales Netzwerk */
+//#define BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
 //#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 /* Kalibrierungs-Verhalten */
@@ -104,10 +104,10 @@
 
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#ifndef BOT_FS_AVAILABLE
-#warning "uBasic-Verhalten benoetigt BOT_FS_AVAILABLE (siehe ct-Bot.h)"
+#ifndef SDFAT_AVAILABLE
+#warning "uBasic-Verhalten benoetigt SDFAT_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_UBASIC_AVAILABLE
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
 
 #ifdef BEHAVIOUR_ABL_AVAILABLE

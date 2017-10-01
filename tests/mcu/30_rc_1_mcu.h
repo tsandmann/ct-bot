@@ -60,7 +60,7 @@
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
 #define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 /* Hardware-Treiber */
 #define ADC_AVAILABLE						/**< A/D-Konverter */
@@ -120,12 +120,12 @@
 #define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 			/**< Follow Wall Explorer Verhalten */
 #define BEHAVIOUR_DRIVE_AREA_AVAILABLE 				/**< flaechendeckendes Fahren mit Map */
 #define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 		/**< Linienfolger ueber Kreuzungen zum Ziel */
-#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/**< Schach fuer den Bot */
+#undef  BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/**< Schach fuer den Bot */
 #define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
 #define BEHAVIOUR_UBASIC_AVAILABLE 					/**< uBasic Verhalten */
 #define BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
-#define BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
-#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
+#undef  BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
+#undef  BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 /* Kalibrierungs-Verhalten */
 #define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */

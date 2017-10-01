@@ -90,10 +90,10 @@ uint8_t srf10_ping(uint8_t metric_unit);
 
 /**
  * Register auslesen
- * \param SRF10_register welches Register soll ausgelsen werden
+ * \param srf10_register welches Register soll ausgelsen werden
  * \return Inhalt des Registers
  */
-uint8_t srf10_read_register(uint8_t SRF10_register);
+uint8_t srf10_read_register(uint8_t srf10_register);
 
 /**
  * Messung starten Ergebniss aufbereiten und zurueckgeben

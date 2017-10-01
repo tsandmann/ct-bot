@@ -1,12 +1,22 @@
 #!/bin/bash
 
-export ARM_TARGET=armv8l-linux-gnueabihf
+export BUILD_TARGET=armv8l-linux-gnueabihf
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ "`uname`" == "Darwin" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=gcc-5.4 https://github.com/tsandmann/armv8l-toolchain-mac.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-mac.tbz2 'https://www.dropbox.com/s/7375ckr4wgiqp86/armv8l-toolchain-mac.tbz2'; tar xjf armv8l-toolchain-mac.tbz2; }
 	fi
+
+	export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
+fi
+
+if [[ "`uname`" == "Linux" ]]; then
+	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-linux.tbz2 'https://www.dropbox.com/s/y6429vlagozve0r/armv8l-toolchain-linux.tbz2'; tar xjf armv8l-toolchain-linux.tbz2; }
+	fi
+	export LD_LIBRARY_PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin
+	export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
 fi
 
 cd $MYDIR/../

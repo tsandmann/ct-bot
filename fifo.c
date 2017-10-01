@@ -61,21 +61,25 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
  * Achtung, wenn der freie Platz nicht ausreicht, werden die
  * aeltesten Daten verworfen!
  * \param *f		Zeiger auf FIFO-Datenstruktur
- * \param *data		Zeiger auf Quelldaten
+ * \param *data	Zeiger auf Quelldaten
  * \param length	Anzahl der zu kopierenden Bytes
+ * \return		Fehlercode, 0 falls kein Fehler
  */
-void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
+uint8_t fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 	if (length == 0) {
-		return;
+		return 1;
 	}
 	uint8_t space;
 	if (length > (space = (uint8_t) (f->size - f->count))) {
 		/* nicht genug Platz -> alte Daten rauswerfen */
 		f->overflow = 1;
 		LOG_DEBUG_FIFO("FIFO 0x%08x overflow, size=%u", f, f->size);
-		while (f->locked) {
-			os_thread_yield();
-		}
+//		while (f->locked) {
+// FIXME: geht so nicht, weil os_thread_yield() os_exitCS() aufruft
+//			os_thread_yield();
+//		}
+
+		return 2;
 
 		uint8_t to_discard = (uint8_t) (length - space);
 		LOG_DEBUG_FIFO("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
@@ -145,6 +149,7 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 	/* Consumer aufwecken */
 	os_signal_unlock(&f->signal);
 #endif // OS_AVAILABLE
+	return 0;
 }
 
 /**

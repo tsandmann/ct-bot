@@ -81,9 +81,9 @@ int call_statement(void) {
 #endif
 	int r=0;
 
-	accept(TOKENIZER_CALL);
+	ubasic_accept(TOKENIZER_CALL);
 	// Parameterliste wird durch linke Klammer eingeleitet
-    accept(TOKENIZER_LEFTPAREN);
+    ubasic_accept(TOKENIZER_LEFTPAREN);
 	// Funktionsname ermitteln
 	if(tokenizer_token() == TOKENIZER_STRING) {
 		tokenizer_next();
@@ -123,8 +123,8 @@ int call_statement(void) {
 #endif
 #ifdef VOID_FUNC_INT
 			case VOID_FUNC_INT:
-						accept(TOKENIZER_COMMA);
-						p1=expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p1=ubasic_expr();
 						#if USE_PROGMEM
 							void (* f1)(int) = (void (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt);
 							f1(p1);
@@ -135,10 +135,10 @@ int call_statement(void) {
 #endif
 #ifdef VOID_FUNC_2INT
 			case VOID_FUNC_2INT:
-						accept(TOKENIZER_COMMA);
-						p1=expr();
-						accept(TOKENIZER_COMMA);
-						p2=expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p1=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p2=ubasic_expr();
 						#if USE_PROGMEM
 							void (* f2)(int, int) = (void (*)(int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int);
 							f2(p1, p2);
@@ -149,14 +149,14 @@ int call_statement(void) {
 #endif
 #ifdef VOID_FUNC_4INT
 			case VOID_FUNC_4INT:
-						accept(TOKENIZER_COMMA);
-						p1=expr();
-						accept(TOKENIZER_COMMA);
-						p2=expr();
-						accept(TOKENIZER_COMMA);
-						p3=expr();
-						accept(TOKENIZER_COMMA);
-						p4=expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p1=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p2=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p3=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p4=ubasic_expr();
 						#if USE_PROGMEM
 							void (* f3)(int, int, int, int) = (void (*)(int, int, int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc4Int);
 							f3(p1, p2, p3, p4);
@@ -167,12 +167,12 @@ int call_statement(void) {
 #endif
 #ifdef VOID_FUNC_2INT_CHAR
 			case VOID_FUNC_2INT_CHAR:
-						accept(TOKENIZER_COMMA);
-						p1=expr();
-						accept(TOKENIZER_COMMA);
-						p2=expr();
-						accept(TOKENIZER_COMMA);
-						accept(TOKENIZER_STRING);
+						ubasic_accept(TOKENIZER_COMMA);
+						p1=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p2=ubasic_expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						ubasic_accept(TOKENIZER_STRING);
 						#if USE_PROGMEM
 							void (* f4)(int, int, char*) = (void (*)(int, int, char*)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2IntChar);
 							f4(p1, p2, (char*)tokenizer_last_string_ptr());
@@ -186,8 +186,8 @@ int call_statement(void) {
 #endif
 #ifdef INT_FUNC_INT
 			case INT_FUNC_INT:
-						accept(TOKENIZER_COMMA);
-						p1=expr();
+						ubasic_accept(TOKENIZER_COMMA);
+						p1=ubasic_expr();
 						#if USE_PROGMEM
 							int (* f5)(int) = (int (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.IntFuncInt);
 							r=f5(p1);
@@ -199,10 +199,10 @@ int call_statement(void) {
 #ifdef VOID_FUNC_2INT16
 			case VOID_FUNC_2INT16: {
 				// zwei Integer und kein Rueckgabewert
-				accept(TOKENIZER_COMMA);
-				const int16_t p1 = expr();
-				accept(TOKENIZER_COMMA);
-				const int16_t p2 = expr();
+				ubasic_accept(TOKENIZER_COMMA);
+				const int16_t p1 = ubasic_expr();
+				ubasic_accept(TOKENIZER_COMMA);
+				const int16_t p2 = ubasic_expr();
 				void (* func)(int16_t, int16_t) = (void (*)(int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int16);
 				func(p1, p2);
 				break;
@@ -218,17 +218,17 @@ int call_statement(void) {
 #ifdef VOID_FUNC_RC
 			case VOID_FUNC_RC: {
 				// Remotecall
-				accept(TOKENIZER_COMMA);
+				ubasic_accept(TOKENIZER_COMMA);
 				const char * const func = tokenizer_last_string_ptr();
-				accept(TOKENIZER_STRING);
+				ubasic_accept(TOKENIZER_STRING);
 				remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = { {0} };
 				uint8_t i;
 				for (i = 0; i < REMOTE_CALL_MAX_PARAM; ++i) {
 					if (tokenizer_token() == TOKENIZER_RIGHTPAREN) {
 						break;
 					}
-					accept(TOKENIZER_COMMA);
-					params[i].s16 = expr();
+					ubasic_accept(TOKENIZER_COMMA);
+					params[i].s16 = ubasic_expr();
 				}
 				int8_t (* rc)(Behaviour_t *, const char *, const remote_call_data_t *) =
 					(int8_t (*)(Behaviour_t *, const char *, const remote_call_data_t *)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncRC);
@@ -243,7 +243,7 @@ int call_statement(void) {
 		}
 	}
 	// abschliessende rechte Klammer
-    accept(TOKENIZER_RIGHTPAREN);
+    ubasic_accept(TOKENIZER_RIGHTPAREN);
 	return r;
 }
 #endif

@@ -26,6 +26,8 @@
 #ifndef SENSOR_LOW_H_
 #define SENSOR_LOW_H_
 
+#include "sdcard_wrapper.h"
+
 /**
  * Initialisiere alle Sensoren
  */
@@ -65,23 +67,13 @@ typedef struct {
 	uint8_t enc;		/**< Encoder Pegel */
 } PACKED_FORCE slog_data_t;
 
-#define SLOG_WITH_SPEED_CONTROL	1
-#define SLOG_WITHOUT_SPEED_CONTROL 0
-
 typedef union {
 	slog_data_t data[2][25]; /**< Speed-Log Daten */
-	uint8_t raw[512]; /**< Platzfueller auf Block-Groesse */
 } slog_t; /**< Speed-Log Datentyp */
 extern volatile uint8_t slog_i[2]; /**< Array-Index */
-extern slog_t * const slog; /**< Puffer fuer Speed-Log Daten */
+extern slog_t* const slog; /**< Puffer fuer Speed-Log Daten */
+extern pFatFile speedlog_file; /**< Datei fuer das Speed-Log */
 #endif // SPEED_LOG_AVAILABLE
 
-#ifdef PC
-/**
- * Konvertiert eine (binaere) Speedlog-Datei ("AVR-Endian") in eine Textdatei.
- * \param input_file Der Dateiname der BotFS-Image-Datei
- */
-void convert_slog_file(char * input_file);
-#endif // PC
-#define SPEEDLOG_FILE_NAME "speedlog" /**< Dateiname der Speedlog-Datei */
+#define SPEEDLOG_FILE_NAME "speedlog.txt" /**< Dateiname der Speedlog-Datei */
 #endif // SENSOR_LOW_H_

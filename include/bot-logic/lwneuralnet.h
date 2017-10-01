@@ -63,7 +63,6 @@ int net_save (const char *, const network_t *);
 network_t *net_load (const char *);
 int net_fbprint (FILE *, const network_t *);
 network_t *net_fbscan (FILE *);
-int net_fbprint (FILE *, const network_t *);
 int net_bsave (const char *, const network_t *);
 network_t *net_bload (const char *);
 #endif // PC

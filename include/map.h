@@ -28,10 +28,9 @@
 #define MAP_H_
 
 #ifdef MAP_AVAILABLE
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "fifo.h"
 #include "os_thread.h"
-#include "botfs.h"
 
 #define MAP_CLEAR_ON_INIT	/**< Leert die Karte, wenn der Bot gebootet wird */
 #define MAP_USE_TRIG_CACHE	/**< Sollen sin(heading) und cos(heading) mit gecachet werden? */
@@ -41,14 +40,15 @@
 #define MAP_SIZE			(MAP_SIZE_MM / 1000.0)	/**< Kantenlaenge der Karte in m (also MAP_SIZE_MM / 1000). Zentrum ist der Startplatz des Bots. */
 #define MAP_RESOLUTION 		125		/**< Aufloesung der Karte in Punkte / m */
 #define MAP_SECTION_POINTS 	16		/**< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS * MAP_SECTION_POINTS Byte */
+#define MAP_BLOCK_SIZE		(2L * MAP_SECTION_POINTS * MAP_SECTION_POINTS)
 
-#define MAP_UPDATE_STACK_SIZE	180	/**< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
+#define MAP_UPDATE_STACK_SIZE	300	/**< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
 #ifdef DEBUG_BOTFS
 #undef MAP_UPDATE_STACK_SIZE
 #define MAP_UPDATE_STACK_SIZE	220
 #endif
 #define MAP_UPDATE_CACHE_SIZE	16	/**< Groesse des Map-Caches [# Eintraege] */
-#define MAP_2_SIM_STACK_SIZE	150	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
+#define MAP_2_SIM_STACK_SIZE		256	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte] */
 
 #define MAP_2_SIM_BUFFER_SIZE	32	/**< Anzahl der Bloecke, die fuer Map-2-Sim gecached werden koennen */
 
@@ -58,7 +58,7 @@
 #define MAP_RATIO_NONE	0		/**< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
 #define MAP_RATIO_FULL	255		/**< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
 
-/* Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
+/* Die folgenden Variablen/Konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
  * Denn sonst erhaelt man Karten- und nicht Weltkoordinaten! */
 extern int16_t map_min_x;		/**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 extern int16_t map_max_x;		/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
@@ -83,19 +83,17 @@ typedef struct {
 #endif
 } PACKED map_cache_t;
 
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 /** Header der Map-Datei */
-typedef union {
-	struct {
-		uint16_t alignment_offset;	/**< Offset des Kartenanfangs zur Ausrichtung auf Makroblockgroesse */
-		int16_t map_min_x;			/**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-		int16_t map_max_x;			/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-		int16_t map_min_y;			/**< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-		int16_t map_max_y;			/**< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-	} PACKED_FORCE data;
-	uint8_t raw[BOTFS_HEADER_DATA_SIZE];
-} map_header_t;
-#endif // BOT_FS_AVAILABLE
+typedef struct {
+	uint16_t alignment_offset;	/**< Offset des Kartenanfangs zur Ausrichtung auf Makroblockgroesse */
+	int16_t map_min_x;			/**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+	int16_t map_max_x;			/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+	int16_t map_min_y;			/**< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+	int16_t map_max_y;			/**< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
+	uint8_t dummy[MAP_BLOCK_SIZE - 10];
+} PACKED_FORCE map_header_t;
+#endif // SDFAT_AVAILABLE
 
 extern fifo_t map_update_fifo;			/**< Fifo fuer Cache */
 extern map_cache_t map_update_cache[];	/**< Map-Cache */
@@ -150,8 +148,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
  * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
  */
-uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
-		int16_t width, int8_t min_val, int8_t max_val);
+uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t width, int8_t min_val, int8_t max_val);
 
 /**
  * Prueft ob eine direkte Passage frei von Hindernissen ist
@@ -212,21 +209,19 @@ static inline int16_t map_to_world(int16_t map_koord) {
 #define map_get_max_x() map_to_world(map_max_x)		/**< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/**< Maximum in Y-Richtung */
 
-#if defined BOT_FS_AVAILABLE && defined BOTFS_COPY_AVAILABLE
 /**
  * Kopiert die aktuelle Karte in eine BotFS-Datei
  * \param *file Name der Zieldatei (wird geloescht, falls sie schon existiert)
  * \return 0 falls kein Fehler, sonst Fehlercode
  */
-int8_t map_save_to_file(const char * file);
+int8_t map_save_to_file(const char* file);
 
 /**
  * Laedt die Karte aus einer BotFS-Datei, aktuelle Karte wird dadurch geloescht
  * \param *file Name der zu ladenden BotFS-Datei
  * \return 0 falls kein Fehler, sonst Fehlercode
  */
-int8_t map_load_from_file(const char * file);
-#endif // BOT_FS_AVAILABLE && BOTFS_COPY_AVAILABLE
+int8_t map_load_from_file(const char* file);
 
 #ifdef MAP_2_SIM_AVAILABLE
 /**
@@ -270,20 +265,13 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color);
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef PC
-char * map_file; /**< Dateiname fuer Ex- / Import */
-
-/**
- * Liest eine Karte aus einer Map-Datei (MiniFAT-Format) ein
- * \param *filename Quelldatei
- * \return Fehlercode, 0 falls alles ok
- */
-int map_read(const char * filename);
+extern char* map_file; /**< Dateiname fuer Ex- / Import */
 
 /**
  * Schreibt einbe Karte in eine PGM-Datei
  * \param filename	Zieldatei
  */
-void map_to_pgm(const char * filename);
+void map_to_pgm(const char* filename);
 #endif // PC
 
 #ifdef DISPLAY_MAP_AVAILABLE
