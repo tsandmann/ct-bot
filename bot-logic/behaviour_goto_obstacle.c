@@ -115,8 +115,8 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 			if (abs(diff) < max_par_diff) {
 				/* unsinnig bei zu grosser Differenz */
 				LOG_DEBUG("diff=%d", diff);
-				float alpha = (float) diff / (float)(DISTSENSOR_POS_SW * 2);
-				alpha /= 2.0 * M_PI / 360.0;
+				float alpha = (float) diff / (float) (DISTSENSOR_POS_SW * 2.f);
+				alpha /= 2.f * M_PI_F / 360.f;
 				LOG_DEBUG("alpha=%f", alpha);
 				bot_turn(data, (int16_t) alpha);
 			}

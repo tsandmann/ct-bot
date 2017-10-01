@@ -21,7 +21,7 @@
  * \file 	behaviour_scan_beacons.h
  * \brief 	Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * 			aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	01.05.2009
  */
 

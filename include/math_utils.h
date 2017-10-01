@@ -20,7 +20,7 @@
 /**
  * \file 	math_utils.h
  * \brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	17.10.2007
  */
 
@@ -41,7 +41,8 @@ extern "C" {
 #include <avr/version.h>
 #endif
 
-#define DEG2RAD (M_PI / 180.0)	/**< Umrechnungsfaktor von Grad nach Bogenmass */
+#define M_PI_F ((float) M_PI)
+#define DEG2RAD (M_PI_F / 180.f)	/**< Umrechnungsfaktor von Grad nach Bogenmass */
 
 /**
  * Rundet float und gibt das Ergebnis als int zurueck.
@@ -50,7 +51,7 @@ extern "C" {
  * \return	roundf(x)
  */
 static inline int16_t iroundf(float x) {
-	if (x >= 0.0f) {
+	if (x >= 0.f) {
 		return (int16_t) (x + 0.5f);
 	}
 	return (int16_t) (x - 0.5f);
@@ -61,8 +62,8 @@ static inline int16_t iroundf(float x) {
  * \param degree Winkel [Grad]
  * \return Winkel [Bogenmass]
  */
-static inline double rad(double degree) {
-	return degree * (M_PI / 180.0);
+static inline float rad(float degree) {
+	return degree * (M_PI_F / 180.f);
 }
 
 /**
@@ -70,8 +71,8 @@ static inline double rad(double degree) {
  * \param radian Winkel [Bogenmass]
  * \return Winkel [Grad]
  */
-static inline double deg(double radian) {
-	return radian / (M_PI / 180.0);
+static inline float deg(float radian) {
+	return radian / (M_PI_F / 180.f);
 }
 
 #ifdef MCU

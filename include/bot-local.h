@@ -34,9 +34,9 @@
 #define BOT_DIAMETER				120	/**< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60	/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
-#define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades (Sim) [mm] */
-#define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades (Sim) [mm] */
-#define WHEEL_TO_WHEEL_DIAMETER 97.2		/**< Abstand der beiden Raeder (Sim) [mm] */
+#define WHEEL_DIAMETER			56.7f		/**< Durchmesser eines Rades (Sim) [mm] */
+#define WHEEL_PERIMETER			178.1283f	/**< Umfang eines Rades (Sim) [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER	97.2f		/**< Abstand der beiden Raeder (Sim) [mm] */
 #else // MCU
 /* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
 #define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades [mm] */
@@ -78,10 +78,10 @@
 #define MOUSE_FULL_TURN	1600		/**< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #endif // PC
 
-#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/**< Abstand eines Rades zur Mitte des Bots [mm] */
+#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.f)	/**< Abstand eines Rades zur Mitte des Bots [mm] */
 #define STUCK_DIFF		100		/**< ab welcher Differenz haben wir durchdrehende Raeder? */
-#define G_SPEED			0.5		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
-#define G_POS			0.5		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define G_SPEED			0.5f		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define G_POS			0.5f		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
 /* Servo-Parameter */
 #define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */

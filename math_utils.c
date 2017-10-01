@@ -20,7 +20,7 @@
 /**
  * \file 	math_utils.c
  * \brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	17.10.2007
  */
 #include "ct-Bot.h"
@@ -38,11 +38,15 @@
  * \return 		Berechnete Winkeldifferenz [Bogenmass]
  */
 float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff) {
-	const float newHeading = atan2((float) yDiff, (float) xDiff);
+	const float newHeading = atan2f((float) yDiff, (float) xDiff);
 
 	float toTurn = newHeading - rad(heading);
-	if (toTurn > M_PI) toTurn -= 2.0f * M_PI;
-	if (toTurn < -M_PI) toTurn += 2.0f * M_PI;
+	if (toTurn > M_PI_F) {
+		toTurn -= 2.f * M_PI_F;
+	}
+	if (toTurn < -M_PI_F) {
+		toTurn += 2.f * M_PI_F;
+	}
 
 	return toTurn;
 }
@@ -207,8 +211,8 @@ void test_calc_resection(void) {
 	position_t m = {764, 750};
 	position_t b = {865, 224};
 	position_t n;
-	float am = 29;
-	float mb = 35;
+	float am = 29.f;
+	float mb = 35.f;
 
 	for (a.x=5000; a.x<=7000; a.x+=500) {
 		for (a.y=5000; a.y<=7000; a.y+=500) {
@@ -235,9 +239,9 @@ void test_calc_resection(void) {
 										continue;
 									}
 
-									double n_a = deg(atan2(a.x - n.x, a.y - n.y));
-									double n_m = deg(atan2(m.x - n.x, m.y - n.y));
-									double n_b = deg(atan2(b.x - n.x, b.y - n.y));
+									float n_a = deg(atan2f(a.x - n.x, a.y - n.y));
+									float n_m = deg(atan2f(m.x - n.x, m.y - n.y));
+									float n_b = deg(atan2f(b.x - n.x, b.y - n.y));
 
 									am = n_m - n_a;
 									mb = n_b - n_m;
@@ -246,7 +250,7 @@ void test_calc_resection(void) {
 
 									if (abs(res.x - n.x) > 1 || abs(res.y - n.y) > 1) {
 										LOG_ERROR("A=(%d|%d) M=(%d|%d) B=(%d|%d)", a.x, a.y, m.x, m.y, b.x, b.y);
-										LOG_ERROR("alpha=%f beta=%f", am, mb);
+										LOG_ERROR("alpha=%f beta=%f", (double) am, (double) mb);
 										LOG_ERROR(" Abweichung vom gesuchten Standort:");
 										LOG_ERROR(" erwartet:(%d|%d) erhalten:(%d|%d)", n.x, n.y, res.x, res.y);
 									}

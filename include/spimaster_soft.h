@@ -53,7 +53,7 @@ protected:
 		/* Set MOSI and SCK output, MISO input */
 		uint8_t ddrb = DDRB;
 		ddrb |=  _BV(DDB5) | _BV(DDB7);
-		ddrb = (uint8_t) (ddrb & ~_BV(DDB6));
+		ddrb = static_cast<uint8_t>(ddrb & ~_BV(DDB6));
 		DDRB = ddrb;
 	}
 
@@ -209,11 +209,11 @@ protected:
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
 		while (this->receive() != 0xff) {
 			const auto now16(TIMER_GET_TICKCOUNT_16);
-			if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
+			if (now16 - starttime > timeout_ticks) {
 				return false;
 			}
 
-			if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+			if (now16 - yield_start_time > 1 * (1000U / TIMER_STEPS + 1)) {
 				os_exitCS();
 //				LOG_DEBUG("wait_not_busy(): yieldtime: %u %u", now16 - yield_start_time, timeout_ms);
 				os_enterCS();

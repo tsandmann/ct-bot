@@ -49,7 +49,7 @@ void system_time_isr(void) {
 #ifdef ARM_LINUX_BOARD
 	tickCount = tickCount + (uint_fast32_t) MS_TO_TICKS(tmp);
 #else
-	tickCount += MS_TO_TICKS((float) tmp);
+	tickCount += MS_TO_TICKS((double) tmp);
 #endif
 	last_simultime = simultime;
 }
