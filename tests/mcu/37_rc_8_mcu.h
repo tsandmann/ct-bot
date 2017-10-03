@@ -35,9 +35,9 @@
 
 /* Display-Funktionen */
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
+#define KEYPAD_AVAILABLE						/**< Keypad-Eingabe vorhanden? */
 #define DISPLAY_MCU_AVAILABLE				/**< lokales Display (an ATmega) vorhanden */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_REMOTE_AVAILABLE				/**< Sende LCD Anzeigedaten an den Simulator */
 #define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 /* Sensorauswertung */
@@ -47,12 +47,12 @@
 #define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 #define BPS_AVAILABLE						/**< Bot Positioning System */
 #define SRF10_AVAILABLE						/**< Ultraschallsensor SRF10 vorhanden */
-#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
+#define CMPS03_AVAILABLE						/**< Kompass CMPS03 vorhanden */
 
 /* Motoransteuerung */
-#define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE 				/**< Aktiviert die Motorregelung */
 #undef  ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
-#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+#define SPEED_LOG_AVAILABLE 					/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 /* Umgebungskarte */
 #define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
@@ -67,14 +67,14 @@
 #define SHIFT_AVAILABLE						/**< Shift Register */
 #define ENA_AVAILABLE						/**< Enable-Leitungen */
 #define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define IR_AVAILABLE							/**< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
 #define SP03_AVAILABLE						/**< Sprachmodul SP03 vorhanden */
 
 /* Sonstiges */
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+#define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 #undef BOOTLOADER_AVAILABLE					/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 #undef  BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
@@ -97,35 +97,35 @@
 /* Notfall-Verhalten */
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen */
 #define BEHAVIOUR_AVOID_COL_AVAILABLE 				/**< Hindernis ausweichen */
-#define BEHAVIOUR_HANG_ON_AVAILABLE 				/**< Erkennen des Haengenbleibens als Notfallverhalten */
+#define BEHAVIOUR_HANG_ON_AVAILABLE 					/**< Erkennen des Haengenbleibens als Notfallverhalten */
 
 /* Positionierungs-Verhalten */
 #define BEHAVIOUR_TURN_AVAILABLE 					/**< Dreh Verhalten */
 #define BEHAVIOUR_TURN_TEST_AVAILABLE	 			/**< Test des Dreh Verhaltens */
 #define BEHAVIOUR_GOTO_POS_AVAILABLE 				/**< Position anfahren */
 #define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 			/**< Abstand zu Hindernis einhalten */
-#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 			/**< Abfahren der auf dem Stack gesicherten Koordinaten */
+#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 				/**< Abfahren der auf dem Stack gesicherten Koordinaten */
 #define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
 
 /* Anwendungs-Verhalten */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE				/**< Linienfolger */
-#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
-#define BEHAVIOUR_PATHPLANING_AVAILABLE 			/**< Pfadplanungsverhalten */
+#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 		/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
+#define BEHAVIOUR_PATHPLANING_AVAILABLE 				/**< Pfadplanungsverhalten */
 #define BEHAVIOUR_OLYMPIC_AVAILABLE					/**< Olympiadenverhalten */
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
 #define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */
 #define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE 		/**< Transport-Pillar Verhalten */
 #define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 			/**< verfolge ein (bewegliches) Objekt */
-#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 			/**< Follow Wall Explorer Verhalten */
+#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 				/**< Follow Wall Explorer Verhalten */
 #define BEHAVIOUR_DRIVE_AREA_AVAILABLE 				/**< flaechendeckendes Fahren mit Map */
 #define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 		/**< Linienfolger ueber Kreuzungen zum Ziel */
-#undef  BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/**< Schach fuer den Bot */
+#undef  BEHAVIOUR_DRIVE_CHESS_AVAILABLE 				/**< Schach fuer den Bot */
 #define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
 #define BEHAVIOUR_UBASIC_AVAILABLE 					/**< uBasic Verhalten */
-#define BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
+#define BEHAVIOUR_ABL_AVAILABLE 						/**< ABL-Interpreter */
 #undef  BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
-#undef  BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
+#undef  BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 			/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 /* Kalibrierungs-Verhalten */
 #define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */
@@ -139,6 +139,6 @@
 #define BEHAVIOUR_DELAY_AVAILABLE 					/**< Delay-Routine als Verhalten */
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
 #define BEHAVIOUR_GET_UTILIZATION_AVAILABLE			/**< CPU-Auslastung eines Verhaltens messen */
-#define BEHAVIOUR_HW_TEST_AVAILABLE 				/**< Testverhalten (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
+#define BEHAVIOUR_HW_TEST_AVAILABLE 					/**< Testverhalten (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */
