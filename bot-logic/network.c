@@ -21,6 +21,7 @@
 
 /** \todo: fix warnings */
 #pragma GCC diagnostic warning "-Wdouble-promotion"
+#pragma GCC diagnostic warning "-Wsign-conversion"
 
 #include <assert.h>
 #include <stdarg.h>

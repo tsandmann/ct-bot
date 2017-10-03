@@ -44,7 +44,7 @@
  * \file 	bootloader.c
  * \brief 	AVR109 kompatibler Bootloader fuer den c't-Bot
  * \author	Martin Thomas (eversmith@heizung-thomas.de)
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	17.01.2007
  */
 
@@ -72,8 +72,11 @@
 #endif
 
 #if UART_BAUD != 115200
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wcpp"
 #warning "Set UART_BAUD to 115200 for bootloader"
-#endif
+#pragma GCC diagnostic pop
+#endif // BAUD
 
 /** Startup-Timeout */
 #define START_WAIT
