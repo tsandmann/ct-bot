@@ -170,7 +170,7 @@ uint8_t display_puts(const char * text) {
 	/* ARM-Linux Display */
 #if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
 	if (fp) {
-		fprintf(fp, text);
+		fputs(text, fp);
 //		fflush(fp);
 	}
 #endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
