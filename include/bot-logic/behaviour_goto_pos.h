@@ -20,7 +20,7 @@
 /**
  * \file 	behaviour_goto_pos.h
  * \brief 	Anfahren einer Position
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	15.10.2007
  */
 

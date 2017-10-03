@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	behaviour_transport_pillar.c
  * \brief 	Bot startet von einem Farb-Startpad und entdeckt die Welt, bis er auf ein anderes Farbpad stoesst.
  *
@@ -40,7 +40,7 @@
  * \date 	23.10.2007
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 #include "ui/available_screens.h"
@@ -108,11 +108,11 @@ static float startpad_y = 0;
 static float destpad_x = 0;
 static float destpad_y = 0;
 
-static float target_x = 0; /*!< Zwischenzielkoordinaten X des xy-Fahrverhaltens */
-static float target_y = 0; /*!< Zwischenzielkoordinaten Y des xy-Fahrverhaltens */
+static float target_x = 0; /**< Zwischenzielkoordinaten X des xy-Fahrverhaltens */
+static float target_y = 0; /**< Zwischenzielkoordinaten Y des xy-Fahrverhaltens */
 
 #ifdef USE_KOORDS
-/*!
+/**
  * Check, ob die Koordinate xy innerhalb eines Radius-Umkreises befindet; verwendet um das
  * Zielfahren mit gewisser Toleranz zu versehen
  * \param x x-Ordinate
@@ -171,7 +171,7 @@ static const int16_t PAD_MYCOL = 0;
 //kurze Wartezeit wenn bot auf Zielposition
 #define DELAY_ROLLTIME  800
 
-/*!
+/**
  * Liefert True wenn sich Bot auf Pad mit dem Wert value_pad befindet
  * \param value_pad   zu checkender Farbwert der Liniensensoren
  * \param value_bpad  zu checkender farbwert der Bordersensoren
@@ -202,7 +202,7 @@ static uint8_t check_pad(int16_t value_pad, int16_t value_bpad) {
 	return ret;
 }
 
-/*!
+/**
  * Abbruchbedingung des Explorers wenn bereits Start- und Ziel(pad)koordinaten festgelegt sind
  * und er sich immer von einer zur anderen bewegt; wurde die Zielkoord per Hand festgelegt, so
  * gibt es keine Padfelder rot/ gruen und es muss beendet werden wenn sich der bot diesen Koords
@@ -234,7 +234,7 @@ static uint8_t bot_on_pad(void) {
 	}
 }
 
-/*!
+/**
  * Start-Abbruchbedingung des Explorer Verhaltens zur Suche nach dem Ziel-Farbpad; dieses laeuft solange,
  * bis der Explorer ueber ein anderes bekanntes Farbfeld faehrt oder per Taste das Farbpad definiert wurde
  */
@@ -264,7 +264,7 @@ static uint8_t destpad_found(void) {
 	return False; // nicht auf einem Startpadfield
 }
 
-/*!
+/**
  * Endebedingung des Explorerverhaltens
  * \return True wenn Endebedingung erfuellt
  */
@@ -276,7 +276,7 @@ static uint8_t check_end_exploring(void) {
 	return(uint8_t) (startpad_col_2 == 0 ? destpad_found() : bot_on_pad());
 }
 
-/*!
+/**
  * Das Transport_Pillar-Verhalten
  * \param *data	Verhaltensdatensatz
  */
@@ -470,7 +470,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Ruft das Pillarverhalten auf
  * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
@@ -492,7 +492,7 @@ void bot_transport_pillar(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_transport_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
-/*!
+/**
  * Routine zum Setzen der Zielkoordinaten auf der Zielposition/ Zielpad
  * \param x X-World-Zielkoordinate
  * \param y Y-World-Zielkoordinate
@@ -521,7 +521,7 @@ void bot_set_destkoords(float x, float y) {
 }
 
 #ifdef DISPLAY_TRANSPORT_PILLAR
-/*!
+/**
  * Keyhandler fuer Transport_Pillar-Verhalten
  */
 static void trpill_disp_key_handler(void) {
@@ -541,16 +541,16 @@ static void trpill_disp_key_handler(void) {
 	} // switch
 } // Ende Keyhandler
 
-/*!
+/**
  * Display zum Start der Transport_Pillar-Routinen
  */
 void transportpillar_display(void) {
 	display_cursor(1, 1);
-	display_printf("S-Z %1d %1d %1d %1d", (int16_t)startpad_x, (int16_t)startpad_y, (int16_t)destpad_x, (int16_t)destpad_y);
+	display_printf("S: %+5d %+5d", (int16_t) startpad_x, (int16_t) startpad_y);
 	display_cursor(2, 1);
-	display_printf("akt.Ziel: %1d %1d", (int16_t)target_x, (int16_t)target_y);
+	display_printf("Z: %+5d %+5d", (int16_t) destpad_x, (int16_t) destpad_y);
 	display_cursor(3, 1);
-	display_printf("akt.Pos: %1d %1d", (int16_t)x_pos, (int16_t)y_pos);
+	display_printf("akt Z: %+5d %+5d", (int16_t) target_x, (int16_t) target_y);
 	display_cursor(4, 1);
 	display_puts("Go: 9/SetPos: 7");
 

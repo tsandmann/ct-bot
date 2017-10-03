@@ -371,7 +371,12 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			LOG_DEBUG("parameter_count=%u", parameter_count);
 			remote_call_data_t * parameter = (remote_call_data_t *) parameter_data;
 #ifdef PC
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
 			bot_remotecall_fl_dummy(data, parameter[0].fl32, parameter[1].fl32, parameter[2].fl32);
+#pragma GCC diagnostic pop
+
 			func(data, parameter[0], parameter[1], parameter[2]);
 #else // MCU
 			func(data, parameter[1], parameter[0]); // "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
@@ -678,21 +683,21 @@ void remotecall_display(void) {
 		display_puts(" gestartet.");
 		display_cursor(2, 1);
 		display_puts(" (");
-		uint8_t i;
-		for (i = 0; i < parameter_count; ++i) {
-			if (i != 0) {
+		uint8_t j;
+		for (j = 0; j < parameter_count; ++j) {
+			if (j != 0) {
 				display_puts(",");
 			}
 #ifdef MCU
 			int16_t * ptr = (int16_t *) parameter_data;
-			int16_t tmp = ptr[(sizeof(parameter_data) / sizeof(int16_t) - 1) - i];
-			if ((tmp & 0x80) && pgm_read_byte(&ptr_call->param_len[i]) == 1) {
+			int16_t tmp = ptr[(sizeof(parameter_data) / sizeof(int16_t) - 1) - j];
+			if ((tmp & 0x80) && pgm_read_byte(&ptr_call->param_len[j]) == 1) {
 				/* Vorzeichenerweiterung */
 				tmp = (int16_t) (tmp | (int16_t) 0xff00);
 			}
 #else // PC
 			remote_call_data_t * ptr = (remote_call_data_t * ) parameter_data;
-			const int16_t tmp = ptr[i].s16;
+			const int16_t tmp = ptr[j].s16;
 #endif // MCU
 			display_printf("%d", tmp);
 		}
@@ -705,8 +710,8 @@ void remotecall_display(void) {
 		display_puts("ok:Play | Korr:Stopp");
 		display_cursor(2, 1);
 		const char * p_info = ptr_call->param_info;
-		uint8_t i;
-		for (i = 0; i < keypad_param_index; ++i) {
+		uint8_t j;
+		for (j = 0; j < keypad_param_index; ++j) {
 			p_info = strchr_P(p_info, ',');
 			p_info += 2; // ", " weg
 		}
@@ -715,7 +720,7 @@ void remotecall_display(void) {
 		if (p_info_end != NULL) {
 			uint8_t len = (uint8_t) (p_info_end - p_info);
 			display_cursor(2, (int16_t) (len + 1));
-			for (i = len; i < DISPLAY_LENGTH; ++i) {
+			for (j = len; j < DISPLAY_LENGTH; ++j) {
 				display_puts(" ");
 			}
 		}

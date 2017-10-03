@@ -130,10 +130,10 @@ public:
 	}
 
 	/** Read a block into the cache.
-	 * \param[in] lbn Block to read.
+	 * \param[in] lbn_ Block to read.
 	 * \param[in] option mode for cached block.
 	 * \return Address of cached block. */
-	cache_t* read(uint32_t lbn, uint8_t option);
+	cache_t* read(uint32_t lbn_, uint8_t option);
 
 	/** Write current block if dirty.
 	 * \return true for success else false.
