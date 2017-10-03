@@ -14,7 +14,7 @@ for device in "atmega1284p" "atmega644p"; do
 		cp -v $filename $MYDIR/../bot-local-override.h
 		cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu)
 		echo "using $cores parallel jobs"
-		make DEVICE=MCU MCU=$device WERROR=1 WCONVERSION=0 -j$cores
+		make DEVICE=MCU MCU=$device WERROR=1 WCONVERSION=1 -j$cores
 		rc=$?
 		rm $MYDIR/../bot-local-override.h
 		if [[ $rc != 0 ]]; then
