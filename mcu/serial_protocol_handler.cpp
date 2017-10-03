@@ -117,7 +117,7 @@ int serial_protocol_handler() {
 		}
 #else
 		buffer = recv_buf;
-#endif
+#endif // ! TEST_SERIAL
 	} else if (static_cast<SerialProtocol::header_types>(head.type) == SerialProtocol::header_types::SEND) {
 		buffer = recv_buf;
 		if (head.tag == 1) {
@@ -170,16 +170,21 @@ static void wait_handler(const void*) {
 
 void bot_2_linux_init(void) {
 	LED_set(0);
+#ifdef DISPLAY_AVAILABLE
 	display_clear();
 	display_printf("*** Waiting for");
 	display_cursor(2, 1);
 	display_printf("*** connection...");
+#endif // DISPLAY_AVAILABLE
+
 	if (((PINB >> 2) & 1) == 1) { // error sensor
 		LED_on(LED_GRUEN | LED_ORANGE);
 	} else {
 		LED_on(LED_ROT);
+#ifdef DISPLAY_AVAILABLE
 		display_cursor(3, 1);
 		display_printf("Low battery!");
+#endif // DISPLAY_AVAILABLE
 	}
 
 	SerialConnectionAVR::set_wait_callback(wait_handler);
@@ -198,8 +203,10 @@ void bot_2_linux_listen(void) {
 	do {
 		processed = 0;
 		res = serial_protocol_handler();
+#ifdef DISPLAY_AVAILABLE
 //		display_clear();
 //		display_printf("SP: %4d", res);
+#endif // DISPLAY_AVAILABLE
 		if (res == 1) {
 #ifndef TEST_SERIAL
 			processed = process_recv_cmd();
