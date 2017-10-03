@@ -175,7 +175,7 @@ float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff);
  * \return 		Berechnete Winkeldifferenz [Grad]
  */
 static inline float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
-	return (float) deg(calc_angle_diff_rad(xDiff, yDiff));
+	return deg(calc_angle_diff_rad(xDiff, yDiff));
 }
 
 /**
