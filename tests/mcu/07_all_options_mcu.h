@@ -22,9 +22,9 @@
 
 /* Logging-Funktionen */
 #undef  LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
-#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
+#undef  LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
 #undef  LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
-#undef  LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
+#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
 #undef  LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 
