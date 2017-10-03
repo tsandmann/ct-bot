@@ -35,12 +35,11 @@
 #include "log.h"
 #include "tcp.h"
 #include <stdarg.h>
-#include <stdio.h>
 #include <string.h>
 
 uint8_t display_screen = 0; /**< zurzeit aktiver Displayscreen */
 
-static char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
+char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
 static int16_t last_row = 0;
 static int16_t last_column = 0;
 
@@ -72,10 +71,10 @@ void display_clear(void) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 
@@ -113,10 +112,10 @@ void display_cursor(int16_t row, int16_t column) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 
@@ -158,24 +157,6 @@ void display_init(void) {
 }
 
 /**
- * Schreibt einen String auf das Display.
- * \param *format	Format, wie beim printf
- * \param ... 		Variable Argumentenliste, wie beim printf
- * \return			Anzahl der geschriebenen Zeichen
- */
-uint8_t display_printf(const char * format, ...) {
-	va_list	args;
-
-	va_start(args, format);
-	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
-	va_end(args);
-
-	display_puts(display_buf);
-
-	return len;
-}
-
-/**
  * Gibt einen String auf dem Display aus
  * \param *text	Zeiger auf den auszugebenden String
  * \return		Anzahl der geschriebenen Zeichen
@@ -206,10 +187,10 @@ uint8_t display_puts(const char * text) {
 	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	if (tcp_client_connected()) {
-		cmd_func_t old_func = cmd_functions;
+		cmd_func_t old_func2 = cmd_functions;
 		set_bot_2_sim();
 		command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
-		cmd_functions = old_func;
+		cmd_functions = old_func2;
 	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 

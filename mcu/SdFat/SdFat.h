@@ -19,7 +19,7 @@
  */
 
 /**
- * \file
+ * \file mcu/SdFat/SdFat.h
  * \brief SdFat class
  */
 
@@ -42,37 +42,56 @@ extern "C" {
 #define SD_FAT_VERSION 20160719
 
 /**
- * \class SdFatBase
- * \brief Virtual base class for %SdFat library.
+ * \class SdFatInterface
+ * \brief Virtual base class interface for SdFat library.
  */
-class SdFatBase
+class SdFatInterface {
+protected:
+	virtual bool readBlock(uint32_t block, uint8_t* dst) = 0;
+	virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;
+	virtual bool readBlocks(uint32_t block, uint8_t* dst, size_t n) = 0;
+	virtual bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) = 0;
+};
+
+/**
+ * \class SdFatBase
+ * \brief Base class for SdFat library.
+ */
+class SdFatBase : public SdFatInterface
 #ifdef SDFAT_AVAILABLE
-	: public FatFileSystem
+	, public FatFileSystem
 #endif
 {
 private:
 	SdCard m_sdCard;
 
 public:
-	/** Initialize SD card and file system.
-	 * \param[in] spi SPI object for the card.
+	/**
+	 * Initialize SD card and file system.
 	 * \param[in] divisor SPI divisor.
 	 * \return true for success else false.
 	 */
 	bool begin(uint8_t divisor = 2) {
-		return m_sdCard.init(divisor)
+		const auto res(m_sdCard.init(divisor));
 #ifdef SDFAT_AVAILABLE
-			&& FatFileSystem::begin()
-#endif
-		;
+		if (res) {
+			const auto lock_set(m_sdCard.os_lock());
+			const auto res2(FatFileSystem::begin());
+			m_sdCard.os_unlock(lock_set);
+			return res2;
+		}
+#endif // SDFAT_AVAILABLE
+		return res;
 	}
+
 	/** \return Pointer to SD card object */
 	decltype(m_sdCard)* card() {
 		return &m_sdCard;
 	}
 
 #ifdef SDFAT_AVAILABLE
-	/** Diagnostic call to initialize FatFileSystem - use for
+	/**
+	 * Diagnostic call to initialize FatFileSystem - use for
 	 *  diagnostic purposes only.
 	 *  \return true for success else false.
 	 */
@@ -85,19 +104,24 @@ private:
 	uint8_t cardErrorCode() const {
 		return m_sdCard.get_error_code();
 	}
+
 	uint8_t cardErrorData() const {
 		return m_sdCard.get_error_data();
 	}
-	bool readBlock(uint32_t block, uint8_t* dst) {
+
+	virtual bool readBlock(uint32_t block, uint8_t* dst) override {
 		return m_sdCard.read_block(block, dst);
 	}
-	bool writeBlock(uint32_t block, const uint8_t* src) {
+
+	virtual bool writeBlock(uint32_t block, const uint8_t* src) override {
 		return m_sdCard.write_block(block, src);
 	}
-	bool readBlocks(uint32_t block, uint8_t* dst, size_t n) {
+
+	virtual bool readBlocks(uint32_t block, uint8_t* dst, size_t n) override {
 		return m_sdCard.read_block(block, dst, n);
 	}
-	bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) {
+
+	virtual bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) override {
 		return m_sdCard.write_block(block, src, n);
 	}
 };
@@ -108,7 +132,8 @@ private:
  */
 class SdFat : public SdFatBase {
 public:
-	/** Initialize SD card and file system.
+	/**
+	 * Initialize SD card and file system.
 	 * \param[in] divisor SPI divisor.
 	 * \return true for success else false.
 	 */

@@ -20,7 +20,7 @@
 /**
  * \file 	behaviour_abl.c
  * \brief 	Abstract Bot Language Interpreter
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	28.11.2007
  *
  *
@@ -111,9 +111,9 @@ char EEPROM abl_eeprom_data[512] = ABL_PROG; /**< 512 Byte grosser EEPROM-Bereic
 #include <string.h>
 
 
-//#define DEBUG_ABL				/**< Schalter um recht viel Debug-Code anzumachen */
+//#define DEBUG_ABL			/**< Schalter um recht viel Debug-Code anzumachen */
 #define ERROR_CHECKS			/**< aktiviert syntaxbezogene Fehlerpruefungen */
-//#define FLOAT_PARAMS			/**< aktiviert float als moeglichen Parametertyp (ca. +250 Bytes im Flash) */
+//#define FLOAT_PARAMS		/**< aktiviert float als moeglichen Parametertyp (ca. +250 Bytes im Flash) */
 
 #ifdef MCU
 #undef DEBUG_ABL
@@ -214,10 +214,11 @@ static int8_t init(void) {
 		LOG_ERROR("ABL: Keine Datei gesetzt");
 		return -1;
 	}
-	if (sdfat_open(last_file, &abl_file, 0x1)) {
+	if (sdfat_open(last_file, &abl_file, SDFAT_O_READ)) {
 		LOG_ERROR("ABL: Datei \"%s\" nicht vorhanden", last_file);
 		return -1;
 	}
+	sdfat_rewind(abl_file);
 	p_abl_i_data = abl_prg_data;
 #else // EEPROM
 	p_abl_i_data = abl_prg_data;
@@ -227,18 +228,24 @@ static int8_t init(void) {
 
 /**
  * Laedt einen Programmteil aus Datei / EEPROM
- * \param direction Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
+ * \param dir Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
  */
-static void load_program(int8_t direction) {
+static void load_program(int8_t dir) {
+#ifdef DEBUG_ABL
+	const int32_t pos = sdfat_tell(abl_file);
+	const int32_t size = sdfat_get_filesize(abl_file);
+	LOG_DEBUG("load_program(%d): file pos=%d size=%d", dir, pos, size);
+#endif // DEBUG_ABL
+
 #ifdef SDFAT_AVAILABLE
-	if (direction > 0) {
+	if (dir > 0) {
 		sdfat_seek(abl_file, SD_BLOCK_SIZE, SEEK_CUR);
-	} else if (direction < 0) {
+	} else if (dir < 0) {
 		sdfat_seek(abl_file, -SD_BLOCK_SIZE, SEEK_CUR);
 	}
 	const int16_t res = sdfat_read(abl_file, p_abl_i_data, SD_BLOCK_SIZE);
 	if (res != SD_BLOCK_SIZE) {
-		LOG_DEBUG("load_program(): sdfat_read() failed: %d", res);
+		LOG_ERROR("load_program(): sdfat_read() failed: %d", res);
 		p_abl_i_data = NULL;
 		return;
 	}
@@ -246,7 +253,7 @@ static void load_program(int8_t direction) {
 #else // EEPROM
 #if defined __AVR_ATmega1284P__ || defined PC
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
-	if (direction > 0 && addr < 3584 - 512) {
+	if (dir > 0 && addr < 3584 - 512) {
 		addr += 512;
 	} else if (direction < 0 && addr >= 512) {
 		addr -= 512;
@@ -255,7 +262,7 @@ static void load_program(int8_t direction) {
 	}
 #elif defined MCU_ATMEGA644X
 	/* on ATmega644(P) we have 1536 Bytes EEPROM for ABL */
-	if (direction > 0 && addr < 1536 - 512) {
+	if (dir > 0 && addr < 1536 - 512) {
 		addr += 512;
 	} else if (direction < 0 && addr >= 512) {
 		addr -= 512;
@@ -264,7 +271,7 @@ static void load_program(int8_t direction) {
 	}
 #else
 	/* on ATmega32 we have 512 Bytes EEPROM for ABL */
-	(void) direction;
+	(void) dir;
 	if (addr > 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
@@ -292,14 +299,14 @@ static remote_call_data_t parameter_parse(const char * start, const char * end) 
 	if (point != NULL && point <= end) {
 		param.fl32 = param.s16;
 		int16_t tmp = atoi(++point);
-		param.fl32 += (float) tmp / 10.0 / (float) (end - point);
+		param.fl32 += (float) tmp / 10.f / (float) (end - point);
 	}
 #endif // FLOAT_PARAMS
 
 	LOG_DEBUG("parsed parameter (d) is: %d", param.s16);
 	LOG_DEBUG("parsed parameter (x) is: 0x%x", param.u16);
 #if defined PC && defined FLOAT_PARAMS
-	LOG_DEBUG("parsed parameter (f) is: %f", param.fl32);
+	LOG_DEBUG("parsed parameter (f) is: %f", (double) param.fl32);
 #endif
 	return param;
 }
@@ -393,7 +400,7 @@ static instruction_t i_fetch(void) {
 	do {
 		ip++;
 	} while (ip <= &p_abl_i_data[510] /*&& ip >= p_abl_i_data*/ && (*ip == 0x20 || *ip == 0x9));
-	LOG_DEBUG("ip=0x%04x i_start=0x%04x", ip - p_abl_i_data, i_start - abl_i_cache);
+	LOG_DEBUG("ip=0x%04zx i_start=0x%04zx", (size_t) (ip - p_abl_i_data), (size_t) (i_start - abl_i_cache));
 	/* ip becomes start of this instruction */
 	const char * old_ip = ip;
 	uint8_t len;
@@ -441,7 +448,7 @@ static instruction_t i_fetch(void) {
 	/* copy instruction into i-cache */
 	memcpy(i_start, old_ip, len);
 	i_start[len] = '\0';
-	LOG_DEBUG("fetched instruction \"%s\" is %u bytes long", abl_i_cache, &i_start[len] - abl_i_cache);
+	LOG_DEBUG("fetched instruction \"%s\" is %zu bytes long", abl_i_cache, (uintptr_t) (&i_start[len] - abl_i_cache));
 	i_start = abl_i_cache; // correct start of i-cache (if we came here recursively)
 	/* decode this instruction */
 	return i_decode();
@@ -863,7 +870,7 @@ void abl_stack_trace(void) {
 	char * const ptr = strchr(abl_i_cache, ')');
 	if (ptr != NULL) {
 		*(ptr + 1) = '\0';
-		display_printf("%- 20s", abl_i_cache);
+		display_printf("%-20s", abl_i_cache);
 	}
 
 #ifdef RC5_AVAILABLE

@@ -42,8 +42,7 @@ public:
 	/**
 	 * Initialize an FatFileSystem object.
 	 * \param[in] part partition to initialize.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \return The value true is returned for success and the value false is returned for failure.
 	 */
 	bool begin(uint8_t part = 0) {
 		vwd()->close();

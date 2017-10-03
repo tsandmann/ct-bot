@@ -25,7 +25,7 @@
  * das geht aber zurzeit (noch) nicht, weil die Positionsbestimmung fuer kleine Distanzen etwas
  * zu ungenau ist (=> Encoderdatenauswertung checken!)
  *
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	21.04.2007
  */
 
@@ -53,12 +53,12 @@
 #endif
 
 static uint8_t last_toggle = 0;			/**< letztes Toggle-Bit der Distsensoren */
-static uint8_t step = 0;				/**< Abstand zum naechsten Messpunkt [cm] */
+static uint8_t step = 0;					/**< Abstand zum naechsten Messpunkt [cm] */
 static uint8_t count = 0;				/**< aktueller Messpunkt */
 static uint16_t distL = 0;				/**< Rohdaten des linken Sharps */
 static uint16_t distR = 0;				/**< Rohdaten des rechten Sharps */
 static uint16_t distance = 0;			/**< Entfernung zum Hindernis [cm] */
-static int8_t measure_count = 0;		/**< Counter fuer Sharp-Messungen */
+static int8_t measure_count = 0;			/**< Counter fuer Sharp-Messungen */
 static uint8_t userinput_done = 0;		/**< 1: User war schon fleissig, 0: warten */
 
 static distSens_t buffer[2][STEP_COUNT]; /**< Puffer des Kalibrierungsergebnisses im RAM */
@@ -66,7 +66,7 @@ static distSens_t buffer[2][STEP_COUNT]; /**< Puffer des Kalibrierungsergebnisse
 static void (* pNextJob)(void) = NULL;	/**< naechste Teilaufgabe */
 static void (* pLastJob)(void) = NULL;	/**< letzte Teilaufgabe (vor Stopp) */
 
-static void goto_next_pos(void);		/**< Stellt den Bot auf die naechste Position bzw. laesst den User das tun */
+static void goto_next_pos(void);			/**< Stellt den Bot auf die naechste Position bzw. laesst den User das tun */
 
 static const uint8_t max_steps = STEP_COUNT; /**< Anzahl der Entfernungen, an denen gemessen wird */
 
@@ -173,7 +173,7 @@ static void goto_next_pos(void) {
  * \param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * \see			bot_calibrate_sharps()
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in:
- * \see goto_next_pos(), @see measure_distance(), \see update_data()
+ * \see goto_next_pos(), \see measure_distance(), \see update_data()
  */
 void bot_calibrate_sharps_behaviour(Behaviour_t* data) {
 	if (pNextJob) {
@@ -277,7 +277,7 @@ void bot_calibrate_sharps_display(void) {
 	if (count != max_steps && pNextJob == wait_for_userinput_helper) {
 		display_printf("Sharp-Kalibr. %2u/%2u", count + 1 , max_steps);
 		display_cursor(2, 1);
-		display_printf("Bot bitte auf %2u cm", distance);
+		display_printf("Bot bitte auf %2u cm", distance & 0x3ff);
 		display_cursor(3, 1);
 		display_puts("stellen und mit");
 		display_cursor(4, 1);
@@ -294,7 +294,7 @@ void bot_calibrate_sharps_display(void) {
 #warning "Weder RC5_CODE_MUTE noch RC5_CODE_OK vorhanden, bot_calibrate_sharps() funktioniert nicht."
 #pragma GCC diagnostic pop
 			if (0) {
-#endif
+#endif // RC_CODE
 			userinput_done = 1;
 			RC5_Code = 0;
 		}

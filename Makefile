@@ -284,10 +284,13 @@ CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations
 CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += -Wshadow -Wformat=2
 ifeq ($(DEVICE),MCU)
 ifeq ($(WCONVERSION),1)
-	CFLAGS += -Wconversion
+CFLAGS += -Wconversion
 endif
+else
+CFLAGS += -Wdouble-promotion
 endif
 ifeq ($(BUILD_TARGET),arm-linux-gnueabihf)
 CFLAGS += -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
@@ -312,6 +315,10 @@ CXXFLAGS += -Wall -Wextra -Wmissing-declarations
 CXXFLAGS += -MMD
 CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CXXFLAGS += $(CXXSTANDARD)
+CXXFLAGS += -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast
+ifeq ($(DEVICE),PC)
+CXXFLAGS += -Wdouble-promotion
+endif
 ifdef SAVE_TEMPS
 CXXFLAGS += -save-temps -fverbose-asm -dA
 endif

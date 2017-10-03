@@ -21,26 +21,21 @@
  * \file 	mcu/mmc.c
  * \brief 	Routinen zum Auslesen/Schreiben einer MMC-Karte
  * \author 	Benjamin Benz (bbe@heise.de)
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	07.11.2006
  */
 
 
 /*
  * Die MMC kann auf zwei Weisen angesprochen werden:
- * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss
- * SPI_AVAILABLE in ct-Bot.h AUS sein.
- * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
- * muss die Verbindung zwischen PC5 und dem Display trennen (busy-Leitung wird vom Display-
- * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4
- * vom Radencoder zu trennen (der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss
- * jedoch immer als OUTPUT konfiguriert sein). Schaltet man nun in ct-Bot.h SPI_AVAILABLE
- * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
- * hoehere Transfer-Geschwindigkeit zur MMC (Faktor 2) und es sind ca. 430 Byte weniger im
- * Flash belegt.
- * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch
- * wenn man keine MMC-Unterstuetzung benoetigt, weil die Radencoder-Auswertung die
- * veraenderte Pin-Belegung immer beruecksichtigen muss.
+ * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss SPI_AVAILABLE in include/bot-local.h AUS (//) sein.
+ * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man muss die Verbindung zwischen PC5 und dem Display trennen
+ * (busy-Leitung wird vom Display-Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4 vom Radencoder zu trennen
+ * (der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss jedoch immer als OUTPUT konfiguriert sein). Schaltet man nun in
+ * include/bot-local.h SPI_AVAILABLE AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine hoehere
+ * Transfer-Geschwindigkeit zur MMC (Faktor 2).
+ * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch wenn man keine MMC-Unterstuetzung benoetigt,
+ * weil die Radencoder-Auswertung die veraenderte Pin-Belegung immer beruecksichtigen muss.
  */
 
 #ifdef MCU
@@ -192,6 +187,10 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 }
 
 #ifdef SDFAT_AVAILABLE
+/**
+ * Testet das SdFat Dateisystem auf einer SD-Karte
+ * \return 0, wenn alles ok; Fehlercode sonst
+ */
 static inline uint8_t sdfat_test(void) {
 	static uint8_t buffer[512];
 
@@ -203,7 +202,7 @@ static inline uint8_t sdfat_test(void) {
 
 	uint32_t start_ticks, end_ticks;
 	pFatFile file;
-	const uint8_t result = sdfat_open("test.bin", &file, 0x1 | 0x2 | 0x10 | 0x40);
+	const uint8_t result = sdfat_open("test.bin", &file, SDFAT_O_RDWR | SDFAT_O_TRUNC | SDFAT_O_CREAT);
 	if (result) {
 		LOG_ERROR("sdfat_test(): sdfat_open() failed: %d", result);
 		return result;
@@ -312,7 +311,7 @@ void mmc_display(void) {
 	display_clear();
 	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
 
-#if ! defined MMC_WRITE_TEST_AVAILABLE
+#if ! defined MMC_RAW_WRITE_TEST_AVAILABLE
 	cid_t cid;
 	sd_read_cid(&cid);
 	csd_t csd;
@@ -333,9 +332,9 @@ void mmc_display(void) {
 		display_printf("%02x", csd.raw[i]);
 	}
 #endif // ! SDFAT_AVAILABLE
-#endif // ! MMC_WRITE_TEST_AVAILABLE
+#endif // ! MMC_RAW_WRITE_TEST_AVAILABLE
 
-#if ! defined MMC_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
+#if ! defined MMC_RAW_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
 	if (card_size) {
 		const uint8_t result = sdfat_test();
 		if (result) {
@@ -343,9 +342,9 @@ void mmc_display(void) {
 			display_printf("sdfat_test()=%d :(", result);
 		}
 	}
-#endif // ! MMC_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
+#endif // ! MMC_RAW_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
 
-#ifdef MMC_WRITE_TEST_AVAILABLE
+#ifdef MMC_RAW_WRITE_TEST_AVAILABLE
 	static uint8_t buffer[512];
 	if (card_size) {
 		uint8_t result = mmc_test(buffer);
@@ -354,7 +353,7 @@ void mmc_display(void) {
 			display_printf("mmc_test()=%u :(", result);
 		}
 	}
-#endif // MMC_WRITE_TEST_AVAILABLE
+#endif // MMC_RAW_WRITE_TEST_AVAILABLE
 #endif // MMC_INFO_AVAILABLE
 }
 #endif // DISPLAY_MMC_INFO

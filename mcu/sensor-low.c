@@ -163,7 +163,7 @@ void bot_sens_init(void) {
 #ifdef SPEED_LOG_AVAILABLE
 #ifdef SDFAT_AVAILABLE
 	/* Datei oeffnen / anlegen */
-	if (sdfat_open(SPEEDLOG_FILE_NAME, &speedlog_file, 2 | 0x10 | 0x40) != 0) {
+	if (sdfat_open(SPEEDLOG_FILE_NAME, &speedlog_file, SDFAT_O_WRITE | SDFAT_O_TRUNC | SDFAT_O_CREAT) != 0) {
 		LOG_ERROR("sdfat_open(%s) failed", SPEEDLOG_FILE_NAME);
 	}
 
@@ -289,10 +289,10 @@ void bot_sens(void) {
 		uint8_t i;
 		for (i = 0; i < max; ++i) {
 #ifdef SPEED_CONTROL_AVAILABLE
-			LOG_RAW("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
+			LOG_RAW("%zu\t%u\t%u\t%u\t%zu\t%u\t%u\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
 				slog->data[0][i].targetRate, slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate);
 #else
-			LOG_RAW("%lu\t%u\t%lu\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc);
+			LOG_RAW("%zu\t%u\t%zu\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc);
 #endif // SPEED_CONTROL_AVAILABLE
 		}
 #endif // SDFAT_AVAILABLE
@@ -302,10 +302,10 @@ void bot_sens(void) {
 			for (i = 0; i < max; ++i) {
 				int16_t n = snprintf_P(slog_out_buffer, sizeof(slog_out_buffer) - 1,
 #ifdef SPEED_CONTROL_AVAILABLE
-					PSTR("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
+					PSTR("%zu\t%u\t%u\t%u\t%zu\t%u\t%u\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
 					slog->data[0][i].targetRate, slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate
 #else
-					PSTR("%lu\t%u\t%lu\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc
+					PSTR("%zu\t%u\t%zu\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc
 #endif // SPEED_CONTROL_AVAILABLE
 				);
 				if (sdfat_write(speedlog_file, slog_out_buffer, (uint16_t) n) != n) {
@@ -315,7 +315,7 @@ void bot_sens(void) {
 			slog_file_dirty = 1;
 		}
 #endif // SDFAT_AVAILABLE
-		const uint8_t sreg = SREG;
+		const uint8_t sreg2 = SREG;
 		__builtin_avr_cli();
 		uint8_t diff = (uint8_t) (slog_i[0] - max);
 		if (diff) {
@@ -328,7 +328,7 @@ void bot_sens(void) {
 			memmove(&slog->data[1][0], &slog->data[1][max], sizeof(slog_data_t) * diff);
 		}
 		slog_i[1] = diff;
-		SREG = sreg;
+		SREG = sreg2;
 	} else {
 		SREG = sreg;
 #ifdef SDFAT_AVAILABLE

@@ -35,6 +35,7 @@
 
 extern "C" {
 #include "timer.h"
+#include "os_thread.h"
 }
 
 /**
@@ -51,16 +52,16 @@ protected:
 		PORTB |= _BV(PB4); // SS high
 		uint8_t ddrb = DDRB;
 		ddrb |= _BV(DDB5) | _BV(DDB7) | _BV(DDB4);
-		ddrb = (uint8_t) (ddrb & ~_BV(DDB6));
+		ddrb = static_cast<uint8_t>(ddrb & ~_BV(DDB6));
 		DDRB = ddrb;
 	}
 
 	/**
 	 * Receives a byte from the SPI bus
 	 * \return The received data byte
-	 * \note Blocking until data is received, 0xff is sent out
+	 * \note 0xff is sent out
 	 */
-	uint8_t __attribute__((always_inline)) receive() const {
+	uint8_t ALWAYS_INLINE receive() const {
 		SPDR = 0xff;
 		while (! (SPSR & _BV(SPIF))) {}
 		return SPDR;
@@ -89,13 +90,13 @@ protected:
 				"sbiw %2,1		; 2 nop		\n\t"
 				"adiw %2,1		; 2 nop		\n\t"
 				"sbiw %2,1		; 2 nop		\n\t"
-				"nop			; 1 nop		\n\t"
+				"nop				; 1 nop		\n\t"
 				"in %0,%3		; tmp		\n\t" // load from SPDR
-				"out %3,__zero_reg__		\n\t" // start next SPI-transfer
+				"out %3,__zero_reg__			\n\t" // start next SPI-transfer
 				"st Z+,%0	 	; tmp		\n\t" // save to *buffer
 				"sbiw %A1,1		; i			\n\t" // i--
 				"sbrs %B1,7		; i			\n\t" // i == 0?
-				"rjmp 1b						"
+				"rjmp 1b							"
 				: "=&r" (tmp) /* %0 */
 				: "w" (i) /* %1 */, "z" (buf) /* %2 */, "M" (_SFR_IO_ADDR(SPDR)) /* %3 */
 				: "memory"
@@ -115,9 +116,8 @@ protected:
 	/**
 	 * Sends a byte to the SPI bus.
 	 * \param[in] data The data byte to send
-	 * \note Blocking until byte is sent out
 	 */
-	void __attribute__((always_inline)) send(uint8_t data) const {
+	void ALWAYS_INLINE send(uint8_t data) const {
 		SPDR = data;
 		while (!( SPSR & _BV(SPIF))) {}
 	}
@@ -136,7 +136,7 @@ protected:
 			uint8_t tmp;
 			__asm__ __volatile__(
 				"1:							\n\t"
-				"ld %0,Z	 	; tmp	2	\n\t" // load from *buffer
+				"ld %0,Z	 		; tmp	2	\n\t" // load from *buffer
 				"out %3,%0					\n\t" // start next SPI-transfer
 				"adiw %2,1 		; 2 nop		\n\t" // wait 17 cycles for SPI transfer to finish
 				"sbiw %2,1		; 2 nop		\n\t"
@@ -145,7 +145,7 @@ protected:
 				"adiw %2,1		; buf++ 2	\n\t"
 				"sbiw %A1,1		; i		2	\n\t"
 				"sbrs %B1,7		; i		1	\n\t"
-				"rjmp 1b		;		2		"
+				"rjmp 1b			;		2		"
 				: "=&r" (tmp) /* %0 */
 				: "w" (i) /* %1 */, "z" (buf) /* %2 */, "M" (_SFR_IO_ADDR(SPDR)) /* %3 */
 				: "memory"
@@ -175,32 +175,34 @@ protected:
 	 */
 	bool wait_not_busy(uint16_t timeout_ms) const {
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
+		auto yield_start_time(starttime);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
-		if (m_divisor == 2) {
+		if (m_divisor == 2 && 0 /* deactivated because of ToDo below */) {
 			bool ret;
 			__asm__ __volatile__(
-				"ldi %A0,0				; 	 		\n\t"
+/** \todo call os_exit_CS() in asm code */
+				"ldi %A0,0			; 	 		\n\t"
 				"ldi %B0,lo8(-1)		; 	 		\n\t"
-				"jmp 2f					; 			\n\t"
-				"1:						;			\n\t"
+				"jmp 2f				; 			\n\t"
+				"1:					;			\n\t"
 				"cli					; 1			\n\t" // wait 16 cycles for SPI reception to finish
 				"lds %B0,tickCount+1	; 2			\n\t"
-				"lds %A0,tickCount		; 2			\n\t"
+				"lds %A0,tickCount	; 2			\n\t"
 				"sei					; 1			\n\t"
 				"sub %A0,%A1			; 1			\n\t"
 				"sbc %B0,%B1			; 1			\n\t"
-				"cp %A2,%A0				; 1			\n\t"
+				"cp %A2,%A0			; 1			\n\t"
 				"cpc %B2,%B0			; 1			\n\t"
-				"ldi %A0,0				; 1  		\n\t"
+				"ldi %A0,0			; 1  		\n\t"
 				"brlo 3f				; 1			\n\t"
-				"ldi %B0,lo8(-1)		; 1 		\n\t"
-				"in %A0,%3				;			\n\t"
-				"2:						;			\n\t"
-				"out %3,%B0				;			\n\t"
+				"ldi %B0,lo8(-1)		; 1 			\n\t"
+				"in %A0,%3			;			\n\t"
+				"2:					;			\n\t"
+				"out %3,%B0			;			\n\t"
 				"cpi %A0,lo8(-1)		; ==0xff? 1 \n\t"
 				"brne 1b				; 2			\n\t"
-				"ldi %A0,1				;   		\n\t"
-				"3:						;   			"
+				"ldi %A0,1			;   			\n\t"
+				"3:					;   				"
 				: "=&w" (ret) /* %0 */
 				: "d" (starttime) /* %1 */, "d" (timeout_ticks) /* %2 */, "M" (_SFR_IO_ADDR(SPDR)) /* %3 */
 				:
@@ -208,8 +210,15 @@ protected:
 			return ret;
 		} else {
 			while (receive() != 0xff) {
-				if (static_cast<uint16_t>(TIMER_GET_TICKCOUNT_16 - starttime) > timeout_ticks) {
+				const auto now16(TIMER_GET_TICKCOUNT_16);
+				if (now16 - starttime > timeout_ticks) {
 					return false;
+				}
+
+				if (now16 - yield_start_time > 1 * (1000U / TIMER_STEPS + 1)) {
+					os_exitCS();
+					os_enterCS();
+					yield_start_time = now16;
 				}
 			}
 			return true;
@@ -232,9 +241,6 @@ protected:
 	}
 
 private:
-	void receive_sector(void* buf);
-	void send_sector(const void* buf);
-
 	uint8_t m_divisor;
 };
 

@@ -36,6 +36,18 @@ extern "C" {
 #endif
 
 #define SD_BLOCK_SIZE 512U /**< Size of a block in byte */
+#define SDFAT_O_READ 0x1 /** open() oflag for reading */
+#define SDFAT_O_RDONLY SDFAT_O_READ /** open() oflag - same as O_IN */
+#define SDFAT_O_WRITE 0x2 /** open() oflag for write */
+#define SDFAT_O_WRONLY SDFAT_O_WRITE /** open() oflag - same as O_WRITE */
+#define SDFAT_O_RDWR (SDFAT_O_READ | SDFAT_O_WRITE) /** open() oflag for reading and writing */
+#define SDFAT_O_ACCMODE (SDFAT_O_READ | SDFAT_O_WRITE) /** open() oflag mask for access modes */
+#define SDFAT_O_APPEND 0x04 /** The file offset shall be set to the end of the file prior to each write */
+#define SDFAT_O_SYNC 0x08 /** synchronous writes - call sync() after each write */
+#define SDFAT_O_TRUNC 0x10 /** truncate the file to zero length */
+#define SDFAT_O_AT_END 0x20 /** set the initial position at the end of the file */
+#define SDFAT_O_CREAT 0x40 /** create the file if nonexistent */
+#define SDFAT_O_EXCL 0x80 /** If O_CREAT and O_EXCL are set, open() shall fail if the file exists */
 
 #ifdef MCU
 #ifdef MMC_AVAILABLE
@@ -58,6 +70,7 @@ extern uint32_t (*sd_card_get_size)(pSdFat); /**< \see SdFatWrapper::get_size(),
 extern uint8_t (*sd_card_get_type)(pSdFat); /**< \see SdFatWrapper::get_type(), implements the C binding */
 extern uint8_t (*sd_card_get_error_code)(pSdFat); /**< \see SdFatWrapper::get_error_code(), implements the C binding */
 extern uint8_t (*sd_card_get_error_data)(pSdFat); /**< \see SdFatWrapper::get_error_data(), implements the C binding */
+extern uint32_t (*sd_card_get_last_error_time)(pSdFat); /**< \see SdFatWrapper::sd_card_get_last_error_time(), implements the C binding */
 extern uint8_t (*sd_card_read_csd)(pSdFat, csd_t*); /**< \see SdFatWrapper::read_csd(), implements the C binding */
 extern uint8_t (*sd_card_read_cid)(pSdFat, cid_t*); /**< \see SdFatWrapper::read_cid(), implements the C binding */
 
@@ -124,6 +137,14 @@ static inline uint8_t sd_get_error_data(void) {
 }
 
 /**
+ * Returns the timestamp of the last error
+ * \return Timestamp in ticks [176 us]
+ */
+static inline uint32_t sd_get_last_error_time(void) {
+	return sd_card_get_last_error_time(p_sd);
+}
+
+/**
  * Reads the SD card's CSD register
  * \param[out] p_csd Pointer to buffer for CSD content (buffer size >= 16 byte)
  * \return Error code: 1 for success, 0 for error of SdCard::read_csd()
@@ -134,7 +155,7 @@ static inline uint8_t sd_read_csd(csd_t* p_csd) {
 
 /**
  * Reads the SD card's CID register
- * \param[out] p_csd Pointer to buffer for CID content (buffer size >= 16 byte)
+ * \param[out] p_cid Pointer to buffer for CID content (buffer size >= 16 byte)
  * \return Error code: 1 for success, 0 for error of SdCard::read_csd()
  */
 static inline uint8_t sd_read_cid(cid_t* p_cid) {
@@ -150,8 +171,9 @@ typedef void* pFatFile;
 #endif // __cplusplus
 
 extern uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t); /**< \see FatFileWrapper::open(), implements the C binding */
-extern void (*sdfat_seek)(pFatFile, int32_t, uint8_t); /**< \see FatFileWrapper::seek(), implements the C binding */
+extern uint8_t (*sdfat_seek)(pFatFile, int32_t, uint8_t); /**< \see FatFileWrapper::seek(), implements the C binding */
 extern int32_t (*sdfat_tell)(pFatFile p_file); /**< \see FatFileWrapper::tell(), implements the C binding */
+extern uint32_t (*sdfat_get_first_block)(pFatFile p_file); /**< \see FatFileWrapper::get_first_block(), implements the C binding */
 extern void (*sdfat_rewind)(pFatFile); /**< \see FatFileWrapper::rewind(), implements the C binding */
 extern int16_t (*sdfat_read)(pFatFile, void*, uint16_t); /**< \see FatFileWrapper::read(), implements the C binding */
 extern int16_t (*sdfat_write)(pFatFile, const void*, uint16_t); /**< \see FatFileWrapper::write(), implements the C binding */
@@ -166,7 +188,7 @@ extern uint8_t (*sdfat_sync_vol)(pSdFat); /**< \see SdFatWrapper::sync_vol(), im
 
 /**
  * Simple test code for SD Fat library
- * @return 1 in case of success, 0 otherwise
+ * \return 1 in case of success, 0 otherwise
  */
 uint8_t sd_fat_test(void);
 
@@ -216,8 +238,9 @@ typedef void* pFatFile;
 typedef void* pSdFat;
 
 uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode); /**< \see FatFileWrapper::open() */
-void sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin); /**< \see FatFileWrapper::seek() */
+uint8_t sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin); /**< \see FatFileWrapper::seek() */
 int32_t sdfat_tell(pFatFile p_file); /**< \see FatFileWrapper::tell() */
+uint32_t sdfat_get_first_block(pFatFile p_file); /**< \see FatFileWrapper::get_first_block(), implements the C binding */
 void sdfat_rewind(pFatFile p_file); /**< \see FatFileWrapper::rewind() */
 int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length); /**< \see FatFileWrapper::read() */
 int16_t sdfat_write(pFatFile p_file, const void* buffer, uint16_t length); /**< \see FatFileWrapper::write() */
@@ -232,7 +255,7 @@ uint8_t sdfat_sync_vol(pSdFat p_instance); /**< \see SdFatWrapper::sync_vol() */
 
 /**
  * Simple test code for SD Fat library
- * @return 1 in case of success, 0 otherwise
+ * \return 1 in case of success, 0 otherwise
  */
 void sdfat_test(void);
 

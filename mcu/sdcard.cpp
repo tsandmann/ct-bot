@@ -34,7 +34,7 @@
 
 #ifdef MMC_AVAILABLE
 
-#define DEBUG_SDFAT
+//#define DEBUG_SDFAT
 
 #ifdef LOG_MMC_AVAILABLE
 #undef DEBUG_SDFAT
@@ -50,6 +50,7 @@
 #endif
 
 extern "C" {
+#include "os_thread.h"
 #include "led.h"
 #include "log.h"
 }
@@ -136,6 +137,8 @@ static uint16_t CRC_CCITT(const uint8_t* data, size_t n) {
 
 bool SdCard::init(uint8_t sckDivisor) {
 	m_errorCode = m_type = 0;
+	const bool lock_set(os_lock());
+
 	const auto t0(TIMER_GET_TICKCOUNT_16);
 
 	/* initialize SPI bus */
@@ -155,13 +158,13 @@ bool SdCard::init(uint8_t sckDivisor) {
 	/* command to go idle in SPI mode */
 	while (send_cmd(CMD0, 0) != R1_IDLE_STATE) {
 		if ((TIMER_GET_TICKCOUNT_16 - t0) > MS_TO_TICKS(SD_INIT_TIMEOUT)) {
-			return error_handler(SD_CARD_ERROR_CMD0);
+			return error_handler(SD_CARD_ERROR_CMD0, lock_set);
 		}
 	}
 
 #if USE_SD_CRC
 	if (send_cmd(CMD59, 1) != R1_IDLE_STATE) {
-		return error_handler(SD_CARD_ERROR_CMD59);
+		return error_handler(SD_CARD_ERROR_CMD59, lock_set);
 	}
 #endif // USE_SD_CRC
 
@@ -182,7 +185,7 @@ bool SdCard::init(uint8_t sckDivisor) {
 		}
 
 		if ((TIMER_GET_TICKCOUNT_16 - t0) > MS_TO_TICKS(SD_INIT_TIMEOUT)) {
-			return error_handler(SD_CARD_ERROR_CMD8);
+			return error_handler(SD_CARD_ERROR_CMD8, lock_set);
 		}
 	}
 
@@ -191,14 +194,14 @@ bool SdCard::init(uint8_t sckDivisor) {
 	while (send_app_cmd(ACMD41, arg) != R1_READY_STATE) {
 		/* check for timeout */
 		if ((TIMER_GET_TICKCOUNT_16 - t0) > MS_TO_TICKS(SD_INIT_TIMEOUT)) {
-			return error_handler(SD_CARD_ERROR_ACMD41);
+			return error_handler(SD_CARD_ERROR_ACMD41, lock_set);
 		}
 	}
 
 	/* if SD2 read OCR register to check for SDHC card */
 	if (get_type() == SD_CARD_TYPE_SD2) {
 		if (send_cmd(CMD58, 0)) {
-			return error_handler(SD_CARD_ERROR_CMD58);
+			return error_handler(SD_CARD_ERROR_CMD58, lock_set);
 		}
 
 		if ((SPI::receive() & 0xc0) == 0xc0) {
@@ -213,6 +216,8 @@ bool SdCard::init(uint8_t sckDivisor) {
 
 	cs_high();
 	SPI::set_speed(sckDivisor);
+
+	os_unlock(lock_set);
 
 	LOG_DEBUG("SdCard::init(): done");
 #ifdef LED_AVAILABLE
@@ -231,7 +236,7 @@ uint8_t SdCard::send_cmd(uint8_t cmd, uint32_t arg) {
 	/* wait if busy */
 	if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT) && cmd != CMD0) {
 		m_status = 0xff;
-		return ! error_handler(SD_CARD_ERROR_COMMAND);
+		return ! error_handler(SD_CARD_ERROR_COMMAND, false);
 	}
 
 	/* form message */
@@ -273,7 +278,7 @@ uint32_t SdCard::get_size() {
 		const uint8_t c_size_mult((csd.v1.c_size_mult_high << 1) | csd.v1.c_size_mult_low);
 		return static_cast<uint32_t>(c_size + 1) << (c_size_mult + read_bl_len - 7);
 	} else if (csd.v2.csd_ver == 1) {
-		const uint32_t c_size(0x10000L * csd.v2.c_size_high + 0x100L * (uint32_t) csd.v2.c_size_mid + csd.v2.c_size_low);
+		const uint32_t c_size(0x10000L * csd.v2.c_size_high + 0x100L * static_cast<uint32_t>(csd.v2.c_size_mid) + csd.v2.c_size_low);
 		return (c_size + 1) << 10;
 	} else {
 		set_error(SD_CARD_ERROR_BAD_CSD);
@@ -299,39 +304,47 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 		blockNumber <<= 9;
 	}
 
+	bool lock_set(os_lock());
+
 	if (send_cmd(CMD17, blockNumber)) {
-		return error_handler(SD_CARD_ERROR_CMD17);
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
+		return error_handler(SD_CARD_ERROR_CMD17, lock_set);
 	}
 	if (SdFatWrapper::debug_mode) {
 		SdFatWrapper::debug_times.cardcommand = timer_get_us8();
 	}
 
-	if (! read_data(dst, 512)) {
-		return error_handler(0);
+	if (! read_data(dst, 512, lock_set)) {
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
+		return error_handler(0, lock_set);
 	}
 	if (SdFatWrapper::debug_mode) {
 		SdFatWrapper::debug_times.readdata = timer_get_us8();
 	}
 
 	cs_high();
+	os_unlock(lock_set);
+
 	return true;
 }
 
 bool SdCard::read_block(uint32_t block, uint8_t* dst, size_t count) {
+	bool lock_set(os_lock());
+
 	if (! read_start(block)) {
-		return false;
+		return error_handler(0, lock_set);
 	}
 
 	for (uint16_t b(0); b < count; ++b, dst += 512) {
-		if (! read_data(dst, 512)) {
-			return false;
+		if (! read_data(dst, 512, lock_set)) {
+			return error_handler(0, lock_set);
 		}
 	}
 
-	return read_stop();
+	return read_stop(lock_set);
 }
 
-bool SdCard::read_data(uint8_t* dst, size_t count) {
+bool SdCard::read_data(uint8_t* dst, size_t count, bool& lock_set) {
 #ifdef LED_AVAILABLE
 	LED_on(LED_GRUEN);
 #endif // LED_AVAILABLE
@@ -341,16 +354,25 @@ bool SdCard::read_data(uint8_t* dst, size_t count) {
 #endif // USE_SD_CRC
 	/* wait for start block token */
 	const auto starttime(TIMER_GET_TICKCOUNT_16);
+	auto yield_start_time(starttime);
 	const uint16_t timeout_ticks(SD_READ_TIMEOUT * (1000U / TIMER_STEPS + 1));
 	while ((m_status = SPI::receive()) == 0xff) {
-		if (static_cast<uint16_t>(tickCount.u16 - starttime) > timeout_ticks) {
-			return error_handler(SD_CARD_ERROR_READ_TIMEOUT);
+		const auto now16(TIMER_GET_TICKCOUNT_16);
+		if (now16 - starttime > timeout_ticks) {
+			return error_handler(SD_CARD_ERROR_READ_TIMEOUT, lock_set);
+		}
+
+		if (now16 - yield_start_time > 1 * (1000U / TIMER_STEPS + 1)) {
+			os_exitCS();
+//			LOG_DEBUG("read_data(): yieldtime: %u", now16 - yield_start_time);
+			os_enterCS();
+			yield_start_time = now16;
 		}
 	}
 
 	if (m_status != DATA_START_BLOCK) {
-//		LOG_DEBUG("read_data(): m_status=%u", m_status);
-		return error_handler(SD_CARD_ERROR_READ);
+		LOG_DEBUG("read_data(): m_status=%u", m_status);
+		return error_handler(SD_CARD_ERROR_READ, lock_set);
 	}
 	if (SdFatWrapper::debug_mode) {
 		SdFatWrapper::debug_times.ready = timer_get_us8();
@@ -386,7 +408,7 @@ bool SdCard::read_data(uint8_t* dst, size_t count) {
 bool SdCard::read_ocr(uint32_t* ocr) {
 	uint8_t* p(reinterpret_cast<uint8_t*>(ocr));
 	if (send_cmd(CMD58, 0)) {
-		return error_handler(SD_CARD_ERROR_CMD58);
+		return error_handler(SD_CARD_ERROR_CMD58, false);
 	}
 
 	for (uint8_t i(0); i < 4; ++i) {
@@ -399,15 +421,20 @@ bool SdCard::read_ocr(uint32_t* ocr) {
 
 bool SdCard::read_register(uint8_t cmd, void* buf) {
 	uint8_t* dst(reinterpret_cast<uint8_t*>(buf));
+
+	bool lock_set(os_lock());
+
 	if (send_cmd(cmd, 0)) {
-		return error_handler(SD_CARD_ERROR_READ_REG);
+		return error_handler(SD_CARD_ERROR_READ_REG, lock_set);
 	}
 
-	if (! read_data(dst, 16)) {
-		return error_handler(0);
+	if (! read_data(dst, 16, lock_set)) {
+		return error_handler(0, lock_set);
 	}
 
 	cs_high();
+	os_unlock(lock_set);
+
 	return true;
 }
 
@@ -417,18 +444,20 @@ bool SdCard::read_start(uint32_t blockNumber) {
 	}
 
 	if (send_cmd(CMD18, blockNumber)) {
-		return error_handler(SD_CARD_ERROR_CMD18);
+		return error_handler(SD_CARD_ERROR_CMD18, false);
 	}
 
 	return true;
 }
 
-bool SdCard::read_stop() {
+bool SdCard::read_stop(const bool& lock_set) {
 	if (send_cmd(CMD12, 0)) {
-		return error_handler(SD_CARD_ERROR_CMD12);
+		return error_handler(SD_CARD_ERROR_CMD12, lock_set);
 	}
 
 	cs_high();
+	os_unlock(lock_set);
+
 	return true;
 }
 
@@ -438,52 +467,60 @@ bool SdCard::write_block(uint32_t blockNumber, const uint8_t* src, bool sync) {
 		blockNumber <<= 9;
 	}
 
+	bool lock_set(os_lock());
+
 	if (send_cmd(CMD24, blockNumber)) {
-		return error_handler(SD_CARD_ERROR_CMD24);
+		LOG_DEBUG("SdCard::write_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
+		return error_handler(SD_CARD_ERROR_CMD24, lock_set);
 	}
 
 	if (! write_data(DATA_START_BLOCK, src)) {
-		return error_handler(0);
+		return error_handler(0, lock_set);
 	}
 
 	if (sync) {
 		/* wait for flash programming to complete */
 		if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
-			return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT);
+			LOG_DEBUG("SdCard::write_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
+			return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT, lock_set);
 		}
 
 		/* response is r2 so get and check two bytes for nonzero */
 		if (send_cmd(CMD13, 0) || SPI::receive()) {
-			return error_handler(SD_CARD_ERROR_WRITE_PROGRAMMING);
+			return error_handler(SD_CARD_ERROR_WRITE_PROGRAMMING, lock_set);
 		}
 	}
 
 	cs_high();
+	os_unlock(lock_set);
+
 	return true;
 }
 
 bool SdCard::write_block(uint32_t block, const uint8_t* src, size_t count) {
+	bool lock_set(os_lock());
+
 	if (! write_start(block, count)) {
-		return error_handler(0);
+		return error_handler(0, lock_set);
 	}
 
 	for (size_t b(0); b < count; ++b, src += 512) {
 		if (! write_data(src)) {
-			return error_handler(0);
+			return error_handler(0, lock_set);
 		}
 	}
 
-	return write_stop();
+	return write_stop(lock_set);
 }
 
 bool SdCard::write_data(const uint8_t* src) {
 	/* wait for previous write to finish */
 	if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
-		return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT);
+		return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT, false);
 	}
 
 	if (! write_data(WRITE_MULTIPLE_TOKEN, src)) {
-		return error_handler(0);
+		return error_handler(0, false);
 	}
 
 	return true;
@@ -511,7 +548,7 @@ bool SdCard::write_data(uint8_t token, const uint8_t* src) {
 #endif // LED_AVAILABLE
 
 	if ((m_status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
-		return error_handler(SD_CARD_ERROR_WRITE);
+		return error_handler(SD_CARD_ERROR_WRITE, false);
 	}
 
 	return true;
@@ -520,7 +557,7 @@ bool SdCard::write_data(uint8_t token, const uint8_t* src) {
 bool SdCard::write_start(uint32_t blockNumber, uint32_t eraseCount) {
 	/* send pre-erase count */
 	if (send_app_cmd(ACMD23, eraseCount)) {
-		return error_handler(SD_CARD_ERROR_ACMD23);
+		return error_handler(SD_CARD_ERROR_ACMD23, false);
 	}
 
 	/* use address if not SDHC card */
@@ -529,34 +566,35 @@ bool SdCard::write_start(uint32_t blockNumber, uint32_t eraseCount) {
 	}
 
 	if (send_cmd(CMD25, blockNumber)) {
-		return error_handler(SD_CARD_ERROR_CMD25);
+		return error_handler(SD_CARD_ERROR_CMD25, false);
 	}
 
 	return true;
 }
 
-bool SdCard::write_stop() {
+bool SdCard::write_stop(const bool& lock_set) {
 	if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
-		return error_handler(SD_CARD_ERROR_STOP_TRAN);
+		return error_handler(SD_CARD_ERROR_STOP_TRAN, lock_set);
 	}
 
 	SPI::send(STOP_TRAN_TOKEN);
 	if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
-		return error_handler(SD_CARD_ERROR_STOP_TRAN);
+		return error_handler(SD_CARD_ERROR_STOP_TRAN, lock_set);
 	}
 
 	cs_high();
+	os_unlock(lock_set);
+
 	return true;
 }
 
-bool SdCard::error_handler(uint8_t error_code) {
-#ifdef LOG_AVAILABLE
+bool SdCard::error_handler(uint8_t error_code, const bool& lock_set) {
 	const auto now32(TIMER_GET_TICKCOUNT_32);
-#endif
+
 	if (error_code) {
 		set_error(error_code);
 		LOG_DEBUG("SdCard::error_handler(): error=0x%02x 0x%02x", error_code, m_status);
-		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32 & 0xffff));
+		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32));
 	}
 	cs_high();
 #ifdef LED_AVAILABLE
@@ -566,6 +604,9 @@ bool SdCard::error_handler(uint8_t error_code) {
 	leds |= LED_TUERKIS;
 	LED_set(leds);
 #endif // LED_AVAILABLE
+	m_last_error_time = now32;
+
+	os_unlock(lock_set);
 	return false;
 }
 
@@ -573,7 +614,6 @@ bool SdCard::error_handler(uint8_t error_code) {
 bool SdCard::erase(uint32_t firstBlock, uint32_t lastBlock) {
 	csd_t csd;
 	if (! read_csd(&csd)) {
-		cs_high();
 		return false;
 	}
 	/* check for single block erase */
@@ -583,7 +623,6 @@ bool SdCard::erase(uint32_t firstBlock, uint32_t lastBlock) {
 		if ((firstBlock & m) != 0 || ((lastBlock + 1) & m) != 0) {
 			/* error card can't erase specified area */
 			set_error(SD_CARD_ERROR_ERASE_SINGLE_BLOCK);
-			cs_high();
 			return false;
 		}
 	}

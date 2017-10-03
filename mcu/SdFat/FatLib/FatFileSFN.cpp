@@ -127,11 +127,11 @@ bool FatFile::open(FatFile* dirFile, fname_t* fname, uint8_t oflag) {
 
 	dirFile->rewind();
 	while (1) {
-		if (!emptyFound) {
+		if (! emptyFound) {
 			emptyIndex = index;
 		}
 		dir = dirFile->readDirCache(true);
-		if (!dir) {
+		if (! dir) {
 			if (dirFile->getError()) {
 				DBG_FAIL_MACRO;
 				return false;
@@ -159,7 +159,7 @@ bool FatFile::open(FatFile* dirFile, fname_t* fname, uint8_t oflag) {
 					return false;
 				}
 #endif  // SFN_OPEN_USES_CHKSUM
-				if (!openCachedEntry(dirFile, index, oflag, lfnOrd)) {
+				if (! openCachedEntry(dirFile, index, oflag, lfnOrd)) {
 					DBG_FAIL_MACRO;
 					return false;
 				}
@@ -181,7 +181,7 @@ bool FatFile::open(FatFile* dirFile, fname_t* fname, uint8_t oflag) {
 		index++;
 	}
 	// don't create unless O_CREAT and O_WRITE
-	if (!(oflag & O_CREAT) || !(oflag & O_WRITE)) {
+	if (! (oflag & O_CREAT) || ! (oflag & O_WRITE)) {
 		DBG_FAIL_MACRO;
 		return false;
 	}
@@ -193,12 +193,12 @@ bool FatFile::open(FatFile* dirFile, fname_t* fname, uint8_t oflag) {
 			return false;
 		}
 	}
-	if (!dirFile->seekSet(32UL * index)) {
+	if (! dirFile->seekSet(32UL * index)) {
 		DBG_FAIL_MACRO;
 		return false;
 	}
 	dir = dirFile->readDirCache();
-	if (!dir) {
+	if (! dir) {
 		DBG_FAIL_MACRO;
 		return false;
 	}

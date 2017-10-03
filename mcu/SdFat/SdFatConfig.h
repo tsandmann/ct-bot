@@ -19,7 +19,7 @@
  */
 
 /**
- * \file
+ * \file mcu/SdFat/SdFatConfig.h
  * \brief Configuration definitions. Adapted for ct-Bot framework.
  */
 #ifndef SdFatConfig_h
@@ -91,13 +91,18 @@ constexpr uint8_t const SPI_SCK_INIT_DIVISOR = 128;
  * for FAT table entries. This improves performance for large writes
  * that are not a multiple of 512 bytes.
  */
+#define USE_SEPARATE_FAT_CACHE 1
+
+#ifndef __AVR_ATmega1284P__
+#undef USE_SEPARATE_FAT_CACHE
 #define USE_SEPARATE_FAT_CACHE 0
+#endif // __AVR_ATmega1284P__
 
 /**
  * Set USE_MULTI_BLOCK_IO nonzero to use multi-block SD read/write.
  * Don't use mult-block read/write on small AVR boards.
  */
-#define USE_MULTI_BLOCK_IO 1
+#define USE_MULTI_BLOCK_IO 0
 
 
 #define SDCARD_ERASE_SUPPORT 1

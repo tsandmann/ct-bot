@@ -34,13 +34,14 @@
 
 extern "C" {
 #include "ct-Bot.h"
+#include "os_thread.h"
 #include "log.h"
 }
 
 /** Macro for debug. */
 #define DEBUG_MODE 0
 #if DEBUG_MODE
-#define DBG_FAIL_MACRO LOG_ERROR("%u", __LINE__);
+#define DBG_FAIL_MACRO LOG_ERROR("%s()", __FUNCTION__);
 #define DBG_PRINT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #define DBG_HALT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #else // DEBUG_MODE
@@ -124,15 +125,15 @@ public:
 	}
 
 	/** \return Logical block number for cached block. */
-	uint32_t lbn() {
+	uint32_t lbn() const {
 		return m_lbn;
 	}
 
 	/** Read a block into the cache.
-	 * \param[in] lbn Block to read.
+	 * \param[in] lbn_ Block to read.
 	 * \param[in] option mode for cached block.
 	 * \return Address of cached block. */
-	cache_t* read(uint32_t lbn, uint8_t option);
+	cache_t* read(uint32_t lbn_, uint8_t option);
 
 	/** Write current block if dirty.
 	 * \return true for success else false.
@@ -260,9 +261,17 @@ public:
 	bool wipe(print_t* pr = nullptr);
 #endif // SDFAT_PRINT_SUPPORT && SDFAT_WIPE_SUPPORT
 
+#if USE_SEPARATE_FAT_CACHE
+	bool cacheSync() {
+		return m_cache.sync() && m_fatCache.sync();
+	}
+#else
 	bool cacheSync() {
 		return m_cache.sync();
 	}
+#endif // USE_SEPARATE_FAT_CACHE
+
+	uint32_t clusterStartBlock(uint32_t cluster) const;
 
 	/** Debug access to FAT table
 	 *
@@ -315,12 +324,9 @@ private:
 #if USE_SEPARATE_FAT_CACHE
 	FatCache m_fatCache;
 	cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
-		return m_fatCache.read(blockNumber,	options | FatCache::CACHE_STATUS_MIRROR_FAT);
+		return m_fatCache.read(blockNumber, options | FatCache::CACHE_STATUS_MIRROR_FAT);
 	}
 
-	bool cacheSync() {
-		return m_cache.sync() && m_fatCache.sync();
-	}
 #else
 
 	cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
@@ -344,7 +350,7 @@ private:
 		return m_cache.block();
 	}
 
-	uint32_t cacheBlockNumber() {
+	uint32_t cacheBlockNumber() const {
 		return m_cache.lbn();
 	}
 
@@ -359,7 +365,6 @@ private:
 		return (position >> 9) & m_clusterBlockMask;
 	}
 
-	uint32_t clusterStartBlock(uint32_t cluster) const;
 	int8_t fatGet(uint32_t cluster, uint32_t* value);
 	bool fatPut(uint32_t cluster, uint32_t value);
 
@@ -373,6 +378,20 @@ private:
 		return cluster > m_lastCluster;
 	}
 
+	static bool os_lock() {
+		return os_enterCS_ret() == 0;
+	}
+
+	static bool os_unlock(const bool& lock_set) {
+		if (lock_set) {
+			os_exitCS();
+			return true;
+		}
+
+		return false;
+	}
+
+protected:
 	// Virtual block I/O functions.
 	virtual bool readBlock(uint32_t block, uint8_t* dst) = 0;
 	virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;

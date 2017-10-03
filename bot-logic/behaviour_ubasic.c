@@ -71,7 +71,7 @@ char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
 static uint8_t result_behav; /**< Puffer fuer Verhaltens-Ergebnis */
 
 /**
- * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * Laedt ein uBasic-Programm aus deiner SdFat-Datei
  * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */
@@ -98,7 +98,7 @@ static int8_t read_ubasic_src(const char keynum) {
 	fname[num] = keynum;
 	LOG_DEBUG("zu ladende Datei: \"%s\"", fname);
 
-	if (sdfat_open(fname, &ubasic_prog_file, 0x1)) {
+	if (sdfat_open(fname, &ubasic_prog_file, SDFAT_O_READ)) {
 		LOG_ERROR("Konnte Basic-Programm nicht laden:");
 		LOG_ERROR(" Datei \"%s\" nicht vorhanden", fname);
 		return -1;
@@ -263,7 +263,7 @@ void ubasic_display(void) {
  */
 void switch_proc(char* p_name) {
 	pFatFile new_prog;
-	if (sdfat_open(p_name, &new_prog, 0x1)) {
+	if (sdfat_open(p_name, &new_prog, SDFAT_O_READ)) {
 		tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
 		ubasic_break();
 	} else {

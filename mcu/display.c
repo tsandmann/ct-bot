@@ -30,7 +30,6 @@
 #ifdef DISPLAY_AVAILABLE
 
 #include <avr/io.h>
-#include <stdio.h>
 #include "command.h"
 
 #include "display.h"

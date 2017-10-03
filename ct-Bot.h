@@ -31,7 +31,7 @@
  * Ausgeschaltete Optionen belegen keinen Platz im Flash-Speicher des Controllers. ***/
 
 /* Logging-Funktionen */
-//#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
+//#define LOG_CTSIM_AVAILABLE				/**< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
 //#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
@@ -43,36 +43,36 @@
 
 /* Kommunikation */
 #define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
-//#define BOT_2_BOT_AVAILABLE					/**< Sollen Bots untereinander kommunizieren? */
+//#define BOT_2_BOT_AVAILABLE				/**< Sollen Bots untereinander kommunizieren? */
 #define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
 
 /* Display-Funktionen */
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
+#define KEYPAD_AVAILABLE						/**< Keypad-Eingabe vorhanden? */
 #define DISPLAY_MCU_AVAILABLE				/**< lokales Display (an ATmega) vorhanden */
 //#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
 //#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 
 /* Sensorauswertung */
-//#define MOUSE_AVAILABLE						/**< Maus Sensor */
+//#define MOUSE_AVAILABLE					/**< Maus Sensor */
 #define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 //#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 //#define BPS_AVAILABLE						/**< Bot Positioning System */
-//#define SRF10_AVAILABLE						/**< Ultraschallsensor SRF10 vorhanden */
+//#define SRF10_AVAILABLE					/**< Ultraschallsensor SRF10 vorhanden */
 //#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
 
 
 /* Motoransteuerung */
-#define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE 				/**< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 
 /* Umgebungskarte */
-#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_AVAILABLE						/**< Aktiviert die Kartographie; wenn aktiviert, funktioniert ui/available-screens.h/DISPLAY_MMC_INFO nicht */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
@@ -86,7 +86,7 @@
 #define SHIFT_AVAILABLE						/**< Shift Register */
 #define ENA_AVAILABLE						/**< Enable-Leitungen */
 #define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define IR_AVAILABLE							/**< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
 //#define SP03_AVAILABLE						/**< Sprachmodul SP03 vorhanden */
 
@@ -94,7 +94,7 @@
 /* Sonstiges */
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+#define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 //#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 #define BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */

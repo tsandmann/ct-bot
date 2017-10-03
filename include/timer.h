@@ -82,15 +82,11 @@ uint16_t timer_get_tickCount16(void);
  */
 uint32_t timer_get_tickCount32(void);
 
-static inline
-__attribute__((always_inline))
-uint16_t timer_get_us8(void) {
+static inline ALWAYS_INLINE uint16_t timer_get_us8(void) {
 	return (uint16_t) (tickCount * 176.);
 }
 
-static inline
-__attribute__((always_inline))
-uint32_t timer_get_us32(void) {
+static inline ALWAYS_INLINE uint32_t timer_get_us32(void) {
 	return (uint32_t) (tickCount * 176.);
 }
 
@@ -127,11 +123,7 @@ static inline void timer_reset(void) {
  * Liefert die unteren 16 Bit der Systemzeit zurueck
  * \return	Ticks [176 us]
  */
-static inline
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-uint16_t timer_get_tickcount_16(void) {
+static inline ALWAYS_INLINE uint16_t timer_get_tickcount_16(void) {
 	uint8_t sreg = SREG;
 	__builtin_avr_cli();
 	uint16_t ticks = tickCount.u16;
@@ -143,11 +135,7 @@ uint16_t timer_get_tickcount_16(void) {
  * Liefert die vollen 32 Bit der Systemzeit zurueck
  * \return	Ticks [176 us]
  */
-static inline
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-uint32_t timer_get_tickcount_32(void) {
+static inline ALWAYS_INLINE uint32_t timer_get_tickcount_32(void) {
 	uint8_t sreg = SREG;
 	__builtin_avr_cli();
 	uint32_t ticks = tickCount.u32;
@@ -155,9 +143,11 @@ uint32_t timer_get_tickcount_32(void) {
 	return ticks;
 }
 
-static inline
-__attribute__((always_inline))
-uint16_t timer_get_us8(void) {
+/**
+ * Liefert die aktuelle Systemzeit in us zurueck (16 Bit)
+ * \return Systemzeit [us] als 16 Bit Wert
+ */
+static inline ALWAYS_INLINE uint16_t timer_get_us8(void) {
 	uint8_t microticks1 = TCNT2;
 	uint8_t ticks = tickCount.u8;
 	uint8_t microticks2 = TCNT2;
@@ -169,9 +159,11 @@ uint16_t timer_get_us8(void) {
 	return (uint16_t) ticks * 176U + (uint16_t) microticks1 * 4U;
 }
 
-static inline
-__attribute__((always_inline))
-uint32_t timer_get_us32(void) {
+/**
+ * Liefert die aktuelle Systemzeit in us zurueck (32 Bit)
+ * \return Systemzeit [us] als 32 Bit Wert
+ */
+static inline ALWAYS_INLINE uint32_t timer_get_us32(void) {
 	uint8_t sreg = SREG;
 	uint32_t ticks = tickCount.u32;
 	uint8_t microticks = TCNT2;
@@ -205,13 +197,10 @@ uint32_t timer_get_us32(void) {
  * 		// wird alle 50 ms ausgefuehrt //
  * }
  */
-static inline uint8_t
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
-	uint32_t ticks = TIMER_GET_TICKCOUNT_32;
-	if ((uint32_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+static inline uint8_t ALWAYS_INLINE timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
+	const uint32_t ticks = TIMER_GET_TICKCOUNT_32;
+	const uint32_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -226,13 +215,10 @@ timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
  * \param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
  * \return				True oder False
  */
-static inline uint8_t
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
-	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-	if ((uint16_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+static inline uint8_t ALWAYS_INLINE timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
+	const uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+	const uint16_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -247,13 +233,10 @@ timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
  * \param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
  * \return				True oder False
  */
-static inline uint8_t
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-timer_ms_passed_8(uint8_t * old_ticks, uint16_t ms) {
-	uint8_t ticks = TIMER_GET_TICKCOUNT_8;
-	if ((uint8_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+static inline uint8_t ALWAYS_INLINE timer_ms_passed_8(uint8_t * old_ticks, uint16_t ms) {
+	const uint8_t ticks = TIMER_GET_TICKCOUNT_8;
+	const uint8_t diff = ticks - *old_ticks;
+	if (diff > MS_TO_TICKS(ms)) {
 		*old_ticks = ticks;
 		return True;
 	}
@@ -268,11 +251,7 @@ timer_ms_passed_8(uint8_t * old_ticks, uint16_t ms) {
  * \param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
  * \return				True oder False
  */
-static inline uint8_t
-#ifndef DOXYGEN
-__attribute__((always_inline))
-#endif
-timer_ms_passed(uint32_t * old_ticks, uint32_t ms) {
+static inline uint8_t ALWAYS_INLINE timer_ms_passed(uint32_t * old_ticks, uint32_t ms) {
 	return timer_ms_passed_32(old_ticks, ms);
 }
 

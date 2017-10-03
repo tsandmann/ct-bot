@@ -82,7 +82,7 @@ public:
 	 * \return 0 for SD V1, 1 for SD V2, or 3 for SDHC
 	 */
 	static uint8_t get_type(SdFat* p_instance) {
-		return p_instance->card()->get_type();
+		return p_instance ? p_instance->card()->get_type() : -1;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public:
 	 * \return Error code
 	 */
 	static uint8_t get_error_code(SdFat* p_instance) {
-		return p_instance->card()->get_error_code();
+		return p_instance ? p_instance->card()->get_error_code() : 0;
 	}
 
 	/**
@@ -100,7 +100,16 @@ public:
 	 * \return Last data byte received
 	 */
 	static uint8_t get_error_data(SdFat* p_instance) {
-		return p_instance->card()->get_error_data();
+		return p_instance ? p_instance->card()->get_error_data() : 0;
+	}
+
+	/**
+	 * Returns the timestamp of the last error
+	 * \param[in] p_instance Pointer to SdFat instance (for C bindings)
+	 * \return Timestamp in ticks [176 us]
+	 */
+	static uint32_t get_last_error_time(SdFat* p_instance) {
+		return p_instance ? p_instance->card()->get_last_error_time() : 0;
 	}
 
 	/**
@@ -114,7 +123,7 @@ public:
 	/**
 	 * Reads the SD card's CID register
 	 * \param[in] p_instance Pointer to SdFat instance (for C bindings)
-	 * \param[out] p_csd Pointer to buffer for CID content (buffer size >= 16 byte)
+	 * \param[out] p_cid Pointer to buffer for CID content (buffer size >= 16 byte)
 	 * \return Error code: 1 for success, 0 for error of SdCard::read_csd()
 	 */
 	static uint8_t read_cid(SdFat* p_instance, cid_t* p_cid);
@@ -168,6 +177,9 @@ protected:
  * Wrapper class for FatFile class of SdFat library to support C language bindings
  */
 class FatFileWrapper : protected FatFile {
+protected:
+	static volatile bool busy; /**< Flag to indicate that a file operation is in progress */
+
 public:
 	/**
 	 * Opens a file in the current working directory
@@ -191,6 +203,15 @@ public:
 	}
 
 	/**
+	 * Returns the first block of a file on the underlying device
+	 * \param[in] p_instance Pointer to FatFile instance returned by FatFileWrapper::open() (for C bindings)
+	 * \return Block of file
+	 */
+	static uint32_t get_first_block(FatFile* p_instance) {
+		return p_instance->volume()->clusterStartBlock(p_instance->firstCluster());
+	}
+
+	/**
 	 * Sets a file's position
 	 * \param[in] p_instance Pointer to FatFile instance returned by FatFileWrapper::open() (for C bindings)
 	 * \param[in] offset Offset of new position
@@ -205,7 +226,7 @@ public:
      *          A negative offset places the access position before the end of file, and
      *          a positive offset places the access position after the end of file.
 	 */
-	static void seek(FatFile* p_instance, int32_t offset, uint8_t origin);
+	static uint8_t seek(FatFile* p_instance, int32_t offset, uint8_t origin);
 
 	/**
 	 * Sets the file's current position to zero

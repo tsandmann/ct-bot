@@ -29,6 +29,9 @@
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
 
+/** \todo: fix warnings */
+#pragma GCC diagnostic warning "-Wdouble-promotion"
+
 #include <stdlib.h>
 #include <timer.h>
 #ifdef PC
@@ -186,8 +189,8 @@ void test_net(float *sectorarray) {
  *	1 0 Links drehen
  *	1 1 Vorwaerts
  *
- * \param *out0        Outputneuron 0
  * \param *out1        Outputneuron 1
+ * \param *out2        Outputneuron 2
  * */
 void net_get_test_out(uint8_t *out1, uint8_t *out2) {
 	// die berechneten IST-Outputwerte digitalisieren auf 0 oder 1
