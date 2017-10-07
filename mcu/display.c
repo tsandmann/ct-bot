@@ -30,7 +30,6 @@
 #ifdef DISPLAY_AVAILABLE
 
 #include <avr/io.h>
-#include <stdio.h>
 #include "command.h"
 
 #include "display.h"
@@ -145,7 +144,7 @@ void display_clear(void) {
 #else
 	command_write_to(CMD_AKT_LCD, SUB_LCD_CLEAR, CMD_IGNORE_ADDR, 0, 0, 0);
 #endif // BOT_2_RPI_AVAILABLE
-#endif
+#endif // DISPLAY_REMOTE_AVAILABLE
 }
 
 /**
@@ -179,7 +178,7 @@ void display_cursor(int16_t row, int16_t column) {
 #ifdef DISPLAY_REMOTE_AVAILABLE
 	remote_column = c;
 	remote_row = r;
-#endif
+#endif // DISPLAY_REMOTE_AVAILABLE
 
 	(void) r;
 	(void) c;

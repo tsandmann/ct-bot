@@ -936,17 +936,17 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			// in Testparcours2 bleibt bot oft an unterer rechter Ecke haengen, weil der Weg als Frei erkannt wird obwohl auch laut
 			// Map schon die Ecke Grau-Schwarz eingezeichnet ist (bei nicht uebergebener Karte mit on_the_fly Hindernis-Aktualisierung)
 			// aber selbst mit uebergebener clean Karte aus sim-Export bleibt er haengen, da wap_way_free Weg frei liefert
-			uint8_t free1 = map_way_free(x_pos, y_pos, nextline.point1.x, nextline.point1.y, MAP_WAY_FREE_MARGIN);
-			LOG_DEBUG("kurze Wegefreiheit zu P1: %1d, l/r: %1d %1d, Zielabstand %1d", free1, sensDistL, sensDistR, dist_to_point);
+			uint8_t free1_ = map_way_free(x_pos, y_pos, nextline.point1.x, nextline.point1.y, MAP_WAY_FREE_MARGIN);
+			LOG_DEBUG("kurze Wegefreiheit zu P1: %1d, l/r: %1d %1d, Zielabstand %1d", free1_, sensDistL, sensDistR, dist_to_point);
 
 			// Falls Abstand des Zielpunktes kleiner als ein gesehener Hindernisabstand ist, dann auch nicht anfahren
-			if (free1 && (dist_to_point >= sensDistL + 20 || dist_to_point
+			if (free1_ && (dist_to_point >= sensDistL + 20 || dist_to_point
 					>= sensDistR + 20)) {
 				LOG_DEBUG("Abstand zu fahren groesser als Hindabstand l/r: %1d %1d", sensDistL, sensDistR);
 				free1 = False;
 			}
 
-			if (! free1) { // Visualisierung der Nicht Anfahrbarkeit
+			if (! free1_) { // Visualisierung der Nicht Anfahrbarkeit
 #if defined MAP_2_SIM_AVAILABLE && defined DEBUG_BEHAVIOUR_AREA  // zur Visualisierung Weg zu P1 Rot einfaerben
 				position_t akt_pos;
 				akt_pos.x = x_pos;
@@ -956,7 +956,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			}
 
 			// evtl erst den Punkt 2 anfahren wenn P1 nicht anfahrbar war, d.h. Punkte vertauschen
-			if (!free1 /*&& (get_dist(nextline.point1.x, nextline.point1.y,nextline.point2.x, nextline.point2.y)>300*300)*/) {
+			if (! free1_ /*&& (get_dist(nextline.point1.x, nextline.point1.y,nextline.point2.x, nextline.point2.y)>300*300)*/) {
 				uint8_t free2 = map_way_free(x_pos, y_pos, nextline.point2.x,
 						nextline.point2.y, MAP_WAY_FREE_MARGIN);
 				LOG_DEBUG("Wegfreiheit P2: %1d, Abstand P1: %1.0f P2: %1.0f", free2, sqrtf(get_dist(x_pos, y_pos, nextline.point1.x, nextline.point1.y)),
@@ -971,7 +971,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			}
 
 			// ist der Weg voraus nicht frei laut Map in geringerem Abstand, dann gar nicht erst fahren und verwerfen
-			if (! free1) {
+			if (! free1_) {
 				track_state = GET_LINE_FROM_STACK;
 				LOG_DEBUG("P1 nicht anfahrbar %1d %1d", nextline.point1.x, nextline.point1.y);
 

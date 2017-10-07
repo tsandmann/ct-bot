@@ -76,9 +76,9 @@ public:
 #ifdef SDFAT_AVAILABLE
 		if (res) {
 			const auto lock_set(m_sdCard.os_lock());
-			const auto res(FatFileSystem::begin());
+			const auto res2(FatFileSystem::begin());
 			m_sdCard.os_unlock(lock_set);
-			return res;
+			return res2;
 		}
 #endif // SDFAT_AVAILABLE
 		return res;

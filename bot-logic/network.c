@@ -19,6 +19,10 @@
 
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
 
+/** \todo: fix warnings */
+#pragma GCC diagnostic warning "-Wdouble-promotion"
+#pragma GCC diagnostic warning "-Wsign-conversion"
+
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -480,7 +484,7 @@ net_set_bias (network_t *net, int l, int nu, float weight)
 
 #ifdef PC
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic warning "-Wunused-result"
 /****************************************
  * File I/O
  ****************************************/

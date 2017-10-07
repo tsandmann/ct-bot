@@ -20,7 +20,7 @@
 /*! 
  * @file 	behaviour_turn_test.h
  * @brief 	Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler
- * @author	Timo Sandmann (mail@timosandmann.de)
+ * @author	Timo Sandmann
  * @date 	08.07.2007
  */
 

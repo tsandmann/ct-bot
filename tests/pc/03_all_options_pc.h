@@ -24,7 +24,7 @@
 #define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 #undef  LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
 #undef  LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
-#undef  USE_MINILOG							/**< schaltet auf schlankes Logging um */
+#define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 #define CREATE_TRACEFILE_AVAILABLE			/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 /* Kommunikation */
@@ -34,8 +34,8 @@
 
 /* Display-Funktionen */
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+#define KEYPAD_AVAILABLE						/**< Keypad-Eingabe vorhanden? */
+#define DISPLAY_REMOTE_AVAILABLE				/**< Sende LCD Anzeigedaten an den Simulator */
 #define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 /* Sensorauswertung */
@@ -57,13 +57,13 @@
 #define SHIFT_AVAILABLE						/**< Shift Register */
 #define ENA_AVAILABLE						/**< Enable-Leitungen */
 #define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define IR_AVAILABLE							/**< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
 
 /* Sonstiges */
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+#define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */

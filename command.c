@@ -1000,11 +1000,11 @@ int8_t command_evaluate(void) {
 			} high;
 			high.s16 = received_command.data_r;
 			const uint32_t tick = (uint32_t) low.u16 | ((uint32_t) high.u16 << 16);
-			LOG_DEBUG("time_diff=%lu us", (uint32_t) (tick - last) * 176);
+			LOG_DEBUG("time_diff=%zu us", (uint32_t) (tick - last) * 176);
 			const uint32_t diff = (tick - last) * 176;
 			if (diff > BOT_2_RPI_TIMEOUT && last != 0) {
-				LOG_ERROR(" diff=%lu", diff);
-				LOG_DEBUG(" tick=%lu\tlast=%lu", tick, last);
+				LOG_ERROR(" diff=%zu", diff);
+				LOG_DEBUG(" tick=%zu\tlast=%zu", tick, last);
 				LOG_DEBUG(" received_command.data_l=%d\treceived_command.data_r=%d", received_command.data_l, received_command.data_r);
 			}
 			last = tick;
@@ -1012,7 +1012,7 @@ int8_t command_evaluate(void) {
 			sum += diff;
 			cnt++;
 			if (cnt == 1024) {
-				LOG_INFO("time_diff avg=%lu us", sum / cnt);
+				LOG_INFO("time_diff avg=%zu us", sum / cnt);
 				fflush(stdout);
 				cnt = 0;
 				sum = 0;
@@ -1055,14 +1055,12 @@ int8_t command_evaluate(void) {
 #ifdef MCU
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #endif
-#ifdef ARM_LINUX_BOARD
-#ifdef DEBUG_COMMAND
+#if defined ARM_LINUX_BOARD && defined DEBUG_COMMAND
 				char debug_buf[21];
 				memset(debug_buf, 0, sizeof(debug_buf));
 				struct timeval start, now;
 				gettimeofday(&start, NULL);
-#endif // DEBUG_COMMAND
-#endif // ARM_LINUX_BOARD
+#endif // ARM_LINUX_BOARD && DEBUG_COMMAND
 				uint8_t i;
 				for (i = 0; i < received_command.payload; ++i) {
 #ifdef MCU
@@ -1080,12 +1078,12 @@ int8_t command_evaluate(void) {
 					}
 					if (i < 20 && screen_functions[display_screen] == display_func) {
 						display_data(buffer);
-#ifdef DEBUG_COMMAND
+#if defined ARM_LINUX_BOARD && defined DEBUG_COMMAND
 						debug_buf[i] = buffer;
 #endif
 					}
 				}
-#ifdef DEBUG_COMMAND
+#if defined ARM_LINUX_BOARD && defined DEBUG_COMMAND
 				gettimeofday(&now, NULL);
 				const uint64_t t = (now.tv_sec - start.tv_sec) * 1000000UL + now.tv_usec - start.tv_usec;
 				LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: receive took %llu us", t);
@@ -1093,7 +1091,7 @@ int8_t command_evaluate(void) {
 					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_data() %u bytes from ATmega", i);
 					LOG_DEBUG(" \"%s\"", debug_buf);
 				}
-#endif // DEBUG_COMMAND
+#endif // ARM_LINUX_BOARD && DEBUG_COMMAND
 				break;
 			}
 			} // switch subcommand
@@ -1103,17 +1101,17 @@ int8_t command_evaluate(void) {
 
 #ifdef ARM_LINUX_BOARD
 		case CMD_LOG: {
-			char log_buffer[received_command.payload + 1];
-			log_buffer[received_command.payload] = 0;
+			char log_buf[received_command.payload + 1];
+			log_buf[received_command.payload] = 0;
 			uint8_t i, n;
 			for (i = 0; i < received_command.payload; ++i) {
-				if ((n = cmd_functions.read(&log_buffer[i], 1)) != 1) {
+				if ((n = cmd_functions.read(&log_buf[i], 1)) != 1) {
 					LOG_ERROR("command_evaluate(): CMD_LOG: error while receiving log data, n=%d i=%u", n, i);
 					LOG_ERROR(" uart_data_available()=%d", uart_data_available());
 					break;
 				}
 			}
-			LOG_RAW("MCU - %s", log_buffer);
+			LOG_RAW("MCU - %s", log_buf);
 			break;
 		}
 #endif // ARM_LINUX_BOARD
@@ -1127,9 +1125,9 @@ int8_t command_evaluate(void) {
 			servo_set(SERVO2, (uint8_t) received_command.data_r);
 			break;
 		case CMD_AKT_LED: {
-				uint8_t led = LED_get() & LED_TUERKIS;
-				led = (uint8_t) (led | (received_command.data_l & ~LED_TUERKIS)); // LED_TUERKIS wird fuer Fehleranzeige auf ATmega-Seite verwendet
-				LED_set(led);
+				uint8_t led_ = LED_get() & LED_TUERKIS;
+				led_ = (uint8_t) (led_ | (received_command.data_l & ~LED_TUERKIS)); // LED_TUERKIS wird fuer Fehleranzeige auf ATmega-Seite verwendet
+				LED_set(led_);
 				break;
 		}
 		case CMD_SETTINGS:

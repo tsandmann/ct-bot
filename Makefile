@@ -60,8 +60,9 @@ MSG_DEVICE = Target device is $(DEVICE)
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
 	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/cppsupport.cpp mcu/delay.c \
-	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c \
-	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c mcu/shift.c \
+	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/ll_command.cpp \
+	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c \
+	mcu/serial_connection_avr.cpp mcu/serial_protocol_handler.cpp mcu/serial_protocol.cpp mcu/shift.c \
 	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c \
 	mcu/SdFat/Print.cpp mcu/SdFat/FatLib/FatFile.cpp mcu/SdFat/FatLib/FatFileLFN.cpp mcu/SdFat/FatLib/FatFilePrint.cpp mcu/SdFat/FatLib/FatFileSFN.cpp \
 	mcu/SdFat/FatLib/FatVolume.cpp mcu/SdFat/FatLib/FmtNumber.cpp
@@ -129,7 +130,7 @@ MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include ./include/bot-logic ./mcu/SdFat
+EXTRAINCDIRS = . ./include ./include/bot-logic ./contrib/c++/include ./mcu/SdFat
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
@@ -167,11 +168,12 @@ ifeq ($(DEVICE),MCU)
 	# Linker flags.
 	#  -Wl,...:     tell GCC to pass this to linker.
 	LDFLAGS = -mmcu=$(MCU)
+	LDFLAGS += -L./contrib/c++
 	LDFLAGS += -Wl,--section-start=.bootloader=0x1F800
 	LDFLAGS += -Wl,--whole-archive -Wl,--gc-sections
 	
 	LIBS = -Wl,--no-whole-archive 
-	LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+	LIBS += $(PRINTF_LIB) $(SCANF_LIB) -lstdc++ $(MATH_LIB)
 	
 	
 	# Programming support using avrdude. Settings and variables.
@@ -282,10 +284,13 @@ CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations
 CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += -Wshadow -Wformat=2
 ifeq ($(DEVICE),MCU)
 ifeq ($(WCONVERSION),1)
-	CFLAGS += -Wconversion
+CFLAGS += -Wconversion
 endif
+else
+CFLAGS += -Wdouble-promotion
 endif
 ifeq ($(BUILD_TARGET),arm-linux-gnueabihf)
 CFLAGS += -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
@@ -310,6 +315,10 @@ CXXFLAGS += -Wall -Wextra -Wmissing-declarations
 CXXFLAGS += -MMD
 CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CXXFLAGS += $(CXXSTANDARD)
+CXXFLAGS += -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast
+ifeq ($(DEVICE),PC)
+CXXFLAGS += -Wdouble-promotion
+endif
 ifdef SAVE_TEMPS
 CXXFLAGS += -save-temps -fverbose-asm -dA
 endif
