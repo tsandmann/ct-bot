@@ -48,7 +48,7 @@ public:
  */
 class ClientServerEOF : public std::runtime_error {
 public:
-	ClientServerEOF(const std::string& what) : std::runtime_error(what) {}
+	ClientServerEOF(const std::string& what_msg) : std::runtime_error(what_msg) {}
 };
 
 } /* namespace tsio */
