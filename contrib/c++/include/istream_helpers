@@ -126,12 +126,12 @@ namespace std{
 			}else{
 				temp = _readToken( stream);
 				if( stream.flags() & ios_base::oct){
-					sscanf(temp.c_str(), "%ho", (unsigned short int *)(&var) );
+					sscanf(temp.c_str(), "%ho", static_cast<unsigned short int *>(&var) );
 				}else if(stream.flags() & ios_base::hex){
 					if(stream.flags() & ios_base::uppercase){
-						sscanf(temp.c_str(), "%hX", (unsigned short int *)(&var) );
+						sscanf(temp.c_str(), "%hX", static_cast<unsigned short int *>(&var) );
 					}else{
-						sscanf(temp.c_str(), "%hx", (unsigned short int *)(&var) );
+						sscanf(temp.c_str(), "%hx", static_cast<unsigned short int *>(&var) );
 					}
 				}else{
 					sscanf(temp.c_str(), "%hi", &var);
@@ -161,7 +161,7 @@ namespace std{
 						sscanf(temp.c_str(), "%hx", &var);
 					}
 				}else{
-					sscanf(temp.c_str(), "%hi", (signed short int*)(&var) );
+					sscanf(temp.c_str(), "%hi", static_cast<signed short int*>(&var) );
 				}
 			}
 		}
@@ -179,12 +179,12 @@ namespace std{
 			}else{
 				temp = _readToken( stream);
 				if( stream.flags() & ios_base::oct){
-					sscanf(temp.c_str(), "%o", (unsigned int *)(&var) );
+					sscanf(temp.c_str(), "%o", static_cast<unsigned int *>(&var) );
 				}else if(stream.flags() & ios_base::hex){
 					if(stream.flags() & ios_base::uppercase){
-						sscanf(temp.c_str(), "%X", (unsigned int *)(&var) );
+						sscanf(temp.c_str(), "%X", static_cast<unsigned int *>(&var) );
 					}else{
-						sscanf(temp.c_str(), "%x", (unsigned int *)(&var) );
+						sscanf(temp.c_str(), "%x", static_cast<unsigned int *>(&var) );
 					}
 				}else{
 					sscanf(temp.c_str(), "%i", &var);
@@ -205,15 +205,15 @@ namespace std{
 			}else{
 				temp = _readToken( stream);
 				if( stream.flags() & ios_base::oct){
-					sscanf(temp.c_str(), "%o", (unsigned int *)(&var) );
+					sscanf(temp.c_str(), "%o", static_cast<unsigned int *>(&var) );
 				}else if(stream.flags() & ios_base::hex){
 					if(stream.flags() & ios_base::uppercase){
-						sscanf(temp.c_str(), "%X", (unsigned int *)(&var) );
+						sscanf(temp.c_str(), "%X", static_cast<unsigned int *>(&var) );
 					}else{
-						sscanf(temp.c_str(), "%x", (unsigned int *)(&var) );
+						sscanf(temp.c_str(), "%x", static_cast<unsigned int *>(&var) );
 					}
 				}else{
-					sscanf(temp.c_str(), "%i", (int *)(&var) );
+					sscanf(temp.c_str(), "%i", static_cast<int *>(&var) );
 				}
 			}	
 
@@ -233,15 +233,15 @@ namespace std{
 			}else{
 				temp = _readToken( stream);
 				if( stream.flags() & ios_base::oct){
-					sscanf(temp.c_str(), "%lo", (unsigned long int *)(&var) );
+					sscanf(temp.c_str(), "%lo", static_cast<unsigned long int *>(&var) );
 				}else if(stream.flags() & ios_base::hex){
 					if(stream.flags() & ios_base::uppercase){
-						sscanf(temp.c_str(), "%lX", (unsigned long int *)(&var) );
+						sscanf(temp.c_str(), "%lX", static_cast<unsigned long int *>(&var) );
 					}else{
-						sscanf(temp.c_str(), "%lx", (unsigned long int *)(&var) );
+						sscanf(temp.c_str(), "%lx", static_cast<unsigned long int *>(&var) );
 					}
 				}else{
-					sscanf(temp.c_str(), "%li", (long int *)(&var) );
+					sscanf(temp.c_str(), "%li", static_cast<long int *>(&var) );
 				}
 			}
 
@@ -269,7 +269,7 @@ namespace std{
 						sscanf(temp.c_str(), "%lx", &var);
 					}
 				}else{
-					sscanf(temp.c_str(), "%li", (long int *)(&var) );
+					sscanf(temp.c_str(), "%li", static_cast<long int *>(&var) );
 				}
 			}
 		}

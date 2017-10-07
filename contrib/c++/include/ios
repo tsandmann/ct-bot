@@ -285,7 +285,7 @@ namespace std{
 			if(fail() ){
 				return 0;
 			}
-			return (void *)(1);	//Must return a non-NULL pointer (though it can be *any* pointer)
+			return static_cast<void *>(1);	//Must return a non-NULL pointer (though it can be *any* pointer)
 		}
 
 		_UCXXEXPORT bool operator!() const{
