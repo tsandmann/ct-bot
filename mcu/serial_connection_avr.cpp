@@ -25,10 +25,10 @@ uint16_t SerialConnectionAVR::wait_for_data(const uint16_t size, const uint16_t 
 		return size;
 	}
 
-	const auto ticks(static_cast<uint16_t>(MS_TO_TICKS(timeout_ms)));
+	const uint16_t ticks(MS_TO_TICKS(timeout_ms));
 	const auto start(TIMER_GET_TICKCOUNT_16);
 	auto now(start);
-	const auto sleep_time(static_cast<uint16_t>((size - available) / 50));
+	const uint16_t sleep_time((size - available) / 50U);
 	if (size > available && sleep_time && (timeout_ms >= sleep_time || (! timeout_ms))) {
 		if (wait_callback) {
 			wait_callback(this);
