@@ -15,6 +15,18 @@
 
 namespace tsio {
 
+#ifdef __EXCEPTIONS
+/**
+ * Exception type for closed connection
+ */
+class ClientServerEOF : public std::runtime_error {
+public:
+	ClientServerEOF(const std::string& what_msg) : std::runtime_error(what_msg) {}
+};
+#else
+#define noexcept
+#endif // __EXCEPTIONS
+
 /**
  * Interface class for clients and servers, provides send and receive operations
  */
@@ -41,14 +53,6 @@ public:
 	virtual std::size_t receive_async(std::streambuf& buf, std::size_t size, const uint32_t timeout_ms) = 0;
 	virtual std::size_t send(const void* data, const std::size_t size) = 0;
 	virtual std::size_t send(std::streambuf& buf, const std::size_t size) = 0;
-};
-
-/**
- * Exception type for closed connection
- */
-class ClientServerEOF : public std::runtime_error {
-public:
-	ClientServerEOF(const std::string& what_msg) : std::runtime_error(what_msg) {}
 };
 
 } /* namespace tsio */
