@@ -254,7 +254,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 #ifdef __AVR_ATmega1284P__
 	if (servo == SERVO1) {
 		if (pos == SERVO_OFF) {
-			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(0)); // PWM0 low on next overflow
+			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(0)); // PWM0 stays low on next overflow
 		} else {
 			if ((GPIOR0 & 2) == 0) {
 				TCNT3 = 0;
@@ -265,7 +265,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 		}
 	} else if (servo == SERVO2) {
 		if (pos == SERVO_OFF) {
-			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(1)); // PWM2 low on next overflow
+			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(1)); // PWM2 stays low on next overflow
 		} else {
 			if ((GPIOR0 & 1) == 0) {
 				TCNT3 = 0;
