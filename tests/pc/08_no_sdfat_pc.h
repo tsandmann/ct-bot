@@ -21,9 +21,9 @@
 #define INCLUDE_BOT_LOCAL_OVERRIDE_H_
 
 /* Logging-Funktionen */
-#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
+#undef  LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 #undef  LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
-#undef  LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
+#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 #define CREATE_TRACEFILE_AVAILABLE			/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
@@ -50,7 +50,7 @@
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
+#undef SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 /* Hardware-Treiber */
 #define ADC_AVAILABLE						/**< A/D-Konverter */

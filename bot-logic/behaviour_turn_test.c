@@ -20,7 +20,7 @@
 /*!
  * @file 	behaviour_turn_test.c
  * @brief 	Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler
- * @author	Timo Sandmann (mail@timosandmann.de)
+ * @author	Timo Sandmann
  * @date 	08.07.2007
  */
 
@@ -45,7 +45,7 @@ extern uint8_t EEPROM turn_err[3];
  * @see			bot_turn_test()
  */
 void bot_turn_test_behaviour(Behaviour_t * data) {
-	static float err = 0.0;
+	static float err = 0.f;
 	if (degrees > 0) {
 		if (turn_count < 10) {
 			if (turn_count > 0) {
@@ -60,19 +60,19 @@ void bot_turn_test_behaviour(Behaviour_t * data) {
 //			LOG_DEBUG("heading=%f", heading);
 //			LOG_DEBUG("Fehler=%f Grad", turn_last_err);
 #ifdef FLOAT_PRINTF
-			LOG_DEBUG("durchschn. Fehler=%f Grad", err/10.0);
+			LOG_DEBUG("durchschn. Fehler=%f Grad", err/10.f);
 #else
-			LOG_DEBUG("durchschn. Fehler=%d.%u Grad", (int16_t)(err/10.0), (int16_t)((err/10.0 - (int16_t)(err/10.0))*10));
+			LOG_DEBUG("durchschn. Fehler=%d.%u Grad", (int16_t)(err/10.f), (int16_t)((err/10.f - (int16_t)(err/10.f))*10));
 #endif
 			LOG_DEBUG("degrees=%d: turn_err[]={%d,%d,%d}", degrees, ctbot_eeprom_read_byte(&turn_err[0]), ctbot_eeprom_read_byte(&turn_err[1]), ctbot_eeprom_read_byte(&turn_err[2]));
 			turn_count = 0;
-			err = 0.0;
+			err = 0.f;
 			degrees -= 5;
 			if (degrees > 60) degrees -= 15;
 			LOG_DEBUG("degress=%d", degrees);
 		}
 	} else {
-		err = 0.0;
+		err = 0.f;
 		return_from_behaviour(data);
 	}
 }

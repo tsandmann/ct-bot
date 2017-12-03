@@ -432,7 +432,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		if (dHead < 0) {
 			dHead += 360;
 		}
-		int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.0f) / dHead * (180.0f / M_PI));
+		int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.f) / dHead * (180.f / M_PI_F));
 		/* Objektkoordis berechnen */
 		obj_pos = calc_point_in_distance(headingR, DISTSENSOR_POS_FW + dist, -DISTSENSOR_POS_SW);
 		break;

@@ -31,8 +31,10 @@
 #include <avr/pgmspace.h>
 #endif
 
+#include <stdio.h>
+
 #define DISPLAY_LENGTH 20 /**< Wieviele Zeichen passen in eine Zeile */
-#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1) /**< Puffergroesse fuer eine Zeile [Byte] */
+#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 2) /**< Puffergroesse fuer eine Zeile [Byte] */
 
 #define DISPLAY_SCREEN_TOGGLE 42 /**< Screen-Nummer, die zum Wechseln verwendet wird */
 extern uint8_t display_screen;   /**< Welcher Screen soll gezeigt werden? */
@@ -63,13 +65,16 @@ void display_data(const char data);
 #endif // DISPLAY_MCU_AVAILABLE || PC
 
 #ifdef PC
+extern char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
+
 /**
- * Schreibt einen String auf das Display.
- * \param *format 	Format, wie beim printf
- * \param ... 		Variable Argumentenliste, wie beim printf
+ * Schreibt einen String auf das Display
+ * \param ... 		Format und Variable Argumentenliste, wie beim printf
  * \return			Anzahl der geschriebenen Zeichen
  */
-uint8_t display_printf(const char * format, ...);
+#define display_printf(...) ({	snprintf(display_buf, DISPLAY_BUFFER_SIZE, __VA_ARGS__);	\
+								display_puts(display_buf);								\
+							})
 
 /**
  * Gibt einen String auf dem Display aus

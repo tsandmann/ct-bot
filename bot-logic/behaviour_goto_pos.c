@@ -20,7 +20,7 @@
 /**
  * \file 	behaviour_goto_pos.c
  * \brief 	Anfahren einer Position
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	15.10.2007
  */
 
@@ -157,15 +157,15 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		float tan_alpha = heading_sin / heading_cos;
 		if (drive_dir < 0) {
 			sin_alpha = -sin_alpha;
-			LOG_DEBUG("alpha=%f", heading + 180.f);
+			LOG_DEBUG("alpha=%f", (double) (heading + 180.f));
 		} else {
-			LOG_DEBUG("alpha=%f", heading);
+			LOG_DEBUG("alpha=%f", (double) heading);
 		}
 		float beta = calc_angle_diff_rad(diff_x, diff_y); // [-M_PI; M_PI]
 		if (drive_dir < 0) {
-			LOG_DEBUG("beta=%f", deg(beta) + 180.f);
+			LOG_DEBUG("beta=%f", (double) (deg(beta) + 180.f));
 		} else {
-			LOG_DEBUG("beta=%f", deg(beta));
+			LOG_DEBUG("beta=%f", (double) (deg(beta)));
 		}
 		const float gamma = (float) M_PI_2 - beta - (float) rad(heading);
 		if (sin_alpha == 0.f) {
@@ -183,13 +183,13 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		}
 		const float h7_2 = h6_2 / sin_beta;
 		float radius = (h5_2 + h7_2) / 2.f;
-		LOG_DEBUG("radius=%f", radius);
+		LOG_DEBUG("radius=%f", (double) radius);
 		if ((int16_t) radius == 0) {
 			radius = 100000.f;	// geradeaus
 		}
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
 		float x = diff_to_target < 360L * 360L ? (float) diff_to_target / (float) ((360. / M_PI * 2.) * (360. / M_PI * 2.)) : (float) (M_PI / 2.); // (0; pi/2]
-		LOG_DEBUG("x=%f", x);
+		LOG_DEBUG("x=%f", (double) x);
 		v_m = (int16_t) (sinf(x) * (float) (v_m_max - v_m_min)); // [0; v_m_max - v_m_min]
 		v_m = (int16_t) (v_m + v_m_min); // [v_m_min; v_m_max]
 		if (drive_dir < 0) {

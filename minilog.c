@@ -20,7 +20,7 @@
 /**
  * \file 	minilog.c
  * \brief 	vereinfachte Logging-Funktionen
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	01.09.2007
  */
 
@@ -37,19 +37,15 @@
 #include "uart.h"
 #include "bot-2-sim.h"
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdarg.h>
-
-#define LOG_BUFFER_SIZE 65U /**< Groesse des Log-Puffers */
 
 static const char line_str[] PROGMEM = "[%5u] "; /**< Format-String fuer Zeilennummer */
 static const char debug_str[] PROGMEM	= "DEBUG "; /**< Log-Typ DEBUG */
 static const char info_str[] PROGMEM	= "INFO  "; /**< Log-Typ INFO */
 static const char error_str[] PROGMEM	= "ERROR "; /**< Log-Typ ERROR */
 static PGM_P p_log_type;	 /**< Zeiger auf Log-Types im Flash */
-static PGM_P const log_types[] PROGMEM = {debug_str, info_str, error_str}; /**< Log-Typ-Array im Flash */
-static char minilog_buffer[LOG_BUFFER_SIZE]; /**< Log-Puffer */
+static PGM_P const log_types[] PROGMEM = { debug_str, info_str, error_str }; /**< Log-Typ-Array im Flash */
+char minilog_buffer[LOG_BUFFER_SIZE]; /**< Log-Puffer */
 
 #ifdef LOG_MMC_AVAILABLE
 #define LOG_FILE_NAME "log.txt"
@@ -75,18 +71,7 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type) {
 	}
 }
 
-void minilog_printf(const char* format, ...) {
-	const uint16_t n = strlen(minilog_buffer);
-	char* p_buffer = minilog_buffer + n;
-	va_list	args;
-	va_start(args, format);
-	p_buffer += vsnprintf_P(p_buffer, LOG_BUFFER_SIZE - n, format, args);
-	va_end(args);
-	if (p_buffer > &minilog_buffer[LOG_BUFFER_SIZE - 1]) {
-		p_buffer = &minilog_buffer[LOG_BUFFER_SIZE - 1];
-	}
-	*p_buffer = 0;
-
+void minilog_end(void) {
 #ifdef LOG_CTSIM_AVAILABLE
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
@@ -111,9 +96,10 @@ void minilog_printf(const char* format, ...) {
 
 #ifdef LOG_MMC_AVAILABLE
 	/* Zeilenende ergaenzen */
-	*p_buffer = '\n';
+	const uint8_t len = (uint8_t) strlen(minilog_buffer);
+	minilog_buffer[len] = '\n';
 	int32_t filepos = sdfat_tell(log_file);
-	sdfat_write(log_file, minilog_buffer, (uint16_t) (p_buffer - minilog_buffer + 1));
+	sdfat_write(log_file, minilog_buffer, (uint16_t) len);
 	line_cache[next_line % LOG_SCROLLBACK] = (uint16_t) (filepos);
 	file_pos_off = (uint32_t) filepos & 0xffff0000;
 

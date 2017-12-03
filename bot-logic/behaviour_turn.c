@@ -22,7 +22,7 @@
  * \brief 	Drehe den Bot
  * \author 	Benjamin Benz (bbe@heise.de)
  * \author 	Torsten Evers (tevers@onlinehome.de)
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	03.11.2006
  */
 
@@ -172,7 +172,7 @@ void bot_turn_behaviour(Behaviour_t * data) {
 			/* Nachlauf beendet, jetzt Drehfehler aktualisieren */
 			LOG_DEBUG("Fehler: %d.%u Grad", diff / 10, abs(diff - diff / 10 * 10));
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
-			turn_last_err = fabs(target_fl / 10.0f - 360.0f - heading);
+			turn_last_err = fabsf(target_fl / 10.f - 360.f - heading);
 #endif
 			int16_t err = (int16_t) ctbot_eeprom_read_word(p_err);
 			LOG_DEBUG("old err=%d", err);

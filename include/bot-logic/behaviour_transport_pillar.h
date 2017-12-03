@@ -18,7 +18,7 @@
  */
 
 
-/*!
+/**
  * \file 	behaviour_transport_pillar.h
  * \brief 	Bot startet von einem Farb-Startpad und entdeckt die Welt, bis er auf ein anderes Farbpad stoesst.
  *
@@ -45,26 +45,26 @@
 #define BEHAVIOUR_TRANSPORT_PILLAR_H_
 
 #ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
-/*!
+/**
  * Transport-Pillarverhalten  
  * \param *data	Der Verhaltensdatensatz
  */
 void bot_transport_pillar_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Ruft das Pillarverhalten auf 
  * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_transport_pillar(Behaviour_t * caller);
 
-/*!
+/**
  * Routine zum Setzen der Zielkoordinaten auf der Zielposition/ Zielpad 
  * \param x X-World-Zielkoordinate
  * \param y Y-World-Zielkoordinate
  */
 void bot_set_destkoords(float x, float y);
 
-/*! 
+/**
  * Display zum Start der Transport_Pillar-Routinen
  */
 void transportpillar_display(void);

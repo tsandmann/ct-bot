@@ -38,6 +38,7 @@ extern "C" {
 #include "os_thread.h"
 #include "log.h"
 #include "motor.h"
+#include "motor-low.h"
 }
 
 /**
@@ -53,8 +54,9 @@ protected:
 		/* Set MOSI and SCK output, MISO input */
 		uint8_t ddrb = DDRB;
 		ddrb |=  _BV(DDB5) | _BV(DDB7);
-		ddrb = (uint8_t) (ddrb & ~_BV(DDB6));
+		ddrb = static_cast<uint8_t>(ddrb & ~_BV(DDB6));
 		DDRB = ddrb;
+		last_servo_pos = 0;
 	}
 
 	/**
@@ -63,12 +65,11 @@ protected:
 	 * \note 0xff is sent out
 	 */
 	uint8_t receive() const {
-		disable_servo();
+		servo_suspend();
 
 		uint8_t clk_high, clk_low, port_data, data;
 		__asm__ __volatile__(
 			"in	%2, %4		; load PORTB 		\n\t"
-			"cbr %2, %9		; PB3 low			\n\t"
 			"cbr %2, %7		; CLK low			\n\t"
 			"sbr %2, %8		; MOSI high			\n\t"
 			"out %4, %2		; CLK low			\n\t"
@@ -114,9 +115,11 @@ protected:
 			"bst %3, %6							\n\t"
 			"bld %0, 0							    "
 			: "=&r" (data) /* %0 */, "=&r" (clk_high) /* %1 */, "=&r" (clk_low) /* %2 */, "=&r" (port_data) /* %3 */
-			: "M" (_SFR_IO_ADDR(PORTB)) /* %4 */, "M" (_SFR_IO_ADDR(PINB)) /* %5 */, "M" (PB6) /* %6 */, "M" (_BV(PB7)) /* %7 */, "M" (_BV(PB5)) /* %8 */, "M" (_BV(PB3)) /* %9 */
+			: "M" (_SFR_IO_ADDR(PORTB)) /* %4 */, "M" (_SFR_IO_ADDR(PINB)) /* %5 */, "M" (PB6) /* %6 */, "M" (_BV(PB7)) /* %7 */, "M" (_BV(PB5)) /* %8 */
 			: "memory"
 		);
+
+		servo_resume();
 
 		return data;
 	}
@@ -139,12 +142,11 @@ protected:
 	 * \param[in] data The data byte to send
 	 */
 	void send(uint8_t data) const {
-		disable_servo();
+		servo_suspend();
 
 		uint8_t tmp;
 		__asm__ __volatile__(
 			"in %0, %2		; load PORTB 		\n\t"
-			"cbr %0, %6		; PB3 low			\n\t"
 			"cbr %0, %5		; CLK low			\n\t"
 			"bst %1, 7		; send bit 7			\n\t"
 			"bld %0, %3		; data to DO			\n\t"
@@ -180,9 +182,11 @@ protected:
 			"sbi %2, %4							\n\t"
 			"sbi %2, %3		; DO high		    	"
 			: "=&r" (tmp) /* %0 */
-			: "r" (data) /* %1 */, "M" (_SFR_IO_ADDR(PORTB)) /* %2 */, "M" (PB5) /* %3 */, "M" (PB7) /* %4 */, "M" (_BV(PB7)) /* %5 */, "M" (_BV(PB3)) /* %6 */
+			: "r" (data) /* %1 */, "M" (_SFR_IO_ADDR(PORTB)) /* %2 */, "M" (PB5) /* %3 */, "M" (PB7) /* %4 */, "M" (_BV(PB7)) /* %5 */
 			: "memory"
 		);
+
+		servo_resume();
 	}
 
 	/**
@@ -209,11 +213,11 @@ protected:
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
 		while (this->receive() != 0xff) {
 			const auto now16(TIMER_GET_TICKCOUNT_16);
-			if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
+			if (now16 - starttime > timeout_ticks) {
 				return false;
 			}
 
-			if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+			if (now16 - yield_start_time > 1 * (1000U / TIMER_STEPS + 1)) {
 				os_exitCS();
 //				LOG_DEBUG("wait_not_busy(): yieldtime: %u %u", now16 - yield_start_time, timeout_ms);
 				os_enterCS();
@@ -231,6 +235,8 @@ protected:
 	void set_speed(uint8_t) {}
 
 private:
+	mutable uint8_t last_servo_pos;
+
 	/**
 	 * Receives n byte from the SPI bus, used for n != 512
 	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least n byte)
@@ -247,12 +253,10 @@ private:
 	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least 512 byte)
 	 */
 	void receive_512(void* buf) const {
-		disable_servo();
+		servo_suspend();
 
 		__asm__ __volatile__(
-			"2:								\n\t"
 			"in	r20, %0		; load PORTB 	\n\t"
-			"cbr r20, %6		; PB3 low		\n\t"
 			"cbr r20, %1		; CLK low		\n\t"
 			"sbr r20, %5		; MOSI high		\n\t"
 			"out %0, r20		; CLK low		\n\t"
@@ -311,9 +315,11 @@ private:
 			"rjmp 1b							\n\t"
 			"3:								\n\t"
 			"out %0, r19	; CLK high				"
-			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB6) /* %2 */, "M" (_SFR_IO_ADDR(PINB)) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB5)) /* %5 */, "M" (_BV(PB3)) /* %6 */
+			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB6) /* %2 */, "M" (_SFR_IO_ADDR(PINB)) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB5)) /* %5 */
 			: "r18", "r19", "r20", "r24", "r25", "r26", "memory"
 		);
+
+		servo_resume();
 	}
 
 	/**
@@ -332,11 +338,10 @@ private:
 	 * \param[out] buf Pointer to buffer for the data to send
 	 */
 	void send_512(const void* buf) const {
-		disable_servo();
+		servo_suspend();
 
 		__asm__ __volatile__(
 			"in r26, %0		; load PORTB 			\n\t"
-			"cbr r26, %5		; PB3 low				\n\t"
 			"cbr r26, %1		; CLK low				\n\t"
 			"ldi r18, 2		; r18 = 2				\n\t"
 			"clr r27			; r27 = 0				\n\t"
@@ -383,18 +388,40 @@ private:
 			"rjmp 1b									\n\t"
 			"3:										\n\t"
 			"sbi %0, %2		; DO high					"
-			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "z" (buf) /* %4 */, "M" (_BV(PB3)) /* %5 */
+			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "z" (buf) /* %4 */
 			: "r18", "r25", "r26", "r27", "memory"
 		);
+
+		servo_resume();
 	}
 
 	/**
-	 * Sets SERVO1 to OFF on ATmega1284P
+	 * Suspend SERVO1 by setting it OFF temporarily
+	 * \note for ATmega1284P only
 	 */
-	void disable_servo() const {
+	void servo_suspend() const {
 #ifdef __AVR_ATmega1284P__
-		servo_set(SERVO1, SERVO_OFF);
-#endif
+		if (GPIOR0 & _BV(0)) {
+			last_servo_pos = servo_get_pos(SERVO1);
+			servo_low(SERVO1, SERVO_OFF);
+			PORTB = static_cast<uint8_t>(PORTB & ~_BV(PB3)); // set PWM0 low
+//			LOG_DEBUG("suspended");
+		}
+#endif // __AVR_ATmega1284P__
+	}
+
+	/**
+	 * Reset SERVO1 to previous state as saved by \see servo_suspend()
+	 * \note for ATmega1284P only
+	 */
+	void servo_resume() const {
+#ifdef __AVR_ATmega1284P__
+		if (last_servo_pos) {
+			servo_low(SERVO1, last_servo_pos);
+//			LOG_DEBUG("resumed to %u", last_servo_pos);
+			last_servo_pos = 0;
+		}
+#endif // __AVR_ATmega1284P__
 	}
 };
 

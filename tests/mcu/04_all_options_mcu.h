@@ -35,9 +35,9 @@
 
 /* Display-Funktionen */
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
+#define KEYPAD_AVAILABLE						/**< Keypad-Eingabe vorhanden? */
 #define DISPLAY_MCU_AVAILABLE				/**< lokales Display (an ATmega) vorhanden */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_REMOTE_AVAILABLE				/**< Sende LCD Anzeigedaten an den Simulator */
 #define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 /* Sensorauswertung */
@@ -47,12 +47,12 @@
 #define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 #define BPS_AVAILABLE						/**< Bot Positioning System */
 #define SRF10_AVAILABLE						/**< Ultraschallsensor SRF10 vorhanden */
-#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
+#define CMPS03_AVAILABLE						/**< Kompass CMPS03 vorhanden */
 
 /* Motoransteuerung */
-#define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE 				/**< Aktiviert die Motorregelung */
 #undef  ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
-#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+#define SPEED_LOG_AVAILABLE 					/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 /* Umgebungskarte */
 #define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
@@ -67,15 +67,15 @@
 #define SHIFT_AVAILABLE						/**< Shift Register */
 #define ENA_AVAILABLE						/**< Enable-Leitungen */
 #define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define IR_AVAILABLE							/**< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
 #define SP03_AVAILABLE						/**< Sprachmodul SP03 vorhanden */
 
 /* Sonstiges */
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
-#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
+#define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
+#define BOOTLOADER_AVAILABLE					/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 #undef  BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 

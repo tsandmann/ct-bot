@@ -314,6 +314,8 @@ void gui_display(uint8_t screen) {
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
 	if (screen < max_screens && screen_functions[screen] != NULL) {
 		screen_functions[screen]();
+	} else {
+		LOG_ERROR("gui_display(): active screen is invalid: 0x%zx", (uintptr_t) screen_functions[screen]);
 	}
 
 #ifdef KEYPAD_AVAILABLE

@@ -21,10 +21,10 @@
 #define INCLUDE_BOT_LOCAL_OVERRIDE_H_
 
 /* Logging-Funktionen */
-#undef  LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
+#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 #undef  LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
 #undef  LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
-#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
+#undef  LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
 #undef  LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 
@@ -75,8 +75,60 @@
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
 #define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
-#define BOOTLOADER_AVAILABLE					/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
+#undef BOOTLOADER_AVAILABLE					/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
-#define BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
+#undef  BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
+
+
+/* Demo-Verhalten */
+#undef  BEHAVIOUR_SIMPLE_AVAILABLE					/**< Beispielverhalten */
+#undef  BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
+
+/* Notfall-Verhalten */
+#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen */
+#define BEHAVIOUR_AVOID_COL_AVAILABLE 				/**< Hindernis ausweichen */
+#define BEHAVIOUR_HANG_ON_AVAILABLE 					/**< Erkennen des Haengenbleibens als Notfallverhalten */
+
+/* Positionierungs-Verhalten */
+#define BEHAVIOUR_TURN_AVAILABLE 					/**< Dreh Verhalten */
+#undef  BEHAVIOUR_TURN_TEST_AVAILABLE	 			/**< Test des Dreh Verhaltens */
+#define BEHAVIOUR_GOTO_POS_AVAILABLE 				/**< Position anfahren */
+#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 			/**< Abstand zu Hindernis einhalten */
+#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 				/**< Abfahren der auf dem Stack gesicherten Koordinaten */
+#undef  BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
+
+/* Anwendungs-Verhalten */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
+#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE				/**< Linienfolger */
+#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 		/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
+#define BEHAVIOUR_PATHPLANING_AVAILABLE 				/**< Pfadplanungsverhalten */
+#define BEHAVIOUR_OLYMPIC_AVAILABLE					/**< Olympiadenverhalten */
+#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
+#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */
+#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE 		/**< Transport-Pillar Verhalten */
+#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 			/**< verfolge ein (bewegliches) Objekt */
+#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 				/**< Follow Wall Explorer Verhalten */
+#define BEHAVIOUR_DRIVE_AREA_AVAILABLE 				/**< flaechendeckendes Fahren mit Map */
+#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 		/**< Linienfolger ueber Kreuzungen zum Ziel */
+#undef  BEHAVIOUR_DRIVE_CHESS_AVAILABLE 				/**< Schach fuer den Bot */
+#undef  BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
+#undef  BEHAVIOUR_UBASIC_AVAILABLE 					/**< uBasic Verhalten */
+#undef  BEHAVIOUR_ABL_AVAILABLE 						/**< ABL-Interpreter */
+#define BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
+#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 			/**< Fahrverhalten fuer das neuronale Netzwerk */
+
+/* Kalibrierungs-Verhalten */
+#undef  BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */
+#undef  BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE 		/**< Kalibrierungsverhalten fuer Distanzsensoren */
+
+/* System-Verhalten */
+#define BEHAVIOUR_SCAN_AVAILABLE 					/**< Gegend scannen */
+#define BEHAVIOUR_SERVO_AVAILABLE 					/**< Kontrollverhalten fuer die Servos */
+#undef  BEHAVIOUR_REMOTECALL_AVAILABLE 				/**< Remote-Kommandos */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzesensorasuwertung */
+#define BEHAVIOUR_DELAY_AVAILABLE 					/**< Delay-Routine als Verhalten */
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
+#undef  BEHAVIOUR_GET_UTILIZATION_AVAILABLE			/**< CPU-Auslastung eines Verhaltens messen */
+#undef  BEHAVIOUR_HW_TEST_AVAILABLE 					/**< Testverhalten (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */

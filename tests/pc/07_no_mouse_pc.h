@@ -34,15 +34,15 @@
 
 /* Display-Funktionen */
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+#define KEYPAD_AVAILABLE						/**< Keypad-Eingabe vorhanden? */
+#define DISPLAY_REMOTE_AVAILABLE				/**< Sende LCD Anzeigedaten an den Simulator */
 #define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 /* Sensorauswertung */
-#define MOUSE_AVAILABLE						/**< Maus Sensor */
-#define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
-#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
-#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
+#undef  MOUSE_AVAILABLE						/**< Maus Sensor */
+#undef  MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
+#undef  MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+#undef  MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 #define BPS_AVAILABLE						/**< Bot Positioning System */
 
 /* Umgebungskarte */
@@ -50,20 +50,20 @@
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-#undef SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 /* Hardware-Treiber */
 #define ADC_AVAILABLE						/**< A/D-Konverter */
 #define SHIFT_AVAILABLE						/**< Shift Register */
 #define ENA_AVAILABLE						/**< Enable-Leitungen */
 #define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define IR_AVAILABLE							/**< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
 
 /* Sonstiges */
 #define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+#define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */

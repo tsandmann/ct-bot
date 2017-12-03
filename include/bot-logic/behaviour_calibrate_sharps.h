@@ -17,12 +17,12 @@
  * 
  */
 
-/*! 
- * @file 	behaviour_calibrate_sharps.h
- * @brief 	Kalibriert die Distanzsensoren des Bots
+/**
+ * \file 	behaviour_calibrate_sharps.h
+ * \brief 	Kalibriert die Distanzsensoren des Bots
  * 
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	21.04.2007
+ * \author 	Timo Sandmann
+ * \date 	21.04.2007
  */
 
 #ifndef BEHAVIOUR_CALIBRATE_SHARPS_H_
@@ -30,22 +30,22 @@
 
 #ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
 
-/*!
+/**
  * Das eigentliche Verhalten
- * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
- * @see			bot_calibrate_sharps()
+ * \param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * \see			bot_calibrate_sharps()
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
- * @see goto_next_pos(), @see measure_distance(), @see update_data()
+ * \see goto_next_pos(), \see measure_distance(), \see update_data()
  */
-void bot_calibrate_sharps_behaviour(Behaviour_t *data);
+void bot_calibrate_sharps_behaviour(Behaviour_t* data);
 
-/*!
+/**
  * Kalibriert die Distanzsensoren des Bots
- * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * \param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
-void bot_calibrate_sharps(Behaviour_t *caller);
+void bot_calibrate_sharps(Behaviour_t* caller);
 
-/*!
+/**
  * Displayhandler fuer bot_calibrate_sharps-Verhalten
  */
 void bot_calibrate_sharps_display(void);

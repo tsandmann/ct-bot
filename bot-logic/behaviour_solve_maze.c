@@ -239,11 +239,11 @@ void bot_check_wall_behaviour(Behaviour_t * data) {
  * im Abstand von 12-22cm zu sehen ist. Wenn dem so ist, wird die Variable wall_present
  * auf True gesetzt, sonst False
  * \param *caller	Verhaltensdatensatz des Aufrufers
- * \param direction	Richtung
+ * \param dir		Richtung
  * \return			Zeiger auf Verhaltensdatensatz
  */
-static Behaviour_t* bot_check_wall(Behaviour_t * caller, int8_t direction) {
-	check_direction = direction;
+static Behaviour_t* bot_check_wall(Behaviour_t * caller, int8_t dir) {
+	check_direction = dir;
 	wall_detected = False;
 	checkState = CHECK_WALL_TURN;
 	wall_distance = 0;
@@ -355,13 +355,13 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
  * \param *caller	Verhaltensdatensatz des Aufrufers
- * \param direction	Richtung
+ * \param dir		Richtung
  * \param distance	max. Distanz
  * \return			Zeiger auf Verhaltensdatensatz
  */
-static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
+static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t dir, int16_t distance) {
 	/* maximale Messentfernung und Richtung setzen */
-	measure_direction = direction;
+	measure_direction = dir;
 	measure_distance = distance;
 	/* Heading zu Anfang des Verhaltens merken */
 	start_heading = (int16_t) heading_mou;
@@ -391,7 +391,7 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 	#define MEASUREMENT_DONE			5
 
 	/** Hilfskonstante */
-	#define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
+	#define ANGLE_CONSTANT		(float)((WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER))
 
 	/* bereits gedrehte Strecke errechnen */
 	int16_t turnedLeft = (measure_direction > 0) ? -(sensEncL - startEncL) : (sensEncL - startEncL);
@@ -427,7 +427,7 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 		case FOUND_OBSTACLE:
 			/* Hindernis gefunden, nun Bot wieder in Ausgangsstellung drehen */
 			measure_direction = (int8_t) -measure_direction;
-			measured_angle = (int16_t) ((float)(int32_t)(turnedSteps * 360) / ANGLE_CONSTANT);
+			measured_angle = (int16_t) ((float)(int32_t)(turnedSteps * 360.f) / ANGLE_CONSTANT);
 			measureState = TURN_BACK;
 			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
 			speedWishRight = (measure_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
@@ -491,13 +491,13 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
  * \param *caller	Verhaltensdatensatz des Aufrufers
- * \param direction	Richtung
+ * \param dir		Richtung
  * \param distance	max. Distanz
  * \return			Zeiger auf Verhaltensdatensatz
  */
-static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
+static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t dir, int16_t distance) {
 	/* maximale Messentfernung und Richtung setzen */
-	measure_direction = direction;
+	measure_direction = dir;
 	measure_distance = distance;
 	/* Encoderwerte zu Anfang des Verhaltens merken */
 	startEncL = sensEncL;
