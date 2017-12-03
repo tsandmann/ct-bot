@@ -31,6 +31,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1735546581" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 									<listOptionValue builtIn="false" value="WIN32"/>
+									<listOptionValue builtIn="false" value="__USE_MINGW_ANSI_STDIO=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.1990924785" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wdouble-promotion -Wshadow -Wformat=2" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.504571561" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
@@ -64,6 +65,7 @@
 								<option id="gnu.cpp.compiler.option.preprocessor.def.166900251" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 									<listOptionValue builtIn="false" value="WIN32"/>
+									<listOptionValue builtIn="false" value="__USE_MINGW_ANSI_STDIO=1"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.607735332" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.36465211" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
