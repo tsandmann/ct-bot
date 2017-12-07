@@ -25,7 +25,7 @@
  */
 
 /* Diese Datei dient lediglich der Konfiguration von Fernbedienungsmodellen.
- * Aktiviert werden diese ueber include/bot-local.h -> Abschnitt "Fernbedienungsaktivierung" */
+ * Aktiviert werden diese ueber include/bot-local.h -> Abschnitt "Fernbedienungswahl" */
 
 #ifndef RC5CODE_H_
 #define RC5CODE_H_
