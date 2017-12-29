@@ -459,6 +459,10 @@ static uint8_t isInCallHierarchy(Behaviour_t * job, Behaviour_t * caller_beh) {
 	}
 
 	for (; job->caller; job = job->caller) {
+		if (job == job->caller) {
+			/* Verhalten ist selbst als Caller eingetragen -> Abbruch */
+			return 0;
+		}
 		LOG_DEBUG("  ueberpruefe Verhalten %u mit caller %u...", job->priority, job->caller->priority);
 		level++;
 		if (job->caller == caller_beh) {
