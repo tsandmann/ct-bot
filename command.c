@@ -59,10 +59,15 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #include <stdlib.h>
 
 
-//#define CRC_CHECK				/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
-#define CHECK_CMD_ADDRESS		/**< soll die Zieladresse der Kommandos ueberprueft werden? */
-#define COMMAND_TIMEOUT 15		/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
-#define BOT_2_RPI_TIMEOUT 20000UL /**< Timeout fuer ARM-Boards */
+//#define CRC_CHECK					/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
+#define CHECK_CMD_ADDRESS			/**< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define COMMAND_TIMEOUT 		15		/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+
+#ifdef USB_UART_LINUX
+#define BOT_2_RPI_TIMEOUT	30000UL	/**< Timeout fuer ARM-Boards */
+#else
+#define BOT_2_RPI_TIMEOUT	20000UL	/**< Timeout fuer ARM-Boards */
+#endif
 
 /* CRC aktivieren fuer ARM-Boards, Adress-Check deaktivieren */
 #ifdef ARM_LINUX_BOARD
