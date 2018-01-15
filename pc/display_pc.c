@@ -181,6 +181,7 @@ uint8_t display_puts(const char * text) {
 	cmd_func_t old_func = cmd_functions;
 	set_bot_2_atmega();
 #endif
+//	LOG_DEBUG("last_col=%d, last_row=%d, len=%u, text=\"%s\"", last_column, last_row, len, text)
 	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
 #endif // ! ARM_LINUX_BOARD || DISPLAY_MCU_AVAILABLE
 

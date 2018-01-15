@@ -1042,20 +1042,20 @@ int8_t command_evaluate(void) {
 			case SUB_LCD_CLEAR:
 				if (screen_functions[display_screen] == display_func) {
 					display_clear();
-					LOG_DEBUG("command_evaluate(): SUB_LCD_CLEAR: display_clear() from ATmega");
+					LOG_DEBUG("SUB_LCD_CLEAR: display_clear() ATmega");
 				}
 				break;
 			case SUB_LCD_CURSOR:
 				if (screen_functions[display_screen] == display_func) {
 					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-					LOG_DEBUG("command_evaluate(): SUB_LCD_CURSOR: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
+					LOG_DEBUG("SUB_LCD_CURSOR: display_cursor(%d, %d) ATmega", received_command.data_r + 1, received_command.data_l + 1);
 				}
 				break;
 			case SUB_LCD_DATA: {
 				if (screen_functions[display_screen] == display_func) {
 					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
-					LOG_DEBUG(" payload=%u", received_command.payload);
+					LOG_DEBUG("SUB_LCD_DATA: display_cursor(%d, %d) ATmega", received_command.data_r + 1, received_command.data_l + 1);
+					LOG_DEBUG("SUB_LCD_DATA: payload=%u", received_command.payload);
 				}
 #ifdef MCU
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
@@ -1074,15 +1074,16 @@ int8_t command_evaluate(void) {
 					uint8_t n;
 					char buffer;
 					if ((n = (uint8_t) (cmd_functions.read(&buffer, 1))) != 1) {
-						LOG_ERROR("command_evaluate(): SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
+						LOG_ERROR("SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
 #ifdef MCU
-						LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+						LOG_ERROR("uart_data_available()=%d", uart_data_available());
 #endif
 						i = 0;
 						break;
 					}
 					if (i < 20 && screen_functions[display_screen] == display_func) {
 						display_data(buffer);
+//						LOG_DEBUG("SUB_LCD_DATA: i=%u buffer='%c'", i, buffer);
 #if defined ARM_LINUX_BOARD && defined DEBUG_COMMAND
 						debug_buf[i] = buffer;
 #endif
