@@ -43,7 +43,12 @@
 
 
 #define ERROR_TIME		1000UL	/**< Zeitdauer fuer Error-Anzeige (CRC oder Timeout) via tuerkis LED in ms  */
-#define UART_TIMEOUT	5		/**< Timeout in ms fuer UART-Kommunikation mit Linux-Board */
+
+#if UART_BAUD <= 115200
+#define UART_TIMEOUT		15UL		/**< Timeout in ms fuer UART-Kommunikation mit Linux-Board */
+#else
+#define UART_TIMEOUT		5UL		/**< Timeout in ms fuer UART-Kommunikation mit Linux-Board */
+#endif
 
 /**
  * Initialisiert die Kommunikation mit dem Linux-Board
@@ -78,6 +83,7 @@ void bot_2_linux_init(void) {
 void bot_2_linux_listen(void) {
 	static uint32_t last_crc_error = 0 - MS_TO_TICKS(ERROR_TIME);
 	static uint32_t last_uart_timeout = 0 - MS_TO_TICKS(ERROR_TIME);
+	static uint16_t i = 0;
 
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
 	if (now < last_crc_error + MS_TO_TICKS(ERROR_TIME) || now < last_uart_timeout + MS_TO_TICKS(ERROR_TIME)) {
@@ -86,7 +92,6 @@ void bot_2_linux_listen(void) {
 		LED_off(LED_TUERKIS);
 	}
 
-	uint16_t i = 0;
 	uint32_t timeout = now + MS_TO_TICKS(UART_TIMEOUT);
 	while (now < timeout) {
 		now = TIMER_GET_TICKCOUNT_32;
@@ -95,6 +100,7 @@ void bot_2_linux_listen(void) {
 			const int8_t result = command_read();
 			if (result == 0) {
 				command_evaluate();
+				i = 0xffff;
 			} else if (result == -20) {
 				/* CRC Fehler */
 				last_crc_error = now;
@@ -104,14 +110,17 @@ void bot_2_linux_listen(void) {
 				return;
 			}
 		}
-		++i;
 #ifdef DISPLAY_MCU_AVAILABLE
-		if (i % 5000 < 2500) {
+		if (i < 1000) {
+			++i;
 			display_cursor(4, 20);
 			display_puts("-");
-		} else {
+		} else if (i < 2000) {
+			++i;
 			display_cursor(4, 20);
 			display_puts("|");
+		} else if (i < 0xffff) {
+			i = 0;
 		}
 #endif // DISPLAY_MCU_AVAILABLE
 	}

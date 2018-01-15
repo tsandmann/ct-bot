@@ -102,11 +102,17 @@
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
 
 /* I/O-Schnittstellen fuer Raspberry Pi */
+//#define USB_UART_LINUX						/**< Wird ein USB Uart (z.B. USB-2-Bot) Adapter fuer die Verbinung zum ATmega verwendet? */
+#ifdef USB_UART_LINUX
+#define UART_LINUX_PORT		"/dev/ttyUSB0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
+#else
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
-#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
+#endif // USB_UART_LINUX
+//#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
-/* Fernbedienung */
+/* Fernbedienungswahl */
+/* Zur Konfigruation der hier aufgefuehrten Fernbedienungsmodelle s. include/rc5-codes.h */
 #ifdef MCU
 #define RC_HAVE_HQ_RC_UNIVERS29_334 /**< Dies ist die Standard-Fernbedienung */
 //#define RC_HAVE_VIVANCO_UR89_TV_CODE_089

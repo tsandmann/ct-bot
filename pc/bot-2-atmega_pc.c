@@ -134,13 +134,12 @@ int8_t bot_2_atmega_init(void) {
 	LOG_DEBUG("bot_2_atmega_init(): Fuehre ATmega-Reset aus.");
 	if (atmega_reset() != 0) {
 		LOG_ERROR("bot_2_atmega_init(): Fehler beim ATmega-Reset");
-		return -1;
 	}
 
 	LOG_DEBUG("bot_2_atmega_init(): Initialisiere UART %s mit %d Baud", UART_LINUX_PORT, UART_BAUD);
 	if (uart_init(UART_LINUX_PORT) != 0) {
 		LOG_ERROR("bot_2_atmega_init(): Konnte UART nicht initialisieren");
-		return -2;
+		return -1;
 	}
 
 	gettimeofday(&atmega_last_receive, NULL);
