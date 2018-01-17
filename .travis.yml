@@ -1,7 +1,7 @@
 language: cpp
 dist: trusty
 sudo: true
-osx_image: xcode8.2
+osx_image: xcode9.2
 
 os:
   - linux
@@ -10,7 +10,7 @@ os:
 env:
   - MINGW=false
   - MINGW=true
-  
+
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get -qq update; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get install -y mingw-w64; fi
