@@ -1,0 +1,936 @@
+= Die Hardware des c't-Bot =
+
+[[PageOutline(1-999)]]
+
+== Schnellstart ==
+ Erst einmal ein weniger schnuppern während der Lötkolben vorheizt? Dann helfen die '''[wiki:FirstSteps erste Schritte]''' -- auch wenn die Teile für den realen Bot noch gar nicht da sind.
+
+== Aufbau & Montage ==
+Zu allererst hilft hier leider gar nichts außer das Lesen dieser '''beiden''' Artikel:
+ * c't-Artikel: '''[http://www.heise.de/ct/artikel/Hallo-Welt-290314.html Aufbau des c't-Bot]'''
+ * Aufbauanleitung '''[wiki:ct-Bot-Aufbau Basisversion]''' mit Fotos
+
+Wenn es dann doch mal klemmt:
+ * c't-Artikel: '''[http://www.heise.de/ct/artikel/Kammerjaeger-290506.html Fehlersuche]''' an der Hardware des c't-Bot
+ * '''[http://www.heise.de/ct/artikel/FAQ-fuer-c-t-Bot-und-c-t-SIM-291940.html FAQ]-Einträge'''
+ * Das '''[http://www.heise.de/ct/foren/go.shtml?list=1&forum_id=89813 Forum]'''
+ * Das '''[http://www.heise.de/ct/newsletter/archiv/ct-bot-entwickler Archiv]''' der '''Mailingliste'''
+ * Direkter Kontakt im '''Chat''': IRC-Server ''irc.blitzed.org'', Port ''6667'', Raum ''#ct-bot''
+
+Beim Aufbau lohnt es, ein paar Modifikationen gleich mit einzubauen
+ * Empfehlenswerte '''[wiki:ct-Bot-Modifikationen Hardware-Modifikationen]'''
+
+Ist die Hardware soweit fertig, muss die Firmware in den Bot:
+ * '''[http://www.heise.de/ct/Redaktion/cm/klangcomputer/index1.htm Programmieradapter]''' (Achtung, diese Beschreibung des Adapters entstammt dem Klangcomputer-Projekt, das andere Einstellungen für die Fuse-Bits verwendet als der c't-Bot!)
+ * Software in den c't-Bot '''[wiki:Flash flashen]'''
+
+Noch mehr Hardware gibt es auch:
+ * Aufbauanleitung '''[wiki:USB2Bot USB-2-Bot-Adapter]''' mit Fotos
+ * Aufbauanleitung '''[wiki:ct-Bot-Erweiterung Erweiterungsmodul]''' und Klappe mit Fotos
+
+== Test eines frisch aufgebauten c't-Bots ==
+  1. '''[source:ziped-releases/test-binaries.zip Test-Programm]''' herunterladen[[BR]]
+  1. Das Testprogramm '''[wiki:Flash flashen]'''[[BR]]
+  1. Die Fernbedienung (falls das Modell ''HQ RC Univers 29'' verwendet wird) auf den Gerätecode '''TV 334''' (siehe beiliegende Anleitung) programmieren. Wer diese Fernbedienung mit vierstelligen Gerätecodes (siehe Anleitung) besitzt, sollte unseren [wiki:FirstSteps#Support Support] kontaktieren - der Gerätecode 334 funktioniert hier nicht.
+  1. Die Hardware des Bots '''[http://www.heise.de/ct/artikel/Hallo-Welt-290314.html testen]'''
+Wenn etwas nicht wie im Artikel beschrieben funktioniert, geht es weiter mit der '''[http://www.heise.de/ct/artikel/Kammerjaeger-290506.html Hardware-Fehlersuche]'''[[BR]]
+Wenn alle Tests erfolgreich abgeschlossen sind: Herzlichen Glückwunsch! Nun geht es an die eigene Roboter-Software oder die Erkundung der bereits vorhandenen. Bitte lesen Sie auf der '''[wiki:ct-Bot-Software Software-Seite]''' weiter.
+
+== Erweiterungen ==
+Wenn der c't-Bot erst einmal fährt, gibt es ein paar Erweiterungen:
+=== USB-2-Bot ===
+Das [wiki:USB2Bot USB-2-Bot-Modul] verbindet einen c't-Bot per USB mit dem PC. So lassen sich Debug-Informationen und Steuerbefehle leicht und Billig übertragen. Es dient NICHT der Programmierung.
+
+siehe auch:
+ * '''[http://www.heise.de/ct/artikel/An-der-Leine-290394.html c't 7/2006, S. 223]''': An der Leine, Debuggen des c't-Bot über USB
+ * Aufbauanleitung '''[wiki:USB2Bot USB-2-Bot-Adapter]''' mit Fotos
+
+=== Erweiterungsmodul ===
+Das '''[wiki:ct-Bot-Erweiterung Erweiterungsmodul]''' beschert dem c't-Bot WLAN, MMC- oder SD-Karten und eine Transportklappe.
+
+siehe auch:
+ * '''[http://www.heise.de/ct/artikel/Aussendienstler-290830.html c't 2/2007, S. 184]''' Außendienstler, Funkmodul, Massenspeicher und Klappe für den c't-Bot
+ * Aufbauanleitung '''[wiki:ct-Bot-Erweiterung Erweiterungsmodul]''' und Klappe mit Fotos
+
+=== CPU-Erweiterung ===
+Unter BeagleBoard und RaspberryPi finden sich Informationen über eine leistungsfähige CPU-Erweiterung des c't-Bots mit Hilfe eines !BeagleBoards oder Raspberry Pi.
+
+=== Weitere Ideen ===
+  * Sammlung von Ideen oder Leservorschlägen für [wiki:HWErweiterungen Erweiterung des c't-Bots] um zusätzliche Hardware
+
+== Korrekturen und Hinweise ==
+
+{{{
+#!html
+<p>
+Es haben sich im Laufe des Projekts einige kleine Fehler eingeschlichen. Zum Gl&#252;ck nur in der Dokumentation, nicht in der Hardware (auch wenn es hier mittlerweile einige <a href="https://www.heise.de/ct/projekte/machmit/ctbot/wiki/ct-Bot-Modifikationen" target="blank">Verbesserungsvorschläge</a> gibt). Hier daher die offizielle, bereinigte Version. Umst&#228;nde und Irrt&#252;mer bitten wir zu entschuldigen.
+</p>
+<p>
+Als Aufbauanleitung gilt nach wie vor, die in c't 04/06 ab S. 208 abgedruckte. Sie enth&#228;lt nach unserem derzeitigen Wissensstand keine Fehler. Lediglich in einem Schaltplan und der St&#252;ckliste hatte der Fehlerteufel seine Finger im Spiel. Da etwas Verwirrung durch unterschiedliche Versionen entstanden ist, stehen auf [wiki:ct-Bot-Aufbau dieser Seite] der entsprechende Teil des Artikels mit einigen zus&#228;tzlichen Fotos und Anmerkungen, sowie alle Schalt- und Best&#252;ckungspl&#228;ne. Auch die aktualisierte St&#252;ckliste findet sich hier. Sie entspricht bis auf die Bestellnummern der, die auch <a href="http://www.segor.de/L1Bausaetze/ct-robot.shtml" target="blank">Segor</a> auf seiner Homepage hat und ist etwas ausf&#252;hrlicher, als die in c't 04/06 abgedruckte.
+</p>
+
+<p>
+Die Aufbauanleitung und die Korrekturhinweise, die den Teiles&#228;tzen beiliegen, die vor dem 12.2.2006 ausgeliefert worden bitte nicht mehr beachten. Sie werden durch die hier aufgelisteten Dokumente komplett ersetzt.
+</p>
+<p>
+&#220;berarbeitet gegen&#252;ber den in c't abgedruckten Informationen:
+</p>
+
+<ul>
+<li>St&#252;ckliste (aus c't 04/06)</li>
+<li>Schaltplan Sensorplatinen (aus c't 04/06)</li>
+<li>Best&#252;ckungsdruck Hauptplatine (aus c't 04/06)</li>
+
+<li>Schaltplan Hauptplatine (aus c't 02/06)</li>
+</ul>
+<p>
+Nach wie vor aktuell, und hier der Vollst&#228;ndigkeithalber nochmals aufgef&#252;hrt:
+</p>
+
+<ul>
+<li>Schaltplan Maussensor (aus c't 04/06)</li>
+<li>Best&#252;ckungsplan Maussensor aus c'2 04/06</li>
+</ul>
+<p>
+
+Wer bereits angefangen hat zu bauen findet hier eine Zusammenfassung der wichtigsten Korrekturen:
+</p>
+<ul>
+<li>Gegen&#252;ber dem ersten Schaltplan aus c't 02/06 haben sich diverse Widerstandswerte ge&#228;ndert. Neu hinzugekommen ist auch die Schutzschaltung gegen Verpolen der Spannungsversorgung. Des Weiteren hat sich die Polung der DC-Buchse ge&#228;ndert. Alle diese &#196;nderungen dokumentiert bereits c't 04/06</li>
+<li>In der St&#252;ckliste in c't 04/06 haben R6, R32, Pot1 falsche Werte. Des Weiteren sind die LEDs verrutscht.</li>
+<li>In dem Best&#252;ckungsplan in c't 04/06 sind R7 und R27 vertauscht</li>
+<li>Im Maussensorschaltplan (c't 04/06) ist U102 verpolt</li>
+
+<li>Die Montageanleitung der IR-Distanzsensoren im Beipackzettel ist fehlerhaft.</li>
+</ul>
+
+}}}
+
+== Schaltpläne ==
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-final.pdf Hauptplatine] (PDF) Stand: 13.02.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-sensoren.pdf Sensorplatinen] (PDF) Stand: 13.02.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-maus.pdf Maussensor] (PDF) Stand: 13.02.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-usb-2-bot.pdf USB-2-Bot-Adapter] (PDF) Stand: 20.03.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-erweiterung.pdf Erweiterungsmodul] (PDF) Stand: 06.01.2007
+
+== Bestückungspläne ==
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/bestueckung.pdf Hauptplatine und Sensorplatinen] (PDF) Stand: 13.02.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/bestueckung-usb-2-bot.pdf USB-2-Bot-Adapter] (PDF) Stand: 20.03.2006
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/bestueckung-erweiterung.pdf Erweiterungsmodul] (PDF) Stand: 06.01.2007
+
+== Mechanische Teile des Bot ==
+ * [http://www.heise.de/ct/projekte/ct-bot/pdf/grundplatte_bemassung.pdf Grundplatte] (PDF) Stand: 13.02.2006
+
+
+== Stücklisten ==
+=== Erweiterungsmodul ===
+Stand: 06.01.2007
+{{{
+#!html
+
+
+<table>
+  <tr>
+    <td><b>Bauteil</b></td>
+
+    <td><b>Wert</b></td>
+  </tr>
+  <TR>
+	<TD>C1,C2</TD>
+	<TD>470uF/16V</TD>
+	</TR>
+	<TR>
+
+	<TD>C3,C4,C5,C6,C7,C9</TD>
+	<TD>100nF</TD>
+	</TR>
+	<TR>
+	<TD>D1,D2,D3,D4,D5</TD>
+	<TD>1N4148</TD>
+	</TR>
+
+	<TR>
+	<TD>IC1</TD>
+	<TD>WiPort (WP2001000G)</TD>
+	</TR>
+	<TR>
+	<TD>IC2</TD>
+	<TD>LM3940IT-3,3</TD>
+
+	</TR>
+	<TR>
+	<TD>IC3</TD>
+	<TD>74HC74</TD>
+	</TR>
+	<TR>
+	<TD>IC4</TD>
+
+	<TD>74HCT125</TD>
+	</TR>
+	<TR>
+	<TD>IC5,IC6</TD>
+	<TD>74HCT4053</TD>
+	</TR>
+	<TR>
+
+	<TD>J4, J5, J6, J7</TD>
+	<TD>Buchsenleisten (Best&uuml;ckung erfolgt von unten)</TD>
+	</TR>
+	<TR>
+	<TD>J12</TD>
+	<TD>Stiftleiste, gewinkelt</TD>
+
+	</TR>
+	<TR>
+	<TD>J10</TD>
+	<TD>SD-Kartenschacht</TD>
+	</TR>
+	<TR>
+	<TD>J11</TD>
+
+	<TD>Einzelstift, gewinkelt</TD>
+	</TR>
+	<TR>
+	<TD>J14</TD>
+	<TD>Stiftwanne, gewinkelt</TD>
+	</TR>
+	<TR>
+
+	<TD>J15</TD>
+	<TD>nicht bestückt,</TD>
+	</TR>
+	<TR>
+	<TD>P1</TD>
+	<TD>RJ45-Buchse mit Ferrit</TD>
+	</TR>
+
+	<TR>
+	<TD>und</TD>
+	<TD>LED</TD>
+	</TR>
+	<TR>
+	<TD>R4,R6,R8</TD>
+	<TD>1,8 kOhm</TD>
+
+	</TR>
+	<TR>
+	<TD>R5,R7,R9</TD>
+	<TD>3,3 kOhm</TD>
+	</TR>
+	<TR>
+	<TD>R10,R11</TD>
+
+	<TD>220 Ohm</TD>
+	</TR>
+	<TR>
+	<TD>R12, R13, R16, R17</TD>
+	<TD>10 kOhm</TD>
+	</TR>
+	<TR>
+
+	<TD>R15</TD>
+	<TD>4,7 kOhm</TD>
+	</TR>
+	<TR>
+	<TD>ST51</TD>
+	<TD>Buchsenleiste, zweireihig</TD>
+	</TR>
+
+	<TR>
+	<TD>SW1</TD>
+	<TD>Schalter</TD>
+	</TR>
+	<TR>
+	<TD>Servo</TD>
+	<TD>Futaba S3107</TD>
+
+	</TR>
+	</table>
+}}}
+
+=== c't-Bot Basispaket ===
+
+Stand: 13.02.2006
+
+{{{
+#!html
+<style type="text/css">
+#bauteile TH {
+    border-bottom: 2px solid rgb(204, 204, 204);
+    background-color: rgb(255, 255, 255);
+}
+.hellgrau {
+    background-color: rgb(246, 246, 246);
+}
+.mitlinie {
+    border-bottom: 1px solid rgb(204, 204, 204);
+    padding-top: 8px;
+}
+</style>
+<div id="bauteile">
+<table border="0" cellspacing="0" cellpadding="3">
+<tr>
+<th align="left">Rubrik</th>
+
+<th align="left">Bezeichnung</th>
+<th align="left">Anzahl</th>
+<th align="left">Bemerkung</th>
+</tr>
+<tr>
+<td class="mitlinie"><em>Mechanik</em></td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Grundplatte</td>
+
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Motorflansch</td>
+<td align="right">2</td>
+<td>links/rechts identisch</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Motor</td>
+
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Rad</td>
+<td align="right">2</td>
+<td>ohne Reifen</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Reifen</td>
+
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">2</td>
+<td>Madenschraube f&uuml;r Rad auf Motorachse</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">1</td>
+
+<td>f&uuml;r Madenschraube</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">6</td>
+<td>Schraube f&uuml;r Motor in Motorflansch</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Gleiter</td>
+
+<td align="right">1</td>
+<td>Teflongleiter mit Gewinde</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Alu-Tr&auml;ger</td>
+<td align="right">3</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+
+<td align="right">19</td>
+<td>Kreuzschlitzschraube - 1 Gr&ouml;&szlig;e f&uuml;r fast alles</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">4</td>
+<td>f&uuml;r Motorflansche an Grundplatte</td>
+
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">4</td>
+<td>Kunststoffschrauben f&uuml;r Maussensor-Sandwich</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">14</td>
+
+<td>Kunststoffscheiben 12 x f&uuml;r Maussensor-Sandwich, je 1x
+Sensorplatine links/rechts</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">16</td>
+<td>Kunststoffmuttern f&uuml;r Maussensor-Sandwich</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+
+<td align="right">2</td>
+<td>Halteschellen Maussensor-Kabelbaum an hinteren Alu-Tr&auml;ger</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">2</td>
+<td>Kabelbinder Sensorplatinen-Kabelb&auml;ume an vordere
+Alu-Tr&auml;ger</td>
+
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">4</td>
+<td>Moosgummif&uuml;&szlig;e zwischen Abdeckplatte und Akkupack</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">1</td>
+
+<td>Klettbinder als Akkupack-Halterung</td>
+</tr>
+<tr>
+<td>Batteriehalter</td>
+<td>3xMignon</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>Batteriehalter</td>
+<td>2xMignon</td>
+
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td class="mitlinie"><em>ELEKTRONIK Hauptplatine</em></td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>C1,C2</td>
+<td>22pF</td>
+<td align="right">2</td>
+
+<td>Richtung beliebig</td>
+</tr>
+<tr>
+<td>C3,C4</td>
+<td>100nF</td>
+<td align="right">2</td>
+<td>Stempelung 104, Richtung beliebig</td>
+</tr>
+<tr class="hellgrau">
+<td>C5</td>
+<td>100uF</td>
+
+<td align="right">1</td>
+<td>Polung beachten</td>
+</tr>
+<tr>
+<td>D1,D2</td>
+<td>1N4148</td>
+<td align="right">2</td>
+<td>Polung beachten</td>
+</tr>
+<tr class="hellgrau">
+<td>D3</td>
+
+<td>SB140</td>
+<td align="right">1</td>
+<td>Polung beachten</td>
+</tr>
+<tr>
+<td>IC1</td>
+<td>ATmega32-16PU</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">1</td>
+<td>Sockel f&uuml;r IC1</td>
+</tr>
+<tr>
+<td>IC2</td>
+<td>L293D</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+
+<tr class="hellgrau">
+<td>IC3</td>
+<td>74HC14N</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>IC4,IC5,IC6</td>
+<td>74HC595N</td>
+<td align="right">3</td>
+<td>&nbsp;</td>
+
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">4</td>
+<td>Sockel f&uuml;r IC2,4,5,6</td>
+</tr>
+
+<tr class="hellgrau">
+<td>IC7,IC8</td>
+<td>LM311N</td>
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">2</td>
+<td>Sockel f&uuml;r IC7,8</td>
+
+</tr>
+<tr class="hellgrau">
+<td>IC9</td>
+<td>TSOP34836</td>
+<td align="right">1</td>
+<td>FB-Empf&auml;nger</td>
+</tr>
+<tr>
+<td>IC10</td>
+<td>L4940V5</td>
+
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>J1-J8</td>
+<td>Stiftleiste</td>
+<td align="right">2</td>
+<td>schneiden</td>
+</tr>
+<tr>
+<td>LDR1,LDR2</td>
+
+<td>MPY54C569</td>
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>LED1,LED2,LED7</td>
+<td>LEDblau</td>
+<td align="right">3</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+</tr>
+<tr>
+
+<td>LED3</td>
+<td>LEDrot</td>
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+</tr>
+<tr class="hellgrau">
+<td>LED4</td>
+<td>LEDorange</td>
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+
+</tr>
+<tr>
+<td>LED5</td>
+<td>LEDgelb</td>
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+</tr>
+<tr class="hellgrau">
+<td>LED6</td>
+<td>LEDgr&uuml;n</td>
+
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+</tr>
+<tr>
+<td>LED8</td>
+<td>LEDwei&szlig;</td>
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+</tr>
+<tr class="hellgrau">
+<td>L1</td>
+
+<td>100uH-SMCC</td>
+<td align="right">1</td>
+<td>dicker Widerstand, braun-schwarz-braun-gold</td>
+</tr>
+<tr>
+<td>POT1</td>
+<td>67W 5k</td>
+<td align="right">1</td>
+<td>Trimmpoti Displaykontrast</td>
+</tr>
+
+<tr class="hellgrau">
+<td>P1</td>
+<td>DCBU 2,1-R</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Q1</td>
+<td>Q 16,0-LP</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Abstandshalter</td>
+<td align="right">1</td>
+<td>f&uuml;r Q1</td>
+</tr>
+<tr>
+<td>R1</td>
+<td>10kOhm</td>
+<td align="right">1</td>
+
+<td>braun-schwarz-schwarz-rot-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R2</td>
+<td>20 Ohm</td>
+<td align="right">1</td>
+<td>rot-schwarz-schwarz-gold-braun oder Drahtbr&uuml;cke
+(Displaybeleuchtung)</td>
+</tr>
+<tr>
+<td>R3,R4,R8</td>
+
+<td>4,7kOhm</td>
+<td align="right">3</td>
+<td>gelb-violett-schwarz-braun-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R5,R6,R7,R30,R31</td>
+<td>47kOhm</td>
+<td align="right">5</td>
+<td>gelb-violett-schwarz-rot-braun</td>
+
+</tr>
+<tr>
+<td>R9-R16</td>
+<td>160 Ohm</td>
+<td align="right">8</td>
+<td>braun-blau-schwarz-schwarz-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R17,R18,R32</td>
+<td>39 kOhm</td>
+
+<td align="right">3</td>
+<td>orange-wei&szlig;-schwarz-rot-braun</td>
+</tr>
+<tr>
+<td>R19,R20</td>
+<td>6,2 kOhm</td>
+<td align="right">2</td>
+<td>blau-rot-schwarz-braun-braun</td>
+
+</tr>
+<tr class="hellgrau">
+<td>R21,R22</td>
+<td>470 kOhm</td>
+<td align="right">2</td>
+<td>gelb-violett-schwarz-orange-braun</td>
+</tr>
+<tr>
+<td>R23,R24,R25,R26</td>
+<td>180 Ohm</td>
+
+<td align="right">4</td>
+<td>braun-grau-schwarz-schwarz-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R27</td>
+<td>100 Ohm</td>
+<td align="right">1</td>
+<td>braun-schwarz-schwarz-schwarz-braun</td>
+</tr>
+
+<tr>
+<td>R28</td>
+<td>6,8 Ohm</td>
+<td align="right">1</td>
+<td>blau-grau-gold-gold</td>
+</tr>
+
+<tr>
+<td>R33</td>
+<td>1 kOhm</td>
+<td align="right">1</td>
+<td>braun-schwarz-schwarz-braun-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R34</td>
+
+<td>5,1 kOhm</td>
+<td align="right">1</td>
+<td>gr&uuml;n-braun-schwarz-braun-braun</td>
+</tr>
+<tr>
+<td>R29</td>
+<td>ZD 2V4 0,5W</td>
+<td align="right">1</td>
+<td>Polung beachten</td>
+
+</tr>
+<tr class="hellgrau">
+<td>ST1,ST2,ST3</td>
+<td>Stecker+Buchse mit Kabel</td>
+<td align="right">3</td>
+<td>Set aus Stiftleiste und Buchse mit Kabeln</td>
+</tr>
+<tr>
+<td>ST4</td>
+<td>Stiftwanne</td>
+<td align="right">1</td>
+
+<td>Displayanschlu&szlig;</td>
+</tr>
+<tr class="hellgrau">
+<td>ST5</td>
+<td>Stiftwanne</td>
+<td align="right">1</td>
+<td>isp-Programmierstecker nach Atmel-Standard</td>
+</tr>
+<tr>
+<td>ST6</td>
+<td>Stiftwanne</td>
+
+<td align="right">1</td>
+<td>isp-Programmierstecker f&uuml;r BlueMP3/ISP</td>
+</tr>
+<tr class="hellgrau">
+<td>ST7,ST8,ST9</td>
+<td>Stecker+Buchse mit Kabel</td>
+<td align="right">3</td>
+<td>Set aus Stiftleiste und Buchse mit Kabeln</td>
+</tr>
+<tr>
+
+<td>SW1</td>
+<td>Taster</td>
+<td align="right">1</td>
+<td>Reset-Taster</td>
+</tr>
+<tr class="hellgrau">
+<td>SW2</td>
+<td>Kippschalter</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+
+</tr>
+<tr>
+<td>TR1-TR6</td>
+<td>BS250</td>
+<td align="right">6</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>U1</td>
+<td>CNY70</td>
+<td align="right">1</td>
+
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td class="mitlinie"><em>ELEKTRONIK Sensorplatinen links/rechts</em></td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+<td class="mitlinie">&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>U101-U104</td>
+<td>CNY70</td>
+<td align="right">4</td>
+<td>&nbsp;</td>
+
+</tr>
+<tr>
+<td>U105</td>
+<td>IS471F</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>LED101</td>
+<td>LD274-3</td>
+<td align="right">1</td>
+
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Abstandssensor</td>
+<td>GP2D12</td>
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td align="right">2</td>
+<td>Kabelsatz f&uuml;r Abstandssensor</td>
+
+</tr>
+<tr>
+<td><em>ELEKTRONIK Maussensor-Platine</em></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>C1</td>
+<td>100nF</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+
+<tr>
+<td>C2</td>
+<td>1uF</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>LED1</td>
+<td>HLMP-ED80-K0T00</td>
+<td align="right">1</td>
+<td>kurzes Bein ist Kathode (Minus)</td>
+
+</tr>
+<tr>
+<td>Klammer f&uuml;r LED</td>
+<td>HDNS-2200</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>Linsenplatte</td>
+<td>HDNS-2100</td>
+<td align="right">1</td>
+
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Q1</td>
+<td>Q24,0-LP/GW</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>&nbsp;</td>
+<td>Abstandshalter</td>
+<td align="right">1</td>
+<td>f&uuml;r Q1</td>
+
+</tr>
+<tr>
+<td>Q2</td>
+<td>BC557B</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>R1.R4</td>
+<td>180 Ohm</td>
+<td align="right">2</td>
+
+<td>braun-grau-schwarz-schwarz-braun</td>
+</tr>
+<tr>
+<td>R2.R3</td>
+<td>47 kOhm</td>
+<td align="right">2</td>
+<td>gelb-violett-schwarz-rot-braun</td>
+</tr>
+<tr class="hellgrau">
+<td>R5</td>
+
+<td>100 Ohm</td>
+<td align="right">1</td>
+<td>braun-schwarz-schwarz-schwarz-braun</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>100 kOhm</td>
+<td align="right">1</td>
+<td>braun-schwarz-schwarz-orange-braun</td>
+
+</tr>
+<tr class="hellgrau">
+<td>R7</td>
+<td>1 kOhm</td>
+<td align="right">1</td>
+<td>braun-schwarz-schwarz-braun-braun</td>
+</tr>
+<tr>
+<td>U1,U2</td>
+<td>CNY70</td>
+
+<td align="right">2</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="hellgrau">
+<td>U</td>
+<td>ADNS2610</td>
+<td align="right">1</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+</div>
+}}}
+
+=== USB-2-Bot-Adapter ===
+{{{
+#!html
+<table border="0" cellspacing="3" cellpadding="4">
+<tr><th align="left">Bauteil</th><th align="left">Bezeichnung </th><th align="left">Anzahl </th><th align="left">Bemerkung</th></tr>
+<tr><td>C1</td><td>10 nF</td><td>1</td><td>Stempelung "103"</td></tr>
+<tr><td>C2, C4</td><td>100 nF</td><td>2</td><td>Stempelung "104"</td></tr>
+
+<tr><td>C3</td><td>4,7 &#181;F</td><td>1</td><td>Polung beachten</td></tr>
+<tr><td>L1</td><td>BL01RN1</td><td>1</td><td></td></tr>
+<tr><td>R1, R2</td><td>270 Ohm</td><td>2</td><td></td></tr>
+<tr><td>LED1, LED2</td><td>LED</td><td>2</td><td>langes Bein ist der Pluspol</td></tr>
+
+<tr><td>P1</td><td>USB-Buchse</td><td>1</td><td></td></tr>
+<tr><td>J1</td><td>Stiftleiste</td><td>1</td><td></td></tr>
+<tr><td>J2</td><td>Stiftleiste</td><td>0</td><td>unbest&#252;ckt f&#252;r Erweiterungen</td></tr>
+<tr><td>IC1</td><td>FT232RL</td><td>0</td><td>bereits vorbest&#252;ckt</td></tr>
+
+</table>
+
+}}}

@@ -1,0 +1,855 @@
+Index: Changelog.txt
+===================================================================
+RCS file: /ctbot/ct-Sim/Changelog.txt,v
+retrieving revision 1.10
+diff -u -r1.10 Changelog.txt
+--- Changelog.txt	10 Apr 2006 22:04:59 -0000	1.10
++++ Changelog.txt	18 Apr 2006 22:16:02 -0000
+@@ -1,5 +1,7 @@
+ CHANGELOG fuer c't-Sim
+ ======================
++2006-04-18 Carsten Giesen (info@cnau.de) Redesign des Controllers
++
+ 2006-04-10 Andreas Merkle (mail@blue-andi.de) Der c't-Sim kann nun auch Log-Informationen darstellen
+ 
+ 2006-03-20 Markus Lang (lang@repulse.de)
+Index: ctSim/ctSim/View/CtControlPanel.java
+===================================================================
+RCS file: /ctbot/ct-Sim/ctSim/ctSim/View/CtControlPanel.java,v
+retrieving revision 1.6
+diff -u -r1.6 CtControlPanel.java
+--- ctSim/ctSim/View/CtControlPanel.java	10 Apr 2006 22:04:59 -0000	1.6
++++ ctSim/ctSim/View/CtControlPanel.java	18 Apr 2006 22:16:03 -0000
+@@ -54,44 +54,104 @@
+ 
+ 	private static final long serialVersionUID = 1L;
+ 
+-	private static final int RC5_CODE_0 = 0x3940; // /< Taste 0
++	private static final int RC5_CODE_PWR = 0x103D; // /< Taste An/Aus
++	private static final int RC5_CODE_GO	= 0x17FB;		// /< Taste GO */
+ 
+ 	private static final int RC5_CODE_1 = 0x3941; // /< Taste 1
+-
+ 	private static final int RC5_CODE_2 = 0x3942; // /< Taste 2
+-
+ 	private static final int RC5_CODE_3 = 0x3943; // /< Taste 3
+ 
+ 	private static final int RC5_CODE_4 = 0x3944; // /< Taste 4
+-
+ 	private static final int RC5_CODE_5 = 0x3945; // /< Taste 5
+-
+ 	private static final int RC5_CODE_6 = 0x3946; // /< Taste 6
+ 
+ 	private static final int RC5_CODE_7 = 0x3947; // /< Taste 7
+-
+ 	private static final int RC5_CODE_8 = 0x3948; // /< Taste 8
+-
+ 	private static final int RC5_CODE_9 = 0x3949; // /< Taste 9
+ 
++	private static final int RC5_CODE_BACK	= 0x17DF;		// /< Taste Back/Exit */
++	private static final int RC5_CODE_0 = 0x3940; // /< Taste 0
++	private static final int RC5_CODE_MENU	= 0x17CD;		// /< Taste Menue */
++
++	private static final int RC5_CODE_RED = 0x100B; // /< Taste An/Aus
+ 	private static final int RC5_CODE_UP = 0x2950; // /< Taste Hoch
++	private static final int RC5_CODE_GREEN = 0x102E; // /< Taste An/Aus
+ 
++	private static final int RC5_CODE_LEFT = 0x2955; // /< Taste Links
++	private static final int RC5_CODE_SELECT = 0x100B; // /< Taste Select
++	private static final int RC5_CODE_RIGHT = 0x2956; // /< Taste Rechts
++
++	private static final int RC5_CODE_YELLOW = 0x1038; // /< Taste An/Aus
+ 	private static final int RC5_CODE_DOWN = 0x2951; // /< Taste Runter
++	private static final int RC5_CODE_BLUE = 0x1029; // /< Taste An/Aus
+ 
+-	private static final int RC5_CODE_LEFT = 0x2955; // /< Taste Links
++	private static final int RC5_CODE_MUTE	= 0x100F;		// /<
++	private static final int RC5_CODE_VIEW	= 0x000F;		// /< Taste View zwischen Mute und Full */
++	private static final int RC5_CODE_FULL	= 0x103C;		// /< Taste Full */
++	
++	private static final int RC5_CODE_FWD	= 0x1032;		// /< Taste Vorlauf
++	private static final int RC5_CODE_PLAY	= 0x1035;		// /<  Taste Play
++	private static final int RC5_CODE_BWD	= 0x17F2;		// /<  Taste Ruecklauf
++
++	private static final int RC5_CODE_RECORD	= 0x1037;		// /<  Taste Aufnahme */
++	private static final int RC5_CODE_STOP	= 0x1036;		// /<  Taste Stop */
++	private static final int RC5_CODE_WAIT	= 0x1030;		// /<  Taste Pause */
+ 
+-	private static final int RC5_CODE_RIGHT = 0x2956; // /< Taste Rechts
++	private static final int RC5_CODE_REPLAY	= 0x1024;		// /<  Taste Anfang |< */
++	private static final int RC5_CODE_SKIP	= 0x101E;		// /<  Taste Ende >| */
++	
++	private JButton jButtonPWR;
++	private JPanel dummy1;
++	private JButton jButtonGO;
+ 
+-	private static final int RC5_CODE_PWR = 0x394C; // /< Taste An/Aus
++	private JButton jButton1;
++	private JButton jButton2;
++	private JButton jButton3;
+ 
+-	private static final int RC5_CODE_RED = 0x100B; // /< Taste An/Aus
++	private JButton jButton4;
++	private JButton jButton5;
++	private JButton jButton6;
+ 
+-	private static final int RC5_CODE_GREEN = 0x102E; // /< Taste An/Aus
++	private JButton jButton7;
++	private JButton jButton8;
++	private JButton jButton9;
+ 
+-	private static final int RC5_CODE_YELLOW = 0x1038; // /< Taste An/Aus
++	private JButton jButtonBACK;
++	private JButton jButton10;
++	private JButton jButtonMENU;
+ 
+-	private static final int RC5_CODE_BLUE = 0x1029; // /< Taste An/Aus
++	private JButton jButtonRED;	
++	private JButton jButtonUp;
++	private JButton jButtonGREEN;	
++
++	private JButton jButtonLeft;
++	private JButton jButtonSelect;
++	private JButton jButtonRight;
++	
++	private JButton jButtonYELLOW;	
++	private JButton jButtonDown;
++	private JButton jButtonBLUE;	
+ 
++	private JButton jButtonMUTE;	
++	private JButton jButtonVIEW;
++	private JButton jButtonFULL;	
++
++	private JButton jButtonFWD;	
++	private JButton jButtonPLAY;
++	private JButton jButtonBWD;	
++
++	private JButton jButtonRECORD;	
++	private JButton jButtonSTOP;
++	private JButton jButtonWAIT;	
++
++
++	private JButton jButtonREPLAY;	
++	private JPanel dummy2;
++	private JButton jButtonSKIP;	
++
++	private JPanel rc5Panel;
++
++	
+ 	// Zu welchem Bot gehoert das Panel?
+ 	private CtBot bot;
+ 
+@@ -147,52 +207,8 @@
+ 
+ 	private JPanel rightIRSliderPanel;
+ 
+-	private JPanel dummy6;
+-
+-	private JPanel dummy5;
+-
+-	private JButton jButtonDown;
+-
+-	private JPanel dummy4;
+-
+-	private JButton jButtonRight;
+-
+-	private JButton jButtonOnOff;
+-
+-	private JButton jButtonLeft;
+-
+-	private JButton jButtonUp;
+-
+-	private JPanel dummy3;
+-
+-	private JPanel dummy2;
+-
+-	private JButton jButton10;
+-
+-	private JButton jButton9;
+-
+-	private JButton jButton8;
+-
+-	private JButton jButton7;
+-
+-	private JButton jButton2;
+-
+-	private JPanel dummy8;
+-
+ 	private JPanel keyPanel;
+-
+-	private JButton jButton6;
+-
+-	private JButton jButton5;
+-
+-	private JButton jButton4;
+-
+-	private JButton jButton3;
+-
+-	private JButton jButton1;
+-
+-	private JPanel rc5Panel;
+-
++	
+ 	private JPanel irPanelR;
+ 
+ 	private JPanel motPanelR;
+@@ -283,11 +299,6 @@
+ 	private static final Color colLed8Akt = new Color(255, 255, 255);// weisse
+ 																		// LED
+ 
+-	// Farb-Tasten
+-	private JPanel colKeyPanel;
+-
+-	private JButton jButtonRed, jButtonGreen, jButtonYellow, jButtonBlue;
+-
+ 	// Anzeigen von Loggings
+ 	private JPanel jPanelLog;
+ 	private JButton jButtonLog;
+@@ -731,255 +742,10 @@
+ 					}
+ 				}
+ 
+-				// Tastenfeld einfuegen
+-				keyPanel = new JPanel();
+-				mainPanelLeft.add(keyPanel);
+-				{
+-					keyPanel
+-							.setLayout(new BoxLayout(keyPanel, BoxLayout.Y_AXIS));
+-
+-					// Zahlen- und Pfeiltasten
+-					rc5Panel = new JPanel();
+-					keyPanel.add(rc5Panel);
+-					GridLayout rc5PanelLayout = new GridLayout(1, 1);
+-					rc5PanelLayout.setHgap(5);
+-					rc5PanelLayout.setVgap(5);
+-					rc5PanelLayout.setColumns(3);
+-					rc5PanelLayout.setRows(7);
+-					rc5Panel.setLayout(rc5PanelLayout);
+-					rc5Panel.setPreferredSize(new java.awt.Dimension(200, 200));
+-					{
+-						jButton1 = new JButton();
+-						rc5Panel.add(jButton1);
+-						jButton1.setText("1");
+-						jButton1.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_1);
+-							}
+-						});
+-					}
+-					{
+-						jButton2 = new JButton();
+-						rc5Panel.add(jButton2);
+-						jButton2.setText("2");
+-						jButton2.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_2);
+-							}
+-						});
+-					}
+-					{
+-						jButton3 = new JButton();
+-						rc5Panel.add(jButton3);
+-						jButton3.setText("3");
+-						jButton3.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_3);
+-							}
+-						});
+-					}
+-					{
+-						jButton4 = new JButton();
+-						rc5Panel.add(jButton4);
+-						jButton4.setText("4");
+-						jButton4.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_4);
+-							}
+-						});
+-					}
+-					{
+-						jButton5 = new JButton();
+-						rc5Panel.add(jButton5);
+-						jButton5.setText("5");
+-						jButton5.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_5);
+-							}
+-						});
+-					}
+-					{
+-						jButton6 = new JButton();
+-						rc5Panel.add(jButton6);
+-						jButton6.setText("6");
+-						jButton6.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_6);
+-							}
+-						});
+-					}
+-					{
+-						jButton7 = new JButton();
+-						rc5Panel.add(jButton7);
+-						jButton7.setText("7");
+-						jButton7.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_7);
+-							}
+-						});
+-					}
+-					{
+-						jButton8 = new JButton();
+-						rc5Panel.add(jButton8);
+-						jButton8.setText("8");
+-						jButton8.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_8);
+-							}
+-						});
+-					}
+-					{
+-						jButton9 = new JButton();
+-						rc5Panel.add(jButton9);
+-						jButton9.setText("9");
+-						jButton9.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_9);
+-							}
+-						});
+-					}
+-					{
+-						jButtonOnOff = new JButton();
+-						rc5Panel.add(jButtonOnOff);
+-						jButtonOnOff.setText("ON / OFF");
+-						jButtonOnOff.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_PWR);
+-							}
+-						});
+-					}
+-					{
+-						jButton10 = new JButton();
+-						rc5Panel.add(jButton10);
+-						jButton10.setText("0");
+-						jButton10.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_0);
+-							}
+-						});
+-					}
+-					{
+-						dummy2 = new JPanel();
+-						rc5Panel.add(dummy2);
+-					}
+-					{
+-						dummy3 = new JPanel();
+-						rc5Panel.add(dummy3);
+-					}
+-					{
+-						jButtonUp = new JButton();
+-						rc5Panel.add(jButtonUp);
+-						jButtonUp.setText("UP");
+-						jButtonUp.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_UP);
+-							}
+-						});
+-					}
+-					{
+-						dummy4 = new JPanel();
+-						rc5Panel.add(dummy4);
+-					}
+-					{
+-						jButtonLeft = new JButton();
+-						rc5Panel.add(jButtonLeft);
+-						jButtonLeft.setText("LEFT");
+-						jButtonLeft.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_LEFT);
+-							}
+-						});
+-					}
+-					{
+-						dummy8 = new JPanel();
+-						rc5Panel.add(dummy8);
+-					}
+-					{
+-						jButtonRight = new JButton();
+-						rc5Panel.add(jButtonRight);
+-						jButtonRight.setText("RIGHT");
+-						jButtonRight.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_RIGHT);
+-							}
+-						});
+-					}
+-					{
+-						dummy5 = new JPanel();
+-						rc5Panel.add(dummy5);
+-					}
+-					{
+-						jButtonDown = new JButton();
+-						rc5Panel.add(jButtonDown);
+-						jButtonDown.setText("DOWN");
+-						jButtonDown.addActionListener(new ActionListener() {
+-							public void actionPerformed(ActionEvent evt) {
+-								bot.setSensRc5(RC5_CODE_DOWN);
+-							}
+-						});
+-					}
+-					{
+-						dummy6 = new JPanel();
+-						rc5Panel.add(dummy6);
+-					}
+-
+-					// Farb-Tastenfeld einfuegen
+-					colKeyPanel = new JPanel();
+-					keyPanel.add(colKeyPanel);
+-					colKeyPanel.setLayout(new GridLayout(1, 4, 5, 5));
+-					{
+-						{
+-							jButtonRed = new JButton();
+-							colKeyPanel.add(jButtonRed);
+-							jButtonRed.setBackground(new Color(255, 0, 0));
+-							jButtonRed.addActionListener(new ActionListener() {
+-								public void actionPerformed(ActionEvent evt) {
+-									bot.setSensRc5(RC5_CODE_RED);
+-								}
+-							});
+-						}
+-						{
+-							jButtonGreen = new JButton();
+-							colKeyPanel.add(jButtonGreen);
+-							jButtonGreen.setBackground(new Color(0, 255, 0));
+-							jButtonGreen
+-									.addActionListener(new ActionListener() {
+-										public void actionPerformed(
+-												ActionEvent evt) {
+-											bot.setSensRc5(RC5_CODE_GREEN);
+-										}
+-									});
+-						}
+-						{
+-							jButtonYellow = new JButton();
+-							colKeyPanel.add(jButtonYellow);
+-							jButtonYellow.setBackground(new Color(255, 255, 0));
+-							jButtonYellow
+-									.addActionListener(new ActionListener() {
+-										public void actionPerformed(
+-												ActionEvent evt) {
+-											bot.setSensRc5(RC5_CODE_YELLOW);
+-										}
+-									});
+-						}
+-						{
+-							jButtonBlue = new JButton();
+-							colKeyPanel.add(jButtonBlue);
+-							jButtonBlue.setBackground(new Color(0, 0, 255));
+-							jButtonBlue.addActionListener(new ActionListener() {
+-								public void actionPerformed(ActionEvent evt) {
+-									bot.setSensRc5(RC5_CODE_BLUE);
+-								}
+-							});
+-						}
+-					} // Ende des Farb-Tastenfeldes
+-				} // Ende des Tastenfeldes
+-			} // Ende der linken Spalte
+-
+-			// rechte Spalte fuellen
++			} 
+ 			{
+ 				sensorPanel = new JPanel();
+-				mainPanelRight.add(sensorPanel);
++				mainPanelLeft.add(sensorPanel);
+ 
+ 				labelDim = new Dimension(50, 25);
+ 				Dimension labelDimMax = new Dimension(100, 25);
+@@ -1153,6 +919,10 @@
+ 
+ 				} // Ende Sensor Panel
+ 
++				// Ende der linken Spalte
++
++				// rechte Spalte fuellen
++
+ 				mainPanelRight.add(Box.createRigidArea(smallGap));
+ 
+ 				/*
+@@ -1251,6 +1021,378 @@
+ 						ledPanel.add(led7);
+ 						ledPanel.add(led8);
+ 					} // LED-Panel ENDE
++					
++					// Tastenfeld einfuegen
++					keyPanel = new JPanel();
++					mainPanelRight.add(keyPanel);
++					{
++						keyPanel
++								.setLayout(new BoxLayout(keyPanel, BoxLayout.Y_AXIS));
++
++						// Zahlen- und Pfeiltasten
++						rc5Panel = new JPanel();
++						keyPanel.add(rc5Panel);
++						GridLayout rc5PanelLayout = new GridLayout(1, 1);
++						rc5PanelLayout.setHgap(5);
++						rc5PanelLayout.setVgap(5);
++						rc5PanelLayout.setColumns(3);
++						rc5PanelLayout.setRows(12);
++						rc5Panel.setLayout(rc5PanelLayout);
++						rc5Panel.setPreferredSize(new java.awt.Dimension(200, 200));
++						{
++							jButtonPWR = new JButton();
++							rc5Panel.add(jButtonPWR);
++							jButtonPWR.setText("PWR");
++							jButtonPWR.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_PWR);
++								}
++							});
++						}
++						{
++							dummy1 = new JPanel();
++							rc5Panel.add(dummy1);
++						}
++						{
++							jButtonGO = new JButton();
++							rc5Panel.add(jButtonGO);
++							jButtonGO.setText("GO");
++							jButtonGO.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_GO);
++								}
++							});
++						}
++						{
++							jButton1 = new JButton();
++							rc5Panel.add(jButton1);
++							jButton1.setText("1");
++							jButton1.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_1);
++								}
++							});
++						}
++						{
++							jButton2 = new JButton();
++							rc5Panel.add(jButton2);
++							jButton2.setText("2");
++							jButton2.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_2);
++								}
++							});
++						}
++						{
++							jButton3 = new JButton();
++							rc5Panel.add(jButton3);
++							jButton3.setText("3");
++							jButton3.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_3);
++								}
++							});
++						}
++						{
++							jButton4 = new JButton();
++							rc5Panel.add(jButton4);
++							jButton4.setText("4");
++							jButton4.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_4);
++								}
++							});
++						}
++						{
++							jButton5 = new JButton();
++							rc5Panel.add(jButton5);
++							jButton5.setText("5");
++							jButton5.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_5);
++								}
++							});
++						}
++						{
++							jButton6 = new JButton();
++							rc5Panel.add(jButton6);
++							jButton6.setText("6");
++							jButton6.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_6);
++								}
++							});
++						}
++						{
++							jButton7 = new JButton();
++							rc5Panel.add(jButton7);
++							jButton7.setText("7");
++							jButton7.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_7);
++								}
++							});
++						}
++						{
++							jButton8 = new JButton();
++							rc5Panel.add(jButton8);
++							jButton8.setText("8");
++							jButton8.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_8);
++								}
++							});
++						}
++						{
++							jButton9 = new JButton();
++							rc5Panel.add(jButton9);
++							jButton9.setText("9");
++							jButton9.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_9);
++								}
++							});
++						}
++						
++						{
++							jButtonBACK = new JButton();
++							rc5Panel.add(jButtonBACK);
++							jButtonBACK.setText("BACK");
++							jButtonBACK.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_BACK);
++								}
++							});
++						}
++						{
++							jButton10 = new JButton();
++							rc5Panel.add(jButton10);
++							jButton10.setText("0");
++							jButton10.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_0);
++								}
++							});
++						}
++						{
++							jButtonMENU = new JButton();
++							rc5Panel.add(jButtonMENU);
++							jButtonMENU.setText("MENU");
++							jButtonMENU.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_MENU);
++								}
++							});
++						}
++
++						{
++							jButtonRED = new JButton();
++							rc5Panel.add(jButtonRED);
++							jButtonRED.setBackground(new Color(255, 0, 0));
++							jButtonRED.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_RED);
++								}
++							});
++						}
++						{
++							jButtonUp = new JButton();
++							rc5Panel.add(jButtonUp);
++							jButtonUp.setText("\u2191");
++							jButtonUp.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_UP);
++								}
++							});
++						}
++						{
++							jButtonGREEN = new JButton();
++							rc5Panel.add(jButtonGREEN);
++							jButtonGREEN.setBackground(new Color(0, 255, 0));
++							jButtonGREEN.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_GREEN);
++								}
++							});
++						}
++
++						{
++							jButtonLeft = new JButton();
++							rc5Panel.add(jButtonLeft);
++							jButtonLeft.setText("\u2190");
++							jButtonLeft.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_LEFT);
++								}
++							});
++						}
++						{
++							jButtonSelect = new JButton();
++							rc5Panel.add(jButtonSelect);
++							jButtonSelect.setText("OK");
++							jButtonSelect.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_SELECT);
++								}
++							});
++						}
++						{
++							jButtonRight = new JButton();
++							rc5Panel.add(jButtonRight);
++							jButtonRight.setText("\u2192");
++							jButtonRight.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_RIGHT);
++								}
++							});
++						}
++
++						{
++							jButtonYELLOW = new JButton();
++							rc5Panel.add(jButtonYELLOW);
++							jButtonYELLOW.setBackground(new Color(255, 255, 0));
++							jButtonYELLOW.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_YELLOW);
++								}
++							});
++						}
++						{
++							jButtonDown = new JButton();
++							rc5Panel.add(jButtonDown);
++							jButtonDown.setText("\u2193");
++							jButtonDown.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_DOWN);
++								}
++							});
++						}
++						{
++							jButtonBLUE = new JButton();
++							rc5Panel.add(jButtonBLUE);
++							jButtonBLUE.setBackground(new Color(0, 0, 255));
++							jButtonBLUE.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_BLUE);
++								}
++							});
++						}
++
++						{
++							jButtonMUTE = new JButton();
++							rc5Panel.add(jButtonMUTE);
++							jButtonMUTE.setText("MUTE");
++							jButtonMUTE.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_MUTE);
++								}
++							});
++						}
++						{
++							jButtonVIEW = new JButton();
++							rc5Panel.add(jButtonVIEW);
++							jButtonVIEW.setText("VIEW");
++							jButtonVIEW.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_VIEW);
++								}
++							});
++						}
++						{
++							jButtonFULL = new JButton();
++							rc5Panel.add(jButtonFULL);
++							jButtonFULL.setText("FULL");
++							jButtonFULL.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_FULL);
++								}
++							});
++						}
++						{
++							jButtonBWD = new JButton();
++							rc5Panel.add(jButtonBWD);
++							jButtonBWD.setText("<<");
++							jButtonBWD.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_BWD);
++								}
++							});
++						}
++						{
++							jButtonPLAY = new JButton();
++							rc5Panel.add(jButtonPLAY);
++							jButtonPLAY.setText(">");
++							jButtonPLAY.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_PLAY);
++								}
++							});
++						}
++						{
++							jButtonFWD = new JButton();
++							rc5Panel.add(jButtonFWD);
++							jButtonFWD.setText(">>");
++							jButtonFWD.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_FWD);
++								}
++							});
++						}
++						{
++							jButtonRECORD = new JButton();
++							rc5Panel.add(jButtonRECORD);
++							jButtonRECORD.setText("REC");
++							jButtonRECORD.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_RECORD);
++								}
++							});
++						}
++						{
++							jButtonSTOP = new JButton();
++							rc5Panel.add(jButtonSTOP);
++							jButtonSTOP.setText("STOP");
++							jButtonSTOP.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_STOP);
++								}
++							});
++						}
++						{
++							jButtonWAIT = new JButton();
++							rc5Panel.add(jButtonWAIT);
++							jButtonWAIT.setText("||");
++							jButtonWAIT.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_WAIT);
++								}
++							});
++						}
++						{
++							jButtonREPLAY = new JButton();
++							rc5Panel.add(jButtonREPLAY);
++							jButtonREPLAY.setText("|<");
++							jButtonREPLAY.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_REPLAY);
++								}
++							});
++						}
++						{
++							dummy2 = new JPanel();
++							rc5Panel.add(dummy2);
++						}
++						{
++							jButtonSKIP = new JButton();
++							rc5Panel.add(jButtonSKIP);
++							jButtonSKIP.setText(">|");
++							jButtonSKIP.addActionListener(new ActionListener() {
++								public void actionPerformed(ActionEvent evt) {
++									bot.setSensRc5(RC5_CODE_SKIP);
++								}
++							});
++						}
++					} // Ende des Tastenfeldes
+ 				} // Bot-Panel ENDE
+ 
+ 				// Anzeigen von Loggings

@@ -1,0 +1,122 @@
+[[PageOutline(1-999)]]
+
+The wiki is written in German, but online translation services like [http://translate.google.com/translate?hl=&sl=de&tl=en&u=https%3A%2F%2Fwww.heise.de%2Fct%2Fprojekte%2Fmachmit%2Fctbot%2Fwiki%2FWikiStart Google Translate] may help you.
+
+== Willkommen beim c't-Bot- und c't-Sim-Projekt ==
+c't-Bot und c't-Sim gehören zusammen und sind ein Roboterprojekt der Zeitschrift c't. Dies hier ist das Trac zum Projekt, in dem dieses auch nach dem Erscheinen des letzten c't-Artikels weiterlebt. Daher ergänzen diese Seiten die offizielle '''[http://www.heise.de/ct/projekte/ct-bot/ c't-Projektseite]'''.
+
+== c't-Bot in Aktion ==
+Zur Einstimmung gibt es in der '''[wiki:Galerie]''' Videos und Bilder rund um das Projekt. [[Image(bot3.jpg, nolink, right, 150)]]
+
+== Anlaufstellen ==
+
+Zum Projekt gibt es viel Doku, hier ein paar generelle Anlaufadressen:
+  1. '''[wiki:Artikelliste c't-Artikel]'''
+  1. Die '''[http://www.heise.de/ct/artikel/FAQ-fuer-c-t-Bot-und-c-t-SIM-291940.html FAQ]'''
+  1. Das '''[http://www.heise.de/ct/foren/go.shtml?list=1&forum_id=89813 Heise Forum]'''
+  1. Das '''[https://www.ctbot.de Fan Forum zum c't-Bot]'''
+  1. Die '''[http://www.ct-bot.de Projektseite]'''
+  1. Das '''[wiki:WikiStart Wiki]''' in dem Sie gerade lesen
+  1. '''[wiki:FirstSteps#AllgemeineInfos Dokumentationen und Informationsseiten]'''
+  1. '''[source:devel/ct-Bot/Documentation c't-Bot-]'''Dokumentation im Code-Repository
+  1. '''Direkter Kontakt''' über
+     * das Matrix-Netzwerk mit '''[https://riot.im/app/#/room/#ctbot:matrix.org Riot.im]''' (auch als Gast ohne Registrierung nutzbar)
+     * oder '''[https://ct-bot-slack.herokuapp.com Slack]'''
+     * !Matrix/Riot.im und Slack sind synchronisiert, zeigen also immer dieselben Inhalte und können je nach persönlicher Präferenz gewählt werden.
+
+
+== Schnelleinstieg in das Projekt ==
+ 1. Mal ausprobieren, wie das ganze so geht (auch ohne Geld auszugeben): '''[wiki:FirstSteps Erste Schritte]'''
+ 1. c't-Bot '''[wiki:ct-Bot-Hardware#AufbauMontage aufbauen]'''
+ 1. c't-Bot '''[wiki:ct-Bot-Hardware#Testeinesfrischaufgebautenct-Bots testen]'''
+ 1. Die Firmware für die eigene Hardware '''[wiki:ct-Bot-Software#Kalibrierung kalibrieren]'''
+ 1. Demo-Firmware '''[wiki:ct-Bot-Software#Undlosgehtes ausprobieren]'''
+ 1. '''[wiki:ct-Bot-Software#EigeneSchritte Eigenen Code]''' schreiben
+ 1. '''[wiki:AVRToolchainInterna#FirmwarefürdenAVR-Mikrocontrollererzeugen Firmware]''' für den realen Bot generieren
+ 1. Firmware auf den realen Bot '''[wiki:Flash Übertragen (Flashen)]'''
+
+
+== Hardware ==
+  * Überblick über die '''[wiki:ct-Bot-Hardware ct-Bot-Hardware]'''
+  * '''[wiki:ct-Bot-Hardware#Schaltpl%C3%A4ne Schaltpläne]
+  * '''[wiki:ct-Bot-Hardware#Stücklisten Stücklisten]'''
+  * '''[wiki:ct-Bot-Hardware#AufbauMontage Aufbauanleitung]'''
+  * '''[wiki:ct-Bot-Hardware#Erweiterungen Erweiterungen]'''
+  * '''[wiki:Flash Firmware flashen]
+  * c't-Bot '''[wiki:ct-Bot-Hardware#Testeinesfrischaufgebautenct-Bots testen]'''
+
+== Software ==
+'''[wiki:InstallationsanleitungR23 Installationsanleitung]''' für c't-Bot und c't-Sim
+
+=== c't-Bot ===
+Dieses Teilprojekt umfasst den C-Code für reale und simulierte c't-Bots
+ * Überblick über die '''[wiki:ct-Bot-Software ct-Bot-Software]'''
+ * '''[wiki:ct-Bot-Software#Dokumentation Dokumentation]''' zum bestehenden Code
+ * '''[wiki:ct-Bot-Software#Howto Howto]''' zum Bot
+ * '''[wiki:ct-Bot-Software#Ideenmehr Ideen & mehr]'''
+ * '''[wiki:ct-Bot-Software#Kalibrierung kalibrieren]'''
+ * '''[wiki:ct-Bot-Software#EigeneSchritte Eigenen Code]''' schreiben
+
+=== c't-Sim ===
+Dieses Teilprojekt umfasst den Java-Code für den Simulator c't-Sim
+ * Überblick über die '''[http://www.heise.de/ct/projekte/c-t-Sim-Software-406394.html c-t-Sim-Software]'''
+ * '''[wiki:ct-Sim#Konfiguration Konfiguration]''' der Sim-Optionen
+ * '''[wiki:ct-Sim#Howto Howto]''' zum Sim
+
+=== Zugang zum Source-Code ===
+Aller Source-Code steht in einem frei zugänglichen Subversion hier im Trac. Damit eigener Code den Weg in das Repository findet, sollte er den '''[wiki:Coderichtlinien Code-Richtlinien]''' entsprechen.
+
+ * '''[wiki:SVNUndEclipse Detailierte Beschreibung]''' zum Repository und der Integration in Eclipse sowie Howto zum Umgang mit Subversion.
+ * Code-Repository: Ab sofort findet sich der aktuelle Code im Subversion des TRAC, das den '''[source: Code auch im Web]''' sichtbar macht. Die Subversion-URL, um den Code in Eclipse oder andere Tools zu holen lautet: '''!https://www.heise.de/svn/ctbot'''
+ * Per Webbrowser stöbern: Der aktuelle stabile Code liegt unter '''[source:stable]''', der Neueste (aber teilweise Experimentelle) immer unter '''[source:devel]'''.
+ * '''[source:ziped-releases Zip-Files]''' mit dem Code und Binaries älterer Releases
+ * '''[wiki:Patches Erweiterungen]''' von Lesern, die es (noch) nicht in den offiziellen Code geschafft haben
+
+=== Entwicklungsumgebung ===
+ * '''[wiki:InstallationsanleitungR23 Installationsanleitung]''' für c't-Bot und c't-Sim
+ * Entwicklungsumgebung
+  * '''[wiki:EclipseInstallation Eclipse-Installation]''' inkl. der nötigen Plugins
+  * '''[wiki:SVNUndEclipse Code aus dem Subversion]''' in Eclipse einbinden
+  * '''[wiki:TracUndEclipsePaaren Tickets aus dem Trac]''' in Eclipse einbinden
+  * '''[wiki:EclipseTipps Tipps, Tricks und Hotkeys]''' rund um Eclipse
+ * AVR-Toolchain
+  * '''[wiki:AVRToolchain Installation der AVR-Toolchain]''' zur Entwicklung des Steuercodes eines ''realen'' c't-Bots
+  * '''[wiki:AVRToolchainInterna Hintergründe]''' zur AVR-Toolchain
+  * '''[wiki:Utils AVR-Tools und Tricks]''' für die (Bot-)Softwareentwicklung
+
+
+== Was es hier gibt ==
+Trac besteht im wesentlichen aus einem Wiki, einem SVN-Repository für den Code und einem Bugtracker.
+ * Im '''[wiki:WikiStart Wiki]''' ist Platz für Anleitungen, Tipps und Dokumentation für den c't-Bot. Wer will kann aber auch gerne Videos und Fotos von seinem eigenen c't-Bot hochladen.
+ * Das '''[/timeline Journal]''' zeigt, was sich zuletzt im Trac geändert hat.
+ * Was als nächstes im c't-Bot-Projekt ansteht verrät die '''[/roadmap Roadmap]'''.
+ * Wer keine Lust hat, den ganzen Code per SVN auszuchecken, kann in der Rubrik '''[source: Source]''' durch den Quelltext stöbern oder einzelne Dateien herunterladen.
+ * Das '''[/log/ Revision Log]''' zeigt, was sich in letzter Zeit am Code geändert hat. Fehler und Diskussionen darum und auch die Lösungen dazu finden sich unter '''[/report View Tickets]'''.
+ * Wer einen Fehler entdeckt hat oder Ideen für neue Features hat, kann unter '''[/newticket New Ticket]''' neue Tickets erstellen (siehe auch TicketGuide).
+ * Ein vollständiger '''[wiki:TitleIndex Index]''' aller Wiki-Seiten.
+
+== Jagd auf den Fehlerteufel ==
+ * Offene '''[/report/14 Fehlerberichte zum c't-Sim]'''
+ * Offene '''[/report/9 Fehlerberichte zum c't-Bot]'''
+ * Neuen '''[/newticket Fehlerbericht erstellen]'''
+ * Erklärungen zu den Tickets befinden sich im TicketGuide
+
+== Organisatorisches ==
+ * '''[wiki:Neuigkeiten]'''
+ * '''[wiki:Links Links]''' rund um den c't-Bot und auf Leserprojekte
+ * '''[wiki:MLAttachments Pool]''' für Dateianhänge der Mailingliste
+
+== Ein paar Spielregeln ==
+Die Spielregeln für dieses Trac lauten wie folgt:
+  * Ohne Anmeldung kann man alles einsehen, aber nichts verändern
+  * Einige administrative Aufgaben, wie die Bearbeitung der Roadmap bleibt einer kleinen Gruppe von Maintainern vorbehalten
+  * Jeder hat Leserechte auf den ganzen Code im SVN, Schreibrechte haben nur die Maintainer
+
+Damit eigener Code den Weg in das Repository findet, sollte er den '''[wiki:Coderichtlinien]''' entsprechen.
+
+== Trac ==
+ * Einige kurze '''[wiki:TicketGuide Erklärungen zu den Tickets]'''
+ * Ein paar '''[wiki:Trac_start Infos und Einstiegspunkte zu Trac]'''
+ * '''[wiki:TracGuide Handbuch]'''
+ * Wer alle Änderungen per RSS sehen möchte, aboniert einfach diesen '''[http://www.heise.de/ct/projekte/machmit/ctbot/timeline?milestone=on&ticket=on&ticket_details=on&changeset=on&wiki=on&daysback=30&update=Update&format=rss RSS-Feed]'''
+ * Trac kann an mehreren Stellen '''RSS''', um Änderungen an Bugs bekanntzugeben ('''[wiki:TracRss mehr zu Tracs RSS-Unterstützung]''')

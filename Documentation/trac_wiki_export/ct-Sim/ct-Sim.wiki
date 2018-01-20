@@ -1,0 +1,9 @@
+[[PageOutline(1-999)]]
+= c't-Sim =
+
+== Konfiguration ==
+   * [wiki:SimConfig Übersicht] der in ct-sim.xml konfigurierbaren Optionen
+
+== Howto ==
+   * [wiki:AppletHowto Applet kompilieren und installieren]
+   * [wiki:AntMiniHowto Mini-Howto zu Ant], dem bei c't-Sim verwendeten Build-System

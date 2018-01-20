@@ -1,0 +1,227 @@
+[[PageOutline(1-999)]]
+
+= CPU-Erweiterung für den c't-Bot =
+
+== Installation von Ubuntu 12.04 LTS für ARM auf einem !BeagleBoard ==
+
+=== Vorbereitungen ===
+
+ 1. Herunterladen des Disk-Images ''Texas Instruments OMAP3 (Hard-Float) preinstalled server image'' von [http://cdimage.ubuntu.com/releases/12.04/release/ubuntu-12.04-preinstalled-server-armhf+omap.img.gz http://cdimage.ubuntu.com/releases/12.04/release]
+ 1. Entpacken und kopieren des Images auf eine Mikro-SD Karte: siehe [https://wiki.ubuntu.com/ARM/Server/Install#Copy_the_image_to_SD_card Installing pre-installed OMAP4 Precise (12.04) Server Images]
+ 1. Serielle Schnittstelle des !BeagleBoards mit dem PC verbinden
+ 1. Ethernet-Port des !BeagleBoards an ein LAN mit Internetzugang anschließen
+ 1. Ein Terminalprogramm starten und die serielle Schnittstelle, an der das !BeagleBoard angeschlossen ist, öffnen
+ 1. Mikro-SD-Karte ins !BeagleBoard stecken und das Board mit Strom versorgen - vorzugsweise ein Netzteil benutzen ('''5V''') - so dass das Board von der SD-Karte bootet
+ 1. Im Terminalprogramm sollte es dann während des Bootens ungefähr so aussehen:[[BR]]
+  [[Image(source:/galery/bb/screenshots/01.png)]]
+
+=== Installation von Ubuntu ===
+ * Nach dem Booten startet automatisch der Installationsassistent. Dort wählt man zunächst die gewünschte Sprache aus:[[BR]]
+ [[Image(source:/galery/bb/screenshots/02.png)]]
+
+ * anschließend die Region:[[BR]]
+ [[Image(source:/galery/bb/screenshots/03.png)]]
+ [[Image(source:/galery/bb/screenshots/04.png)]]
+ [[Image(source:/galery/bb/screenshots/05.png)]]
+
+ * und die Zeichenkodierung:[[BR]]
+ [[Image(source:/galery/bb/screenshots/06.png)]]
+
+ * sowie die Zeitzone:[[BR]]
+ [[Image(source:/galery/bb/screenshots/07.png)]]
+ [[Image(source:/galery/bb/screenshots/08.png)]]
+
+ * Nun legt man einen User an, mit dem man sich später am System anmelden kann:[[BR]]
+ [[Image(source:/galery/bb/screenshots/09.png)]]
+ [[Image(source:/galery/bb/screenshots/10.png)]]
+ [[Image(source:/galery/bb/screenshots/11.png)]]
+ [[Image(source:/galery/bb/screenshots/12.png)]]
+ [[Image(source:/galery/bb/screenshots/13.png)]]
+
+ * und vergibt einen Hostnamen:[[BR]]
+ [[Image(source:/galery/bb/screenshots/14.png)]]
+
+ * Außerdem installiert man direkt einen SSH-Server mit:[[BR]]
+ [[Image(source:/galery/bb/screenshots/15.png)]]
+
+ * Nach einiger Zeit ist die Installation abgeschlossen und man kann sich am System anmelden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/16.png)]]
+ [[Image(source:/galery/bb/screenshots/17.png)]]
+ [[Image(source:/galery/bb/screenshots/18.png)]]
+ [[Image(source:/galery/bb/screenshots/19.png)]]
+
+ * Dann überprüft man am besten zunächst die Netzwerkkonfiguration mit {{{ifconfig}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/20.png)]]
+
+
+=== System aktualisieren ===
+
+ * Im nächsten Schritt sollte man das System auf einen aktuellen Stand bringen mit {{{sudo aptitude update}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/21.png)]]
+
+ * Nach Eingabe des zuvor gewählten Passworts für den Benutzer:[[BR]]
+ [[Image(source:/galery/bb/screenshots/22.png)]]
+
+ * werden die Paketquellen aktualisiert und der Status angezeigt. Mit {{{sudo aptitude full-upgrade}}} startet man nun die Aktualisierung:[[BR]]
+ [[Image(source:/galery/bb/screenshots/23.png)]]
+
+ * Die Sicherheitsabfrage beantwortet man mit {{{y}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/24.png)]]
+
+ * Die Ausgabe sollte ähnlich der Folgenden aussehen und es sollten keine Fehler angezeigt werden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/25.png)]]
+
+ * Jetzt startet man das System mit {{{sudo reboot}}} neu:[[BR]]
+ [[Image(source:/galery/bb/screenshots/26.png)]]
+
+ * Anschließend erhält man erneut die Bootausgabe und kann sich wieder mit dem angelegten Benutzer anmelden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/28.png)]]
+ [[Image(source:/galery/bb/screenshots/29.png)]]
+
+ * Von jetzt an kann man sich per SSH über die Ethernet Verbindung einloggen, was deutlich komfortabler ist als über die serielle Verbindung. Dazu startet man von einer Shell aus ssh unter Angabe von Benutzernamen des !BeagleBoard-Systems und zugehöriger IP-Adresse, also z.B. {{{ssh bb@192.168.1.32}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/30.png)]]
+
+ * Da das System bisher unbekannt ist, stimmt man der Sicherheitsabfrage zu, gibt anschließend das Passwort des Benutzers ein und erhält eine Login-Shell auf dem BeagleBoard:[[BR]]
+ [[Image(source:/galery/bb/screenshots/31.png)]]
+ [[Image(source:/galery/bb/screenshots/32.png)]]
+
+
+=== Angepassten Kernel installieren ===
+
+Damit das !BeagleBoard mit der Hardware des c't-Bots kommunizieren kann, benötigt man einen speziell angepassten Kernel, der die Peripherie des Boards entsprechend konfiguriert und im Userspace zugänglich macht (siehe BeagleBoard). Die Versionsnummern im Folgenden bitte jeweils der verwendeten Kernelversion anpassen! Diese Kernelversion lässt sich wie folgt installieren:
+
+ * Z.B. über einen sftp-Client mit dem !BeagleBoard verbinden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/33.png, 860)]]
+
+ * Die heruntergeladenen Pakete für den Kernel auf das !BeagleBoard kopieren (alternativ kann man sie auch auf die FAT-Partition der SD-Karte kopieren):[[BR]]
+ [[Image(source:/galery/bb/screenshots/34.png, 860)]]
+
+ * In das Verzeichnis mit den kopierten Paketen wechseln, im Beispiel mit {{{cd kernel-3.2.17-x11_0.1}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/35.png)]]
+
+ * Zuerst das Firmware-Image installieren mit {{{sudo dpkg --force-all -i ./linux-firmware-image_1.0cross_armhf.deb}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/36.png)]]
+ [[Image(source:/galery/bb/screenshots/37.png)]]
+
+ * Im zweiten Schritt die Kernel-Header installieren mit {{{sudo dpkg -i ./linux-headers-3.2.17-x11_1.0cross_armhf.deb}}} (''Version entsprechend anpassen''):[[BR]]
+ [[Image(source:/galery/bb/screenshots/38.png)]]
+
+ * Danach die libc-Header installieren mit {{{sudo dpkg -i ./linux-libc-dev_1.0cross_armhf.deb}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/39.png)]]
+
+ * Und abschließend das Kernel-Image installieren mit {{{sudo dpkg --force-all -i ./linux-image-3.2.17-x11_1.0cross_armhf.deb}}} (''Version entsprechend anpassen''):[[BR]]
+ [[Image(source:/galery/bb/screenshots/40.png)]]
+
+ * Da die bereitgestellten Pakete derzeit eine abweichende Architekturbezeichnung tragen, muss man nun noch ein paar Dateien umbenennen, dazu mit {{{cd /boot}}} das Verzeichnis wechseln:[[BR]]
+ [[Image(source:/galery/bb/screenshots/41.png)]]
+
+ * Und anschließend die Befehle {{{sudo mv vmlinux-3.2.17-x11 vmlinux-3.2.17-x11-omap}}}, {{{sudo mv initrd.img-3.2.17-x11 initrd.img-3.2.17-x11-omap}}}, {{{sudo mv config-3.2.17-x11 config-3.2.17-x11-omap}}} und {{{sudo mv System.map-3.2.17-x11 System.map-3.2.17-x11-omap}}} ausführen (''Versionen entsprechend anpassen''):[[BR]]
+ [[Image(source:/galery/bb/screenshots/42.png)]]
+ [[Image(source:/galery/bb/screenshots/43.png)]]
+ [[Image(source:/galery/bb/screenshots/44.png)]]
+ [[Image(source:/galery/bb/screenshots/45.png)]]
+
+ * Mit {{{sudo flash-kernel 3.2.17-x11-omap}}} (''Version entsprechend anpassen'') wird dann der neue Kernel auf der Boot-Partition installiert:[[BR]]
+ [[Image(source:/galery/bb/screenshots/46.png)]]
+
+ * und mit {{{sudo reboot}}} gestartet:[[BR]]
+ [[Image(source:/galery/bb/screenshots/47.png)]]
+
+ * Nach dem Reboot und einem erneuten Login (s.o.) teilt man dem Paketmanager mit, dass die installierte Kernel-Version nicht durch Distributionsupdates überschrieben werden soll. Dazu dient die folgenden, mehrzeilige Eingabe (''Versionen entsprechend anpassen''):[[BR]]
+{{{
+sudo dpkg --set-selections << EOF
+linux-firmware-image hold
+linux-headers-3.2.17-x11 hold
+linux-image-3.2.17.x11 hold
+linux-libc-dev hold
+EOF
+}}}
+ [[Image(source:/galery/bb/screenshots/49.png)]]
+
+ * Anschließend kann man die alten Kernel-Versionen vollständig entfernen mit {{{sudo aptitude purge linux-image-3.2.0-23-omap}}}, {{{sudo aptitude purge linux-image-omap}}} und {{{sudo dpkg -P linux-image-3.2.0-24-omap}}}. Wichtig ist hierbei, dass die letzte Kernel-Version mit dpkg entfernt wird, damit der Paketmanager nicht auch die zugehörigen Hilfspakete entfernt:[[BR]]
+ [[Image(source:/galery/bb/screenshots/50.png)]]
+ [[Image(source:/galery/bb/screenshots/51.png)]]
+ [[Image(source:/galery/bb/screenshots/52.png)]]
+
+
+=== WLAN konfigurieren ===
+
+ * Bevor man einen USB-WLAN-Adapter anschließt, sollte man sich zuerst einen Überblick über die derzeit angeschlossenen USB-Geräte verschaffen mit {{{lsusb}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/54.png)]]
+
+ * Die Ausgabe sollte dem obigen Beispiel entsprechen. Jetzt schließt man den WLAN-Adapter an und führt erneut {{{lsusb}}} aus. Der WLAN-Adapter sollte nun mit aufgelistet werden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/55.png)]]
+
+ * Nun kann man die Pakete ''wpasupplicant'' und ''wireless-tools'' mit {{{sudo aptitude install wpasupplicant}}} und {{{sudo aptitude wireless-tools}}} installieren:[[BR]]
+ [[Image(source:/galery/bb/screenshots/57.png)]]
+ [[Image(source:/galery/bb/screenshots/58.png)]]
+ [[Image(source:/galery/bb/screenshots/59.png)]]
+
+ * Ein Aufruf von {{{iwconfig}}} sollte nun das Interface ''wlan0'' anzeigen:[[BR]]
+ [[Image(source:/galery/bb/screenshots/60.png)]]
+ [[Image(source:/galery/bb/screenshots/61.png)]]
+
+ * Im nächsten Schritt erzeugt man mit {{{wpa_passphrase <SSID>}}} den Pre-shared Key für die WPA2-Verschlüsselung, indem man anschließend das WPA2-Passwort eingibt:[[BR]]
+ [[Image(source:/galery/bb/screenshots/62.png)]]
+
+ * Die Ausgabe des Programms kopiert man in die Zwischenablage, ruft {{{sudo nano /etc/wpa_supplicant.conf}}} auf:[[BR]]
+ [[Image(source:/galery/bb/screenshots/63.png)]]
+
+ * und fügt die kopierte Ausgabe dort ein:[[BR]]
+ [[Image(source:/galery/bb/screenshots/64.png)]]
+
+ * mit ''CTRL + o'' und ''Enter'' speichert man die Datei ab und schließt den Editor mit ''CTRL + x'':[[BR]]
+ [[Image(source:/galery/bb/screenshots/65.png)]]
+
+ * Jetzt kann man die WLAN-Verbindung testen, indem man {{{sudo wpa_supplicant -iwlan0 -c/etc/wpa_supplicant.conf -Dwext}}} ausführt:[[BR]]
+ [[Image(source:/galery/bb/screenshots/66.png)]]
+
+ * Im Erfolgsfall bekommt man mit ''CTRL-EVENT-CONNECTED'' die Bestätigung für einen korrekten Verbindungsaufbau. Mit ''CTRL + c'' kann man den Test dann beenden:[[BR]]
+ [[Image(source:/galery/bb/screenshots/68.png)]]
+
+ * Nun trägt man das Interface ''wlan0'' in ''/etc/network/interfaces'' ein, indem man mit {{{sudo nano /etc/network/interfaces}}} einen Editor öffnet:[[BR]]
+ [[Image(source:/galery/bb/screenshots/69.png)]]
+
+ * und ergänzt:[[BR]]
+{{{
+# The wifi interface
+auto wlan0
+iface wlan0 inet dhcp
+wpa-driver wext
+wpa-conf /etc/wpa_supplicant.conf
+}}}
+  sodass die Datei wie folgt aussieht:[[BR]]
+ [[Image(source:/galery/bb/screenshots/70.png)]]
+
+ * ''CTRL + o'' speichert die Datei und ''CTRL + x'' schließt den Editor wieder:[[BR]]
+ [[Image(source:/galery/bb/screenshots/71.png)]]
+
+ * Das neu eingerichtete Interface aktiviert und testen man nun mit {{{sudo ifup -v wlan0}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/72.png)]]
+
+ * Die Ausgabe sollte ähnlich der Folgenden aussehen:[[BR]]
+ [[Image(source:/galery/bb/screenshots/73.png)]]
+
+ * Außerdem überprüft man mit {{{ifconfig}}} die Konfiguration des Interfaces:[[BR]]
+ [[Image(source:/galery/bb/screenshots/74.png)]]
+
+ * Nach einem Neustart mit {{{sudo reboot}}} kann man das Ethernet-Kabel entfernen und mit ssh auf die IP-Adresse der WLAN-Schnittstelle wie gewohnt eine Verbindung zum Board aufbauen:[[BR]]
+ [[Image(source:/galery/bb/screenshots/76.png)]]
+ [[Image(source:/galery/bb/screenshots/77.png)]]
+ [[Image(source:/galery/bb/screenshots/78.png)]]
+
+ * Abschließend empfiehlt es sich, noch die Pakete ''alsa-base'' und ''libasound2-dev'' zu installieren mit {{{sudo aptitude install alsa-base libasound2-dev}}}:[[BR]]
+ [[Image(source:/galery/bb/screenshots/80.png)]]
+
+
+=== Backup ===
+
+ * Nach der Installation und Konfiguration sollte man ein Backup des gesamten Systems durchführen, um später im Bedarfsfall leicht zu diesem Stand zurückkehren zu können. Da das komplette System auf der (Mikro-)SD-Karte installiert ist, fertigt man als Backup einfach ein Image der gesamten SD-Karte an. Unter Linux bzw. Mac OS X lässt sich das mit {{{dd if=/dev/sdb bs=8M | pbzip2 -c > beagle-sd-backup.iso.bz2}}} bzw. {{{dd if=/dev/rdisk4 bs=8m | pbzip2 -c > beagle-sd-backup.iso.bz2}}} erledigen:[[BR]]
+ [[Image(source:/galery/bb/screenshots/85.png)]]
+
+ ''/dev/sdb'' bzw. ''/dev/rdisk4'' ist entsprechend dem Gerät der SD-Karte anzupassen.
+
+
+=== Weitere Schritte ===
+
+Siehe BeagleBoard.

@@ -1,0 +1,107 @@
+Index: CtBotSim.java
+===================================================================
+RCS file: /CVSROOT/ct-Sim/ctSim/ctSim/Model/CtBotSim.java,v
+retrieving revision 1.2
+diff -u -r1.2 CtBotSim.java
+--- CtBotSim.java	15 Feb 2006 12:10:56 -0000	1.2
++++ CtBotSim.java	15 Feb 2006 12:11:35 -0000
+@@ -159,46 +159,41 @@
+ 		// und speichern sie.
+ 		this.setSensEncR((short) (this.getSensEncR() + encoderSteps));
+ 
+-		// Zurueckgelegte Strecke linkes Rad als Vector
+-		Vector3f vecL = new Vector3f(this.getHeading());
+-		vecL.scale((float) (turnsL * RAD_UMFANG), vecL);
+-
+-		// Zurueckgelegte Strecke rechtes Rad als Vector
+-		Vector3f vecR = new Vector3f(this.getHeading());
+-		vecR.scale((float) (turnsR * RAD_UMFANG), vecR);
+-
+-		// Vektor vom Ursprung zum linken Rad
+-		Vector3f vec = new Vector3f((float) -this.getHeading().y, (float) this
+-				.getHeading().x, 0f);
+-		vec.scale((float) RAD_ABSTAND, vec);
+-
+-		// neue Position linkes Rad
+-		Vector3f posRadL = new Vector3f(this.getPos());
+-		posRadL.add(vec);
+-		posRadL.add(vecL);
+-
+-		// Vektor vom Ursprung zum rechten Rad
+-		vec = new Vector3f((float) this.getHeading().y, (float) -this
+-				.getHeading().x, 0f);
+-		vec.scale((float) RAD_ABSTAND, vec);
+-
+-		// neue Position rechtes Rad
+-		Vector3f posRadR = new Vector3f(this.getPos());
+-		posRadR.add(vec);
+-		posRadR.add(vecR);
+-
+-		// Neue Position berechnen
+-		Vector3f mid = new Vector3f(posRadR); // fange rechts an
+-		mid.sub(posRadL); // ziehe linke Position ab
+-		mid.scale(0.5f, mid); // bilde relative Mitte
+-
+-		Vector3f newPos = new Vector3f(posRadR); // und berechne die absolute
+-		newPos.sub(mid);
++		// Für ausführliche Erläuterung der Positionsberechnung siehe pdf
++		// Absolut zurückgelegte Strecke pro Rad berechnen
++		double s_l = turnsL * RAD_UMFANG;
++		double s_r = turnsR * RAD_UMFANG;
++		
++		// halben Drehwinkel berechnen
++		double _gamma = (s_l - s_r) / (4.0 * RAD_ABSTAND);
+ 
+-		// Jetzt fehlt noch die neue Blickrichtung
+-		Vector3f newHeading = new Vector3f(-mid.y, mid.x, 0);
++		// neue Blickrichtung berechnen
++		// ergibt sich aus Rotation der Blickrichtung um 2*_gamma
++		Vector3f _hd = this.getHeading();
++		double _s2g = Math.sin(2*_gamma);
++		double _c2g = Math.cos(2*_gamma);
++		Vector3f newHeading = new Vector3f((float)(_hd.x*_c2g + _hd.y*_s2g),(float)( - _hd.x*_s2g + _hd.y*_c2g ), 0f);
+ 		newHeading.normalize();
+ 
++		// Neue Position bestimmen
++		Vector3f newPos = new Vector3f(this.getPos());
++		double _sg = Math.sin(_gamma);
++		double _cg = Math.cos(_gamma);
++		double moveDistance;
++		if (_gamma == 0) {
++			// Bewegung geradeaus
++			moveDistance = s_l; // = s_r
++		} else {
++			// anderfalls die Distanz laut Formel berechnen
++			moveDistance = 0.5 * (s_l + s_r) * Math.sin(_gamma) / _gamma;
++		}
++		// Den Bewegungsvektor berechnen ...
++		Vector3f moveDirection = new Vector3f((float)(_hd.x*_cg + _hd.y*_sg),(float)( - _hd.x*_sg + _hd.y*_cg ), 0f);
++		moveDirection.normalize();
++		moveDirection.scale((float) moveDistance);
++		// ... und die alte Position entsprechend verändern.
++		newPos.add(moveDirection);
++		
+ 		// Pruefen, ob Kollision erfolgt. Bei einer Kollision wird
+ 		// der Bot blau gefaerbt.
+ 		if (world.checkCollision(botBody ,getBounds(), newPos, getBotName())) {
+@@ -221,6 +216,20 @@
+ 		this.setHeading(newHeading);
+ 
+ 		// Bodenkontakt ueberpruefen
++
++		// Vektor vom Ursprung zum linken Rad
++		Vector3f vecL = new Vector3f((float) newHeading.y, (float) newHeading.x, 0f);
++		vecL.scale((float) RAD_ABSTAND);
++		// neue Position linkes Rad
++		Vector3f posRadL = new Vector3f(this.getPos());
++		posRadL.add(vecL);
++
++		// Vektor vom Ursprung zum rechten Rad
++		Vector3f vecR = new Vector3f((float) newHeading.y, (float) -newHeading.x, 0f);
++		vecR.scale((float) RAD_ABSTAND);
++		// neue Position rechtes Rad
++		Vector3f posRadR = new Vector3f(this.getPos());
++		posRadR.add(vecR);
+ 		
+ 		// Winkel des heading errechnen
+ 		double angle = SimUtils.getRotation(newHeading);
