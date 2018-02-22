@@ -44,7 +44,7 @@
 /* Kommunikation */
 #define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE				/**< Sollen Bots untereinander kommunizieren? */
-//#define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
+#define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
 
 /* Display-Funktionen */
@@ -56,9 +56,9 @@
 
 
 /* Sensorauswertung */
-#define MOUSE_AVAILABLE					/**< Maus Sensor */
+//#define MOUSE_AVAILABLE					/**< Maus Sensor */
 #define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
-#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+//#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 //#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 //#define BPS_AVAILABLE						/**< Bot Positioning System */
 //#define SRF10_AVAILABLE					/**< Ultraschallsensor SRF10 vorhanden */
@@ -67,7 +67,7 @@
 
 /* Motoransteuerung */
 #define SPEED_CONTROL_AVAILABLE 				/**< Aktiviert die Motorregelung */
-//#define ADJUST_PID_PARAMS					/**< macht PID-Parameter zur Laufzeit per FB einstellbar */
+//#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 
@@ -78,7 +78,7 @@
 
 /* MMC-/SD-Karte als Speichererweiterung (opt. Erweiterungsmodul) */
 //#define MMC_AVAILABLE						/**< Aktiviert Unterstuetzung von MMC/SD-Karten im Erweiterungsmodul */
-//#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
 /* Hardware-Treiber */
@@ -124,6 +124,17 @@
 #if ! defined RC5_CODE_DOT || ! defined RC5_CODE_STOP || ! defined RC5_CODE_PLAY
 #undef KEYPAD_AVAILABLE
 #endif
+
+#ifdef PC
+#undef EXPANSION_BOARD_MOD_AVAILABLE
+#endif
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE // Anpassungen fuer modifiziertes Erweiterungsboard
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
+#undef ENABLE_RX0_PULLUP // Verwendung von Pull-down fuer RX0, also Kurzschluss verhindern
+#undef MOUSE_AVAILABLE // deaktiviert Maus-Sensor wegen Nutzung der ATMega SPI-Schnittstelle fuer den SD-Schacht
+#define SPI_AVAILABLE // Hardware-SPI-Modus des Controllers für die Anbindung des SD-Schachts.
+#endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef EXPANSION_BOARD_AVAILABLE
 #undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
