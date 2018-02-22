@@ -125,17 +125,6 @@
 #undef KEYPAD_AVAILABLE
 #endif
 
-#ifdef PC
-#undef EXPANSION_BOARD_MOD_AVAILABLE
-#endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE // Anpassungen fuer modifiziertes Erweiterungsboard
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
-#undef ENABLE_RX0_PULLUP // Verwendung von Pull-down fuer RX0, also Kurzschluss verhindern
-#undef MOUSE_AVAILABLE // deaktiviert Maus-Sensor wegen Nutzung der ATMega SPI-Schnittstelle fuer den SD-Schacht
-#define SPI_AVAILABLE // Hardware-SPI-Modus des Controllers für die Anbindung des SD-Schachts.
-#endif // EXPANSION_BOARD_AVAILABLE
-
 #ifdef EXPANSION_BOARD_AVAILABLE
 #undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #endif
