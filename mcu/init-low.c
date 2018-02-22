@@ -188,11 +188,6 @@ void ctbot_init_low_last(void) {
 		LED_on(LED_TUERKIS);
 	}
 #endif // OS_AVAILABLE
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-   ENA_on(ENA_VOLTAGE_3V3); // Die 3,3V Versorgung ist standardmaessig eingeschaltet.
-   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist standardmaessig eingeschaltet.
-#endif
 }
 
 /**
@@ -201,11 +196,6 @@ void ctbot_init_low_last(void) {
 void ctbot_shutdown_low() {
 #if defined SDFAT_AVAILABLE && defined SPEED_LOG_AVAILABLE
 	sdfat_close(speedlog_file);
-#endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-	ENA_off(ENA_VOLTAGE_3V3); // 3,3V Versorgung aus
-	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
 #endif
 
 #ifdef UART_AVAILABLE
