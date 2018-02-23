@@ -71,11 +71,7 @@ using SpiType = SpiMaster;
 using SpiType = SpiMasterSoft;
 #endif
 
-#ifndef EXPANSION_BOARD_MOD_AVAILABLE
 using CsType = SelectEna;
-#else
-using CsType = SelectPB4;
-#endif
 } // namespace SdCardTypes
 
 /**
