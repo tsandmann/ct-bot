@@ -362,9 +362,9 @@ void gui_display(uint8_t screen) {
 
 	/* Falls der eingestellte Wert ueberschritten wird, Display einschalten und umgekehrt */
 	if (sensLDR_average > 300) {
-		ENA_on(ENA_MMC);
+		ENA_on(ENA_MOUSE_SENSOR);
 	} else {
-		ENA_off(ENA_MMC);
+		ENA_off(ENA_MOUSE_SENSOR);
 	}
 #endif // AUTO_DISPLAYLIGHT
 }

@@ -129,6 +129,10 @@
 #undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #endif
 
+#ifdef AUTO_DISPLAYLIGHT
+#undef EXPANSION_BOARD_AVAILABLE // Erweiterungsboard verwendet ENA_MOUSE_SENSOR für den Betrieb des Maussensors
+#endif
+
 #ifndef MOUSE_AVAILABLE
 #undef MEASURE_MOUSE_AVAILABLE
 #undef MEASURE_COUPLED_AVAILABLE
