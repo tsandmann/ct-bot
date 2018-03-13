@@ -68,6 +68,31 @@
 #define PID_START_DELAY		20	/**< Dauer der Anfahrverzoegerung */
 #define ENC_CORRECT_L		5	/**< Korrekturoffset fuer linken Radencoder (falls nicht kalibriert, sonst 0) */
 #define ENC_CORRECT_R		5	/**< Korrekturoffset fuer rechten Radencoder (falls nicht kalibriert, sonst 0) */
+//#define MOT_SWAP_L				/**< Kehrt die Drehrichtung des linken Motors um */
+//#define MOT_SWAP_R				/**< Kehrt die Drehrichtung des rechten Motors um */
+
+//#define DRV8835_MOT_DRV		/**< Motortreiber DRV8835 */
+
+#ifdef DRV8835_MOT_DRV
+#undef PID_Kp
+#define PID_Kp				30	/**< PID-Parameter proportional */
+#undef PID_Ki
+#define PID_Ki				10	/**< PID-Parameter intergral */
+#undef PID_Kd
+#define PID_Kd				10	/**< PID-Parameter differential */
+#undef PID_SPEED_THRESHOLD
+#define PID_SPEED_THRESHOLD	BOT_SPEED_MIN /**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
+#undef PWMSTART_L
+#define PWMSTART_L			0	/**< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
+#undef PWMSTART_R
+#define PWMSTART_R			0	/**< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
+#undef PID_START_DELAY
+#define PID_START_DELAY		4	/**< Dauer der Anfahrverzoegerung */
+#undef MOT_SWAP_L
+#define MOT_SWAP_L				/**< Kehrt die Drehrichtung des linken Motors um */
+#undef MOT_SWAP_R
+#define MOT_SWAP_R				/**< Kehrt die Drehrichtung des rechten Motors um */
+#endif
 
 /* Odometrie-Konstanten */
 #ifdef PC
