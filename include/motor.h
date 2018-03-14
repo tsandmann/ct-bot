@@ -27,45 +27,49 @@
 #define MOTOR_H_
 
 
-#define BOT_SPEED_IGNORE	1000	/**< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
-#define BOT_SPEED_STOP		0		/**< Motor aus */
+#define BOT_SPEED_IGNORE    1000 /**< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
+#define BOT_SPEED_STOP         0 /**< Motor aus */
 
-#define BOT_SPEED_MIN		 50 	/**< langsamste Fahrt in mm/s */
-#define BOT_SPEED_SLOW		 50 	/**< langsame Fahrt in mm/s */
-#define BOT_SPEED_FOLLOW	 70		/**< vorsichtige Fahrt, fuer Folgeverhalten in mm/s */
-#define BOT_SPEED_MEDIUM	100		/**< mittlere Fahrt in mm/s */
-#define BOT_SPEED_NORMAL	150		/**< normale Fahrt in mm/s  */
-#define BOT_SPEED_FAST		300		/**< schnelle Fahrt in mm/s */
-#define BOT_SPEED_MAX		400		/**< maximale Fahrt in mm/s */
+#ifndef DRV8835_MOT_DRV
+#define BOT_SPEED_MIN         50 /**< langsamste Fahrt in mm/s */
+#else
+#define BOT_SPEED_MIN         25 /**< langsamste Fahrt in mm/s */
+#endif
+#define BOT_SPEED_SLOW        50 /**< langsame Fahrt in mm/s */
+#define BOT_SPEED_FOLLOW      70 /**< vorsichtige Fahrt, fuer Folgeverhalten in mm/s */
+#define BOT_SPEED_MEDIUM     100 /**< mittlere Fahrt in mm/s */
+#define BOT_SPEED_NORMAL     150 /**< normale Fahrt in mm/s  */
+#define BOT_SPEED_FAST       300 /**< schnelle Fahrt in mm/s */
+#define BOT_SPEED_MAX        400 /**< maximale Fahrt in mm/s */
 
 
 #define DIRECTION_FORWARD  0		/**< Drehrichtung vorwaerts */
 #define DIRECTION_BACKWARD 1		/**< Drehrichtung rueckwaerts */
 
-#define SERVO_OFF 0					/**< Servo wird zum Stromsparen deaktiviert */
+#define SERVO_OFF 0				/**< Servo wird zum Stromsparen deaktiviert */
 
 #define SERVO1 1					/**< Servo 1 */
 #define SERVO2 2					/**< Servo 2 */
 
-extern int16_t speed_l;				/**< Sollgeschwindigkeit des linken Motors */
-extern int16_t speed_r;				/**< Sollgeschwindigkeit des rechten Motors */
+extern int16_t speed_l;			/**< Sollgeschwindigkeit des linken Motors */
+extern int16_t speed_r;			/**< Sollgeschwindigkeit des rechten Motors */
 
-extern int16_t motor_left;			/**< zuletzt gestellter Wert linker Motor */
-extern int16_t motor_right;			/**< zuletzt gestellter Wert rechter Motor */
+extern int16_t motor_left;		/**< zuletzt gestellter Wert linker Motor */
+extern int16_t motor_right;		/**< zuletzt gestellter Wert rechter Motor */
 
 extern uint8_t servo_pos[2];		/**< Positionen der Servos */
-extern uint8_t servo_active[2];		/**< Aktivitaet der Servos */
+extern uint8_t servo_active[2];	/**< Aktivitaet der Servos */
 
 /** In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef union {
 	struct {
-		unsigned left:1;	/**< linksrum */
-		unsigned right:1;	/**< rechtsrum */
+		unsigned left:1; /**< linksrum */
+		unsigned right:1; /**< rechtsrum */
 	} PACKED_FORCE;
 	uint8_t raw;
 } direction_t;
 
-extern direction_t direction;		/**< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
+extern direction_t direction; /**< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 
 /**
  * Initialisiere den Motorkrams
@@ -78,7 +82,7 @@ void motor_init(void);
  * \param right	Geschwindigkeit fuer den rechten Motor
  *
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
- * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
+ * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW, -BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
 void motor_set(int16_t left, int16_t right);
 
@@ -93,8 +97,8 @@ void servo_set(uint8_t servo, uint8_t pos);
 
 /**
  * \brief Gibt die Sollposition der Servos zurueck
- * @param servo Servo ID
- * @return Sollposition
+ * \param servo Servo ID
+ * \return Sollposition
  */
 static inline uint8_t servo_get_pos(uint8_t servo) {
 	if (servo < SERVO1 || servo > SERVO2) {
@@ -106,8 +110,8 @@ static inline uint8_t servo_get_pos(uint8_t servo) {
 
 /**
  * \brief Gibt die Aktivitaet der Servos zurueck
- * @param servo Servo ID
- * @return 1, falls Servo aktiv, 0 sonst
+ * \param servo Servo ID
+ * \return 1, falls Servo aktiv, 0 sonst
  */
 static inline uint8_t servo_get_active(uint8_t servo) {
 	if (servo < SERVO1 || servo > SERVO2) {
@@ -130,7 +134,7 @@ static inline uint8_t servo_get_active(uint8_t servo) {
  * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
  * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
  */
-void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_time, uint8_t enc);
+void speed_control(uint8_t dev, int16_t* actVar, uint16_t* encTime, uint8_t i_time, uint8_t enc);
 
 /**
  * \brief Zeigt Debug-Informationen der Motorregelung an.

@@ -79,7 +79,7 @@
 #undef PID_Ki
 #define PID_Ki				10	/**< PID-Parameter intergral */
 #undef PID_Kd
-#define PID_Kd				10	/**< PID-Parameter differential */
+#define PID_Kd				0	/**< PID-Parameter differential */
 #undef PID_SPEED_THRESHOLD
 #define PID_SPEED_THRESHOLD	BOT_SPEED_MIN /**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #undef PWMSTART_L
