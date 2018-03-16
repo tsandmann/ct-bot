@@ -93,10 +93,14 @@ static void pwm_1_init(void) {
 void motor_update(uint8_t dev) {
 	if (dev == 0) {
 		/* linker Motor */
+#ifndef MOT_SWAP_L
 		if (direction.left == DIRECTION_FORWARD) {
-			BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
+#else
+		if (direction.left == DIRECTION_BACKWARD) {
+#endif
+			BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
 		} else {
-			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN); // rueckwaerts
+			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN);
 		}
 
 		uint8_t sreg = SREG;
@@ -107,10 +111,14 @@ void motor_update(uint8_t dev) {
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
+#ifndef MOT_SWAP_R
 		if (direction.right == DIRECTION_BACKWARD) {
-			BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
+#else
+		if (direction.right == DIRECTION_FORWARD) {
+#endif
+			BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 		} else {
-			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN); // vorwaerts
+			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN);
 		}
 
 		uint8_t sreg = SREG;

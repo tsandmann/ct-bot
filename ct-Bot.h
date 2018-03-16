@@ -130,7 +130,7 @@
 #endif
 
 #ifdef AUTO_DISPLAYLIGHT
-#undef EXPANSION_BOARD_AVAILABLE // Erweiterungsboard verwendet ENA_MOUSE_SENSOR für den Betrieb des Maussensors
+#undef EXPANSION_BOARD_AVAILABLE // Erweiterungsboard verwendet ENA_MOUSE_SENSOR fuer den Betrieb des Maussensors
 #endif
 
 #ifndef MOUSE_AVAILABLE
