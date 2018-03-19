@@ -86,10 +86,12 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic warning "-Wcpp"
 #warning "RemoteCall-Display geht nur mit aktivem Keypad, Display wurde daher deaktiviert"
 #pragma GCC diagnostic pop
+
 #endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif // ! KEYPAD_AVAILABLE || ! BEHAVIOUR_REMOTECALL_AVAILABLE
 
@@ -182,13 +184,16 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 	keypad_row = row;
 	keypad_col = col;
 	keypad_mode = mode;
+
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
+
 	keypad_result = keypad_buffer - 1;
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
+
 #endif
 }
 

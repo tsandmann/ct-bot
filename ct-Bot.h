@@ -97,7 +97,7 @@
 #define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 //#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
-//#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
+//#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Raspberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
 
 

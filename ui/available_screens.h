@@ -35,8 +35,13 @@
 #define DISPLAY_REMOTECALL_AVAILABLE		/**< Steuerung der Verhalten inkl. Parametereingabe */
 #define DISPLAY_ODOMETRIC_INFO				/**< zeigt Positions- und Geschwindigkeitsdaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/**< Gibt Debug-Infos der Motorregelung aus */
+/** TODO: BUG: aktiviertes #define DISPLAY_MISC_AVAILABLE erzeugt build-fehler
+ * "/home/travis/build/$USER/ct-bot/tests/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/4.9.2/../../../../avr/bin/ld: ct-Bot.elf section `.data' will not fit in region `text'
+ * /home/travis/build/$USER/ct-bot/tests/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/4.9.2/../../../../avr/bin/ld: region `text' overflowed by 266 bytes -- collect2: error: ld returned 1 exit status -- make: *** [ct-Bot.elf] Error 1
+ * TEST /home/travis/build/$USER/ct-bot/tests/mcu/20_all_behaviours_1_mcu.h FOR MCU FAILED."
+ */
 //#define DISPLAY_MISC_AVAILABLE			/**< aehm ja, der Rest irgendwie... */
-#define DISPLAY_MMC_INFO                                        /**< Zeigt die Daten der MMC-Karte an; funktioniert nicht, wenn ct-Bot.h/MAP_AVAILABLE aktiviert ist */
+#define DISPLAY_MMC_INFO					/**< Zeigt die Daten der MMC-Karte an; funktioniert nicht, wenn ct-Bot.h/MAP_AVAILABLE aktiviert ist */
 //#define DISPLAY_RESET_INFO_AVAILABLE		/**< Zeigt Informationen ueber Resets an */
 #define DISPLAY_NEURALNET_AVAILABLE		    /**< Screen des neuronalen Netzes */
 #define DISPLAY_DRIVE_NEURALNET_AVAILABLE	/**< Screen des Fahrverhaltens des neuronalen Netzes */
