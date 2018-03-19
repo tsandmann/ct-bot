@@ -32,19 +32,19 @@
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
 
 
-#define NO_LAYERS 3         /**< Anzahl der Layers (1 Inputlayer, 1 Hiddenlayer, 1 Outputlayer) */
-#define NO_PAIRS 15         /**< Gesamtanzahl der Eingabepatterns */
+#define NO_LAYERS 3	/**< Anzahl der Layers (1 Inputlayer, 1 Hiddenlayer, 1 Outputlayer) */
+#define NO_PAIRS 15	/**< Gesamtanzahl der Eingabepatterns */
 
-#define NO_INPUT_NEURONS  6 /**< Anzahl Inputneuronen */
-#define NO_HIDDEN_NEURONS 3 /**< Anzahl Hiddenneuronen */
-#define NO_OUTPUT_NEURONS 2 /**< Anzahl Outputneuronen */
+#define NO_INPUT_NEURONS  6	/**< Anzahl Input-Neuronen */
+#define NO_HIDDEN_NEURONS 3	/**< Anzahl Hidden-Neuronen */
+#define NO_OUTPUT_NEURONS 2	/**< Anzahl Output-Neuronen */
 
-#define MAX_TRAINING_DEF 1500   /**< max. Anzahl Iterationen zum Lernen pro Lernaufruf*/
-#define ERROR_THRESHOLD 0.0003  /**< Ende der Lernschleife bei Erreichen dieser Fehlergrenze */
+#define MAX_TRAINING_DEF 1500	/**< max. Anzahl Iterationen zum Lernen pro Lernaufruf */
+#define ERROR_THRESHOLD 0.0003	/**< Ende der Lernschleife bei Erreichen dieser Fehlergrenze */
 
-extern float total_error; /**< Gesamtfehler des Netzes */
+extern float total_error;	/**< Gesamtfehler des Netzes */
 
-extern uint16_t no_of_pairs; /**< Anzahl der im Array vorhandenen gueltigen Lernpatterns */
+extern uint16_t no_of_pairs;	/**< Anzahl der im Array vorhandenen gueltigen Lernpatterns */
 
 /**
  *  Netz wird mit allen Gewichtungen neu initialisiert
@@ -80,20 +80,20 @@ void set_init_patterns_in_array(void);
 void test_net(float *sectorarray);
 
 /**
- * das Array der Sectorbelegungen mit den gewuenschten Outputs wird eingetragen im Array an der Stelle index,
+ * das Array der sector-Belegungen mit den gewuenschten Outputs wird eingetragen im Array an der Stelle index,
  * also Teachin- und Output wird gefuellt
  * Outputs sind bisher nur 2, bei noch mehr waere sicher auch Array sinnvoll
  * \param *sectorarray Array der Sektorbelegungen
  * \param index       Indexstelle im Array
- * \param out0        Outputneuron 0
- * \param out1        Outputneuron 1
+ * \param out0        Output-Neuron 0
+ * \param out1        Output-Neuron 1
  */
 void fill_pattern_in_lernarray (float *sectorarray, int16_t index, uint8_t out0, uint8_t out1);
 
 /**
- * Auslesen der Outputneuronen aus dem Netz
- * \param *out1        Outputneuron 1
- * \param *out2        Outputneuron 2
+ * Auslesen der Output-Neuronen aus dem Netz
+ * \param *out1        Output-Neuron 1
+ * \param *out2        Output-Neuron 2
  */
 void net_get_test_out (uint8_t *out1, uint8_t *out2);
 
@@ -103,7 +103,7 @@ void net_get_test_out (uint8_t *out1, uint8_t *out2);
 void net_set_rnd_weights (void);
 
 /**
- * Display zum Start/ Anzeigen der NN-Routinen/ Daten
+ * Display zum Start / Anzeigen der NN-Routinen/ Daten
  */
 void neuralnet_display(void);
 
