@@ -231,7 +231,7 @@ void net_set_rnd_weights(void) {
 		srand_statement();
 
 		/* initialize weights and deltas */
-		net_randomize(net, 1.0);
+		net_randomize(net, 1.0f);
 		net_reset_deltas(net);
 
 		/* permanently set output of bias neurons to 1 */
@@ -421,7 +421,7 @@ static void neuralnet_disp_key_handler(void) {
  */
 void neuralnet_display(void) {
 	display_cursor(1, 1);
-	display_printf("NET Err: %f", total_error);
+	display_printf("NET Err: %f", (double)total_error);
 	//display_cursor(2, 1);
 	//display_printf("Patterns: %2u", no_of_pairs);
 	display_cursor(3, 1);

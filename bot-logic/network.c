@@ -153,7 +153,7 @@ allocate_layer (layer_t *layer, int no_of_neurons)
   assert (no_of_neurons > 0);
 
   layer->no_of_neurons = no_of_neurons;
-  layer->neuron = (neuron_t *) calloc (no_of_neurons + 1, sizeof (neuron_t));
+  layer->neuron = (neuron_t *) calloc ((size_t)(no_of_neurons + 1), sizeof (neuron_t));
 }
 
 /*!\brief [Internal] Allocate memory for the weights connecting two layers.
@@ -174,9 +174,9 @@ allocate_weights (layer_t *lower, layer_t *upper)
 
   for (n = 0; n < upper->no_of_neurons; n++) {
     upper->neuron[n].weight =
-      (float *) calloc (lower->no_of_neurons + 1, sizeof (float));
+      (float *) calloc ((size_t)(lower->no_of_neurons + 1), sizeof (float));
     upper->neuron[n].delta =
-      (float *) calloc (lower->no_of_neurons + 1, sizeof (float));
+      (float *) calloc ((size_t)(lower->no_of_neurons + 1), sizeof (float));
   }
 
   /* no incoming weights for bias neurons */
@@ -207,7 +207,7 @@ net_allocate_l (int no_of_layers, const int *arglist)
   /* allocate memory for the network */
   net = (network_t *) malloc (sizeof (network_t));
   net->no_of_layers = no_of_layers;
-  net->layer = (layer_t *) calloc (no_of_layers, sizeof (layer_t));
+  net->layer = (layer_t *) calloc ((size_t)(no_of_layers), sizeof (layer_t));
   for (l = 0; l < no_of_layers; l++) {
     assert (arglist[l] > 0);
     allocate_layer (&net->layer[l], arglist[l]);
@@ -253,7 +253,7 @@ net_allocate (int no_of_layers, ...)
 
   assert (no_of_layers >= 2);
 
-  arglist = calloc (no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(no_of_layers), sizeof (int));
   va_start (args, no_of_layers);
   for (l = 0; l < no_of_layers; l++) {
     arglist[l] = va_arg (args, int);
@@ -515,15 +515,15 @@ net_fprint (FILE *file, const network_t *net)
   }
 
   /* write network constants */
-  result = fprintf (file, "%f\n", net->momentum);
+  result = fprintf (file, "%f\n", (double)net->momentum);
   if (result < 0) {
     return result;
   }
-  result = fprintf (file, "%f\n", net->learning_rate);
+  result = fprintf (file, "%f\n", (double)net->learning_rate);
   if (result < 0) {
     return result;
   }
-  result = fprintf (file, "%f\n", net->global_error);
+  result = fprintf (file, "%f\n", (double)net->global_error);
   if (result < 0) {
     return result;
   }
@@ -532,7 +532,7 @@ net_fprint (FILE *file, const network_t *net)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        result = fprintf (file, "%f\n", net->layer[l].neuron[nu].weight[nl]);
+        result = fprintf (file, "%f\n", (double)net->layer[l].neuron[nu].weight[nl]);
         if (result < 0) {
           return result;
         }
@@ -560,7 +560,7 @@ net_fscan (FILE *file)
   if (result <= 0) {
     return NULL;
   }
-  arglist = calloc (no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(no_of_layers), sizeof (int));
   if (arglist == NULL) {
     return NULL;
   }
@@ -684,7 +684,7 @@ int
 net_fbprint (FILE *file, const network_t *net)
 {
   int l, nu;
-  size_t info_dim = net->no_of_layers + 1;
+  size_t info_dim = (size_t)(net->no_of_layers + 1);
   int info[info_dim];
   float constants[3];
 
@@ -733,7 +733,7 @@ net_fbscan (FILE *file)
   if (fread (&no_of_layers, sizeof (int), 1, file) < 1) {
     return NULL;
   }
-  arglist = calloc (no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(no_of_layers), sizeof (int));
   if (fread (arglist,sizeof(int),no_of_layers,file) < (size_t) no_of_layers) {
     free (arglist);
     return NULL;
@@ -985,7 +985,7 @@ backpropagate_layer (layer_t *lower, layer_t *upper)
   assert (upper != NULL);
 
   for (nl = 0; nl <= lower->no_of_neurons; nl++) {
-    error = 0.0;
+    error = 0.0f;
     for (nu = 0; nu < upper->no_of_neurons; nu++) {
       error += upper->neuron[nu].weight[nl] * upper->neuron[nu].error;
     }
@@ -1210,7 +1210,7 @@ net_jolt (network_t *net, float factor, float range)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        if (fabs (net->layer[l].neuron[nu].weight[nl]) < range) {
+        if (fabsf (net->layer[l].neuron[nu].weight[nl]) < range) {
           net->layer[l].neuron[nu].weight[nl] =
             2.0f * range * ((float) rand() / RAND_MAX - 0.5f);
         } else {
@@ -1248,7 +1248,7 @@ net_add_neurons (network_t *net, int layer, int neuron, int number,
   }
 
   /* allocate memory for the new network */
-  arglist = calloc (net->no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(net->no_of_layers), sizeof (int));
   for (l = 0; l < net->no_of_layers; l++) {
     arglist[l] = net->layer[l].no_of_neurons;
   }
@@ -1306,7 +1306,7 @@ net_remove_neurons (network_t *net, int layer, int neuron, int number)
   assert (number >= 0);
 
   /* allocate memory for the new network */
-  arglist = calloc (net->no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(net->no_of_layers), sizeof (int));
   for (l = 0; l < net->no_of_layers; l++) {
     arglist[l] = net->layer[l].no_of_neurons;
   }
@@ -1356,7 +1356,7 @@ net_copy (const network_t *net)
   assert (net != NULL);
 
   /* allocate memory for the new network */
-  arglist = calloc (net->no_of_layers, sizeof (int));
+  arglist = calloc ((size_t)(net->no_of_layers), sizeof (int));
   for (l = 0; l < net->no_of_layers; l++) {
     arglist[l] = net->layer[l].no_of_neurons;
   }
