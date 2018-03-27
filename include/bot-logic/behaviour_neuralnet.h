@@ -40,7 +40,7 @@
 #define NO_OUTPUT_NEURONS 2	/**< Anzahl Output-Neuronen */
 
 #define MAX_TRAINING_DEF 1500	/**< max. Anzahl Iterationen zum Lernen pro Lernaufruf */
-#define ERROR_THRESHOLD 0.0003	/**< Ende der Lernschleife bei Erreichen dieser Fehlergrenze */
+#define ERROR_THRESHOLD 0.0003f	/**< Ende der Lernschleife bei Erreichen dieser Fehlergrenze */
 
 extern float total_error;	/**< Gesamtfehler des Netzes */
 

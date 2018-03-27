@@ -165,6 +165,8 @@ static float check_borders(int16_t borderl, int16_t borderr) {
  * 3.dann NN abfragen und Faktorwerte holen -> 2.
  */
 void bot_drive_neuralnet_behaviour(Behaviour_t * data) {
+	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) für sensDistL um die Vorzeichen zu eliminieren
+	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) für sensDistR um die Vorzeichen zu eliminieren
 	switch (nn_drive_state) {
 	case BOT_CHECK_SECTORS:
 		// Umschalten zum eigentlichen Verhalten; damit bei Aktivierung ueber Verhaltensscreen
@@ -179,7 +181,7 @@ void bot_drive_neuralnet_behaviour(Behaviour_t * data) {
 #endif
 		bot_check_sectors(data);
 		nn_drive_state = BOT_GET_NN_DIR;
-		LOG_DEBUG("Sektoren checken, Abstaende voraus: %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("Sektoren checken, Abstaende voraus: %u %u", sensDistL_u, sensDistR_u);
 		break;
 
 	case BOT_GET_NN_DIR:
@@ -199,7 +201,7 @@ void bot_drive_neuralnet_behaviour(Behaviour_t * data) {
 		break;
 
 	case BOT_FORWARD:	// fahre geradeaus
-		LOG_DEBUG("Fahre gradeaus Abstaende: %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("Fahre gradeaus Abstaende: %u %u", sensDistL_u, sensDistR_u);
 
 		// bei Fahren mit Fahrtwunsch ist Schluss nach dieser Aktion
 
@@ -242,19 +244,19 @@ void bot_drive_neuralnet_behaviour(Behaviour_t * data) {
 		}
 
 		nn_drive_state = BOT_CHECK_SECTORS;
-		LOG_DEBUG("parallel zur Wand ausrichten l/r:  %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("parallel zur Wand ausrichten l/r:  %u %u", sensDistL_u, sensDistR_u);
 		uint16_t diff = 0;
-		if (sensDistL > sensDistR) {
-			diff = sensDistL - sensDistR;
+		if (sensDistL_u > sensDistR_u) {
+			diff = sensDistL_u - sensDistR_u;
 		} else {
-			diff = sensDistR - sensDistL;
+			diff = sensDistR_u - sensDistL_u;
 		}
 
 		if (diff >= 10) {
 			nn_drive_state = BOT_CHECK_SECTORS;	// Check Abstaende auf zu klein
 
-			LOG_DEBUG("Drehen weil Ausrichtung notwendig l/r:  %u %u, diff: %u", sensDistL, sensDistR, diff);
-			if (sensDistL < sensDistR) {
+			LOG_DEBUG("Drehen weil Ausrichtung notwendig l/r:  %u %u, diff: %u", sensDistL_u, sensDistR_u, diff);
+			if (sensDistL_u < sensDistR_u) {
 				LOG_DEBUG("links naeher dran, also nach links drehen");
 				bot_turn(data, 90);	// nach links maximal x Grad
 				bot_cancel_behaviour(data, bot_turn_behaviour, parallel_wall_leftturn_cancel_check);
@@ -347,6 +349,8 @@ static float check_distances(uint16_t sensl, uint16_t sensr) {
  * \param *data	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_check_sector_behaviour(Behaviour_t * data) {
+	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) für sensDistL um die Vorzeichen zu eliminieren
+	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) für sensDistR um die Vorzeichen zu eliminieren
 	//float border=0;
 	switch (check_sector_state) {
 	case 0:
@@ -354,24 +358,24 @@ void bot_check_sector_behaviour(Behaviour_t * data) {
 		// verwaltet selbst Abstand zur Wand
 		deactivateBehaviour(bot_avoid_col_behaviour);
 #endif
-		LOG_DEBUG("Sektoren pruefen, zuerst 95 Grad links drehen %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("Sektoren pruefen, zuerst 95 Grad links drehen %u %u", sensDistL_u, sensDistR_u);
 		bot_turn(data, 95);	// links 90 Grad
 
 		check_sector_state = 1;
 		break;
 
 	case 1:
-		LOG_DEBUG("bin jetzt 95 Grad links %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("bin jetzt 95 Grad links %u %u", sensDistL_u, sensDistR_u);
 		bot_turn(data, -95);	// und wieder urspruengliche Blickrichtung
 		check_sector_state = 2;
-		sector_arr[0] = check_distances(sensDistL, sensDistR);
+		sector_arr[0] = check_distances(sensDistL_u, sensDistR_u);
 		sector_arr[3] = check_borders(sensBorderL, sensBorderR);
 		break;
 
 	case 2:
-		LOG_DEBUG("bin urspruengliche Richtung %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("bin urspruengliche Richtung %u %u", sensDistL_u, sensDistR_u);
 		bot_turn(data, -95);	// 90 Grad nach rechts
-		sector_arr[1] = check_distances(sensDistL, sensDistR);
+		sector_arr[1] = check_distances(sensDistL_u, sensDistR_u);
 		if (border_in_front) {
 			sector_arr[4] = 1;	// Hindernis als Abgrund voraus
 			border_in_front = False;
@@ -382,10 +386,10 @@ void bot_check_sector_behaviour(Behaviour_t * data) {
 		break;
 
 	case 3:	// ist jetzt 90 Grad rechts
-		LOG_DEBUG("bin jetzt 95 Grad rechts %u %u", sensDistL, sensDistR);
+		LOG_DEBUG("bin jetzt 95 Grad rechts %u %u", sensDistL_u, sensDistR_u);
 		bot_turn(data, 95);	// wieder zurueck auf 45
 		check_sector_state = 4;
-		sector_arr[2] = check_distances(sensDistL, sensDistR);
+		sector_arr[2] = check_distances(sensDistL_u, sensDistR_u);
 		sector_arr[5] = check_borders(sensBorderL, sensBorderR);
 		break;
 
@@ -393,14 +397,14 @@ void bot_check_sector_behaviour(Behaviour_t * data) {
 		// das Sectorarray ist hier gefuellt, NN kann fuer naechste Aktion abgefargt werden
 		check_sector_state = 99;
 
-		LOG_DEBUG("bin wieder urspruengliche Richtung %u %u", sensDistL, sensDistR);
-		sector_arr[1] = check_distances(sensDistL, sensDistR);
+		LOG_DEBUG("bin wieder urspruengliche Richtung %u %u", sensDistL_u, sensDistR_u);
+		sector_arr[1] = check_distances(sensDistL_u, sensDistR_u);
 		break;
 
 	default:
 		// Abspeichern des Lernpatterns wenn bei Aufruf des Verhaltens gewuenscht
 		if (append_learnpattern) {
-			//LOG_DEBUG("Pattern gespeichert in NN index %u ,Outputs: %u  %u",no_of_pairs, teachout0, teachout1);
+			//LOG_DEBUG("Pattern gespeichert in NN index %u , Outputs: %u  %u", no_of_pairs, teachout0, teachout1);
 			fill_pattern_in_lernarray(sector_arr, no_of_pairs, teachout0, teachout1);
 			no_of_pairs++;
 			// jetzt auch die Aktion ausfuehren, die ausgewaehlt wurde, bei Stop nicht notwendig

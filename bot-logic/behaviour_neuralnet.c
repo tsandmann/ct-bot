@@ -81,11 +81,11 @@ static float inputs_def[NO_PAIRS][NO_INPUT_NEURONS] = { { 0, 0, 0, 0, 0, 0 },	/*
 { 1, 0, 1, 0, 0, 0 },	/**< Wand links und rechts, vorn frei */
 { 1, 1, 0, 0, 0, 0 },	/**< linke Ecke, also links und voraus Wand */
 { 1, 1, 1, 0, 0, 0 },	/**< nichts geht mehr, vorn rechts und links Wand */
-{ 0.7, 1, 0, 0, 0, 0 },	/**< mal ein paar Zwischenwerte, Wand im jeweiligen Sektor nicht ganz so nah */
-{ 0, 1, 0.7, 0, 0, 0 },	/**< Je naeher die Wand, desto mehr liegt der Wert an 1, also Wand voraus aber rechts noch etwas entfernt */
-{ 1, 0.7, 1, 0, 0, 0 }, { 0.28, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, keine Wand gesehen */
-{ 0.5, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, links etwas weiter Wand, rechts komplett frei */
-{ 0, 0, 0.5, 0, 1, 0 }	/**< Abgrund voraus, links frei, Wand rechts etwas weiter weg */
+{ 0.7f, 1, 0, 0, 0, 0 },	/**< mal ein paar Zwischenwerte, Wand im jeweiligen Sektor nicht ganz so nah */
+{ 0, 1, 0.7f, 0, 0, 0 },	/**< Je naeher die Wand, desto mehr liegt der Wert an 1, also Wand voraus aber rechts noch etwas entfernt */
+{ 1, 0.7f, 1, 0, 0, 0 }, { 0.28f, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, keine Wand gesehen */
+{ 0.5f, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, links etwas weiter Wand, rechts komplett frei */
+{ 0, 0, 0.5f, 0, 1, 0 }	/**< Abgrund voraus, links frei, Wand rechts etwas weiter weg */
 };
 /**
  * 4 Kombinationen moeglich fuer Definition der Aktionen im Zieloutput-Array
@@ -194,8 +194,8 @@ void test_net(float *sectorarray) {
  * */
 void net_get_test_out(uint8_t *out1, uint8_t *out2) {
 	// die berechneten IST-Outputwerte digitalisieren auf 0 oder 1
-	*out1 = (outputarr[0] < 0.5) ? 0 : 1;
-	*out2 = (outputarr[1] < 0.5) ? 0 : 1;
+	*out1 = (outputarr[0] < 0.5f) ? 0 : 1;
+	*out2 = (outputarr[1] < 0.5f) ? 0 : 1;
 }
 
 /**
@@ -317,7 +317,7 @@ void bot_neuralnet_behaviour(Behaviour_t* data) {
 			error = error / no_of_pairs; // geteilt durch anzahl der Testpatterns
 
 			/* Gesamtfehler berechnen */
-			total_error = (t == 0) ? error : 0.9 * total_error + 0.1 * error;
+			total_error = (t == 0) ? error : 0.9f * total_error + 0.1f * error;
 
 			/* naechster Lernschritt */
 			t++;
