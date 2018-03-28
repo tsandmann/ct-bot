@@ -710,7 +710,7 @@ net_fbprint (FILE *file, const network_t *net)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       fwrite (net->layer[l].neuron[nu].weight, sizeof (float),
-              net->layer[l - 1].no_of_neurons + 1, file);
+              (size_t)net->layer[l - 1].no_of_neurons + 1, file);
     }
   }
 
@@ -734,7 +734,7 @@ net_fbscan (FILE *file)
     return NULL;
   }
   arglist = calloc ((size_t)(no_of_layers), sizeof (int));
-  if (fread (arglist,sizeof(int),no_of_layers,file) < (size_t) no_of_layers) {
+  if (fread (arglist, sizeof(int), (size_t)no_of_layers, file) < (size_t) no_of_layers) {
     free (arglist);
     return NULL;
   }
@@ -751,7 +751,7 @@ net_fbscan (FILE *file)
   /* read network weights */
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
-    	fread (net->layer[l].neuron[nu].weight, sizeof (float), net->layer[l - 1].no_of_neurons + 1, file);
+    	fread (net->layer[l].neuron[nu].weight, sizeof (float), (size_t)net->layer[l - 1].no_of_neurons + 1, file);
     }
   }
 
@@ -1210,12 +1210,12 @@ net_jolt (network_t *net, float factor, float range)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        if (fabsf (net->layer[l].neuron[nu].weight[nl]) < range) {
+        if ((float)(fabsf (net->layer[l].neuron[nu].weight[nl])) < range) {
           net->layer[l].neuron[nu].weight[nl] =
-            2.0f * range * ((float) rand() / RAND_MAX - 0.5f);
+            2.0f * range * ((float)rand() / RAND_MAX - 0.5f);
         } else {
           net->layer[l].neuron[nu].weight[nl] *=
-            1.0f + 2.0f * factor * ((float) rand() / RAND_MAX - 0.5f);
+            1.0f + 2.0f * factor * ((float)rand() / RAND_MAX - 0.5f);
         }
       }
     }

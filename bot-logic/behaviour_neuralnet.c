@@ -142,7 +142,7 @@ static void srand_statement(void) {
  * \param out0        Outputneuron 0
  * \param out1        Outputneuron 1
  */
-void fill_pattern_in_lernarray(float *sectorarray, int16_t index, uint8_t out0, uint8_t out1) {
+void fill_pattern_in_lernarray(float *sectorarray, uint16_t index, uint8_t out0, uint8_t out1) {
 	uint8_t i;
 
 	// NO_PAIRS ist ja das Define mit der Anzahl der Indexeintraege des Input-Lernarrays zum Initialzeitpunkt; ist also
