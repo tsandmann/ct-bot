@@ -39,9 +39,9 @@
 #define WHEEL_TO_WHEEL_DIAMETER	97.2f		/**< Abstand der beiden Raeder (Sim) [mm] */
 #else // MCU
 /* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
-#define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades [mm] */
-#define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades [mm] */
-#define WHEEL_TO_WHEEL_DIAMETER 97.2		/**< Abstand der beiden Raeder [mm] */
+#define WHEEL_DIAMETER			56.7f		/**< Durchmesser eines Rades [mm] */
+#define WHEEL_PERIMETER			178.1283f	/**< Umfang eines Rades [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER 97.2f		/**< Abstand der beiden Raeder [mm] */
 #endif // PC
 
 #define DISTSENSOR_POS_FW		47	/**< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
