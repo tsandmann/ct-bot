@@ -33,9 +33,9 @@
 //#define BEHAVIOUR_SIMPLE_AVAILABLE					/**< Beispielverhalten */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
 
-/** HINWEIS:
- * Die Aktivierung einer groesseren Anzahl an Behaviours in Verbindung mit erweiterten Displayausgaben
- * in /ui/available_screens.h kann zu einem Speicherueberlauf fuehren.
+/* HINWEIS:
+ * Die Aktivierung einer groesseren Anzahl an Verhalten (und/oder anderen Features wie u.a. Display-Ausgaben) kann zu
+ * einem Speicherueberlauf fuehren.
  * Dadurch bedingt kommt es zu Build-Fehlern wie das folgende Beispiel aus der Travis-Testumgebung zeigt:
  *
  * "/home/travis/build/$USER/ct-bot/tests/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/4.9.2/../../../../avr/bin/ld:
@@ -44,8 +44,8 @@
  * region `text' overflowed by 266 bytes -- collect2: error: ld returned 1 exit status -- make: *** [ct-Bot.elf] Error 1
  * TEST /home/travis/build/$USER/ct-bot/tests/mcu/20_all_behaviours_1_mcu.h FOR MCU FAILED."
  *
- * Vor diesem Hintergrund ist es ratsam Behaviours und Display-Ausgaben selektiv und bedarfsgemaess zu aktivieren
- * um ausreichend Speicher bereitzuhalten.
+ * Vor diesem Hintergrund ist es ratsam Verhalten und Display-Ausgaben selektiv und bedarfsgemaess zu aktivieren, falls es
+ * zum o.a. Fehler kommt.
  */
 
 /* Notfall-Verhalten */
