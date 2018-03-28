@@ -39,9 +39,9 @@
 #define WHEEL_TO_WHEEL_DIAMETER	97.2f		/**< Abstand der beiden Raeder (Sim) [mm] */
 #else // MCU
 /* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
-#define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades [mm] */
-#define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades [mm] */
-#define WHEEL_TO_WHEEL_DIAMETER 97.2		/**< Abstand der beiden Raeder [mm] */
+#define WHEEL_DIAMETER			56.7f		/**< Durchmesser eines Rades [mm] */
+#define WHEEL_PERIMETER			178.1283f	/**< Umfang eines Rades [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER 97.2f		/**< Abstand der beiden Raeder [mm] */
 #endif // PC
 
 #define DISTSENSOR_POS_FW		47	/**< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
@@ -128,13 +128,13 @@
 
 /* I/O-Schnittstellen fuer Raspberry Pi */
 //#define USB_UART_LINUX	/**< Wird ein USB UART (z.B. USB-2-Bot) Adapter fuer die Verbinung zum ATmega verwendet? */
-	#ifdef USB_UART_LINUX
-	#define UART_LINUX_PORT		"/dev/ttyUSB0"	/**< UART Port vom ARM-Linux-Board fuer Verbindung zum ATmega */
-	#else
-	#define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbindung zum ATmega */
-	#endif // USB_UART_LINUX
+#ifdef USB_UART_LINUX
+#define UART_LINUX_PORT		"/dev/ttyUSB0"	/**< UART Port vom ARM-Linux-Board fuer Verbindung zum ATmega */
+#else
+#define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbindung zum ATmega */
+#endif // USB_UART_LINUX
 //#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board (entspricht BCM-GPIO 17 auf Pin 11 der RPi-GPIO-Leiste) */
-//#define ARM_LINUX_DISPLAY		"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
+//#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
 /* Fernbedienungswahl */
 /* Zur Konfigruation der hier aufgefuehrten Fernbedienungsmodelle s. include/rc5-codes.h */

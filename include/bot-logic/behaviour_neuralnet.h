@@ -49,7 +49,7 @@ extern uint16_t no_of_pairs;	/**< Anzahl der im Array vorhandenen gueltigen Lern
 /**
  *  Netz wird mit allen Gewichtungen neu initialisiert
  */
-void net_init (void);
+void net_init(void);
 
 /**
  * Das neuralnet-Verhalten selbst, das Netz wird mit den Inpupatterns trainiert
@@ -88,19 +88,19 @@ void test_net(float *sectorarray);
  * \param out0        Output-Neuron 0
  * \param out1        Output-Neuron 1
  */
-void fill_pattern_in_lernarray (float *sectorarray, int16_t index, uint8_t out0, uint8_t out1);
+void fill_pattern_in_lernarray(float *sectorarray, uint16_t index, uint8_t out0, uint8_t out1);
 
 /**
  * Auslesen der Output-Neuronen aus dem Netz
  * \param *out1        Output-Neuron 1
  * \param *out2        Output-Neuron 2
  */
-void net_get_test_out (uint8_t *out1, uint8_t *out2);
+void net_get_test_out(uint8_t *out1, uint8_t *out2);
 
 /**
  *  Setzen der zufaelligen Verbindungsgewichte
  */
-void net_set_rnd_weights (void);
+void net_set_rnd_weights(void);
 
 /**
  * Display zum Start / Anzeigen der NN-Routinen/ Daten

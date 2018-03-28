@@ -142,7 +142,7 @@ static void srand_statement(void) {
  * \param out0        Outputneuron 0
  * \param out1        Outputneuron 1
  */
-void fill_pattern_in_lernarray(float *sectorarray, int16_t index, uint8_t out0, uint8_t out1) {
+void fill_pattern_in_lernarray(float *sectorarray, uint16_t index, uint8_t out0, uint8_t out1) {
 	uint8_t i;
 
 	// NO_PAIRS ist ja das Define mit der Anzahl der Indexeintraege des Input-Lernarrays zum Initialzeitpunkt; ist also
@@ -231,7 +231,7 @@ void net_set_rnd_weights(void) {
 		srand_statement();
 
 		/* initialize weights and deltas */
-		net_randomize(net, 1.0);
+		net_randomize(net, 1.0f);
 		net_reset_deltas(net);
 
 		/* permanently set output of bias neurons to 1 */
@@ -421,7 +421,7 @@ static void neuralnet_disp_key_handler(void) {
  */
 void neuralnet_display(void) {
 	display_cursor(1, 1);
-	display_printf("NET Err: %f", total_error);
+	display_printf("NET Err: %f", (double)total_error);
 	//display_cursor(2, 1);
 	//display_printf("Patterns: %2u", no_of_pairs);
 	display_cursor(3, 1);

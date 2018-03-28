@@ -358,10 +358,10 @@ void gui_display(uint8_t screen) {
 #ifdef AUTO_DISPLAYLIGHT
 #define RC_LDR 8 // Wert zwischen 1 und 9 einstellbar
 	/* Bestimmung der mittleren Helligkeit aus beiden Sensoren */
-	int sensLDR_average = (sensLDRR + sensLDRL) / 2;
+	int16_t sensLDR_average = (sensLDRR + sensLDRL) / 2;
 
 	/* Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit */
-	static int sensLDR_average_old;
+	static int16_t sensLDR_average_old;
 	sensLDR_average = (RC_LDR * sensLDR_average_old + (10 - RC_LDR) * sensLDR_average) / 10;
 	sensLDR_average_old = sensLDR_average;
 
