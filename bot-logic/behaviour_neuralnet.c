@@ -45,15 +45,15 @@
 
 #include "lwneuralnet.h"
 
-uint16_t max_trainings; /**< max. Anzahl der Lern-Iterationen; temporaer gesetzt */
+uint16_t max_trainings;	/**< max. Anzahl der Lern-Iterationen; temporaer gesetzt */
 
-static uint8_t neuralnet_state = 0; /**< Status des neuralnet-Verhaltens */
+static uint8_t neuralnet_state = 0;	/**< Status des neuralnet-Verhaltens */
 
-#define STATE_NEURALNET_INIT 0      /**< die Verhaltens-Zustaende */
+#define STATE_NEURALNET_INIT 0	/**< die Verhaltens-Zustaende */
 #define STATE_NEURALNET_WORK 1
 #define STATE_NEURALNET_DONE 3
 
-//#define DEBUG_BEHAVIOUR_NN          /**<  Schalter fuer Debug-Code */
+//#define DEBUG_BEHAVIOUR_NN	/**<  Schalter fuer Debug-Code */
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_NN
 #endif
@@ -63,29 +63,29 @@ static uint8_t neuralnet_state = 0; /**< Status des neuralnet-Verhaltens */
 #endif
 
 /**
- * hier einige vordefinierte Lernpatterns fuer die 6 Inputneuronen und die zugehoerigen 2 Outputneuronen mit folgender Bedeutung an den 6 Indexstellen:
+ * hier einige vordefinierte Lernpatterns fuer die 6 Input-Neuronen und die zugehoerigen 2 Output-Neuronen mit folgender Bedeutung an den 6 Indexstellen:
  * Es erfolgt eine Unterteilung in 3 Sektoren jeweils links vom Bot, gradeaus und rechts vom Bot und fuer diese Sektoren gibt es jeweils
  * 3 Neuronen fuer die Abstandswerte zu Hindernissen und weitere 3 fuer die Abgrundsensoren; also Dist links, Dist gradeaus, Dist rechts, Abgrund links, gradeaus und rechts;
- * das hier aufsetzende Fahrverhalten (extra Define zum Einschalten) dekodiert die Kombination der beiden Outputneuronen zu den Fahrverhalten:
+ * das hier aufsetzende Fahrverhalten (extra Define zum Einschalten) dekodiert die Kombination der beiden Output-Neuronen zu den Fahrverhalten:
  * 0 0 -> Stop/ 1 0 -> links fahren/ 0 1 -> rechts fahren/ 1 1 -> gradeaus fahren
  * von den beiden Abstandssensoren wird jeweils der geringere Abstand zum Hindernis normiert zwischen 0 und 1 eingetragen, auch Zwischenwerte, und fuer die Abgrundwerte
  * nur 0(kein Abgrund) oder 1(Abgrund)
  * mit diesen Lernpatterns wird das neuronale Netz sofort trainiert und der Gesamtfehler im Screen ausgegeben, umso kleiner desto besser (also umso naeher liegen die beiden Outputs
  * an den hier vorgegebenen Soll-Outputwerten)
  */
-static float inputs_def[NO_PAIRS][NO_INPUT_NEURONS] = { { 0, 0, 0, 0, 0, 0 }, /**< nirgends Hindernisse oder Abgruende */
-{ 0, 0, 1, 0, 0, 0 }, /**< rechts Hindernis */
-{ 0, 1, 0, 0, 0, 0 }, /**< Hindernis voraus */
-{ 0, 1, 1, 0, 0, 0 }, /**< rechte Ecke, also vorn und rechts Hindernis */
-{ 1, 0, 0, 0, 0, 0 }, /**< Wand links */
-{ 1, 0, 1, 0, 0, 0 }, /**< Wand links und rechts, vorn frei */
-{ 1, 1, 0, 0, 0, 0 }, /**< linke Ecke, also links und voraus Wand */
-{ 1, 1, 1, 0, 0, 0 }, /**< nichts geht mehr, vorn rechts und links Wand */
-{ 0.7, 1, 0, 0, 0, 0 }, /**< mal ein paar Zwischenwerte, Wand im jeweiligen Sektor nicht ganz so nah */
-{ 0, 1, 0.7, 0, 0, 0 }, /**< Je naeher die Wand, desto mehr liegt der Wert an 1, also Wand voraus aber rechts noch etwas entfernt */
-{ 1, 0.7, 1, 0, 0, 0 }, { 0.28, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0 }, /**< Abgrund voraus, keine Wand gesehen */
-{ 0.5, 0, 0, 0, 1, 0 }, /**< Abgrund voraus, links etwas weiter Wand, rechts komplett frei */
-{ 0, 0, 0.5, 0, 1, 0 } /**< Abgrund voraus, links frei, Wand rechts etwas weiter weg */
+static float inputs_def[NO_PAIRS][NO_INPUT_NEURONS] = { { 0, 0, 0, 0, 0, 0 },	/**< nirgends Hindernisse oder Abgruende */
+{ 0, 0, 1, 0, 0, 0 },	/**< rechts Hindernis */
+{ 0, 1, 0, 0, 0, 0 },	/**< Hindernis voraus */
+{ 0, 1, 1, 0, 0, 0 },	/**< rechte Ecke, also vorn und rechts Hindernis */
+{ 1, 0, 0, 0, 0, 0 },	/**< Wand links */
+{ 1, 0, 1, 0, 0, 0 },	/**< Wand links und rechts, vorn frei */
+{ 1, 1, 0, 0, 0, 0 },	/**< linke Ecke, also links und voraus Wand */
+{ 1, 1, 1, 0, 0, 0 },	/**< nichts geht mehr, vorn rechts und links Wand */
+{ 0.7f, 1, 0, 0, 0, 0 },	/**< mal ein paar Zwischenwerte, Wand im jeweiligen Sektor nicht ganz so nah */
+{ 0, 1, 0.7f, 0, 0, 0 },	/**< Je naeher die Wand, desto mehr liegt der Wert an 1, also Wand voraus aber rechts noch etwas entfernt */
+{ 1, 0.7f, 1, 0, 0, 0 }, { 0.28f, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, keine Wand gesehen */
+{ 0.5f, 0, 0, 0, 1, 0 },	/**< Abgrund voraus, links etwas weiter Wand, rechts komplett frei */
+{ 0, 0, 0.5f, 0, 1, 0 }	/**< Abgrund voraus, links frei, Wand rechts etwas weiter weg */
 };
 /**
  * 4 Kombinationen moeglich fuer Definition der Aktionen im Zieloutput-Array
@@ -94,22 +94,22 @@ static float inputs_def[NO_PAIRS][NO_INPUT_NEURONS] = { { 0, 0, 0, 0, 0, 0 }, /*
  * 10 Links drehen
  * 11 Vorwaerts
  */
-static float targets_def[NO_PAIRS][NO_OUTPUT_NEURONS] = { { 1, 1 }, { 1, 1 }, /**< fahren */
-	{ 1, 0 }, { 1, 0 }, /**< nach links fahren */
-	{ 1, 1 }, { 1, 1 }, /**< fahren */
-	{ 0, 1 }, /**< nach rechts fahren */
-	{ 0, 0 }, /**< Stop */
-	{ 0, 1 }, /**< nach rechts fahren */
-	{ 1, 0 }, /**< ... */
+static float targets_def[NO_PAIRS][NO_OUTPUT_NEURONS] = { { 1, 1 }, { 1, 1 },	/**< fahren */
+	{ 1, 0 }, { 1, 0 },	/**< nach links fahren */
+	{ 1, 1 }, { 1, 1 },	/**< fahren */
+	{ 0, 1 },	/**< nach rechts fahren */
+	{ 0, 0 },	/**< Stop */
+	{ 0, 1 },	/**< nach rechts fahren */
+	{ 1, 0 },	/**< ... */
 	{ 1, 1 }, { 0, 1 }, { 1, 0 }, { 0, 1 }, { 1, 0 } };
 
-uint16_t no_of_pairs = NO_PAIRS; /**< Anzahl der vorkommenden Testpaare */
+uint16_t no_of_pairs = NO_PAIRS;	/**< Anzahl der vorkommenden Testpaare */
 
-static float inputs[NO_PAIRS][NO_INPUT_NEURONS]; /**< hier werden die zu erlernenden Patterns fuer das Netz gespeichert */
+static float inputs[NO_PAIRS][NO_INPUT_NEURONS];	/**< hier werden die zu erlernenden Patterns fuer das Netz gespeichert */
 
-static float targets[NO_PAIRS][NO_OUTPUT_NEURONS]; /**< hier werden die zu erlernenden Ziel-Outputs fuer das Netz gespeichert */
+static float targets[NO_PAIRS][NO_OUTPUT_NEURONS];	/**< hier werden die zu erlernenden Ziel-Outputs fuer das Netz gespeichert */
 
-float outputarr[NO_OUTPUT_NEURONS]; /**< Netz-Rueckgabewerte fuer den Ist-Output */
+float outputarr[NO_OUTPUT_NEURONS];	/**< Netz-Rueckgabewerte fuer den Ist-Output */
 
 /**< Zeiger auf das neuronale Netz ueberhaupt */
 network_t *net = NULL;
@@ -156,7 +156,7 @@ void fill_pattern_in_lernarray(float *sectorarray, int16_t index, uint8_t out0, 
 	for (i = 0; i < NO_INPUT_NEURONS; i++)
 		inputs[index][i] = sectorarray[i];
 
-	//nun die zugehoerigen Teachoutputs, also Aktion ob links rechts gradeaus oder Stop
+	// nun die zugehoerigen Teach-Outputs, also Aktion ob links rechts gradeaus oder Stop
 	targets[index][0] = out0;
 	targets[index][1] = out1;
 }
@@ -166,12 +166,12 @@ void fill_pattern_in_lernarray(float *sectorarray, int16_t index, uint8_t out0, 
  * Testen des NN Netzes mit den Sektor-Eingabewerten, die normalisiert sein muessen im Wertebereich 0-1
  * Der Bot-Sichtbereich wurde dazu in 3 Sektoren aufgeteilt mit dieser Reihenfolge:
  * links 90 Grad,  vorn, rechts -90Grad; die rechtesten 3 Werte sind die Werte fuer den Abgrund
- * alle 6 Werte werden dem Netz als Inputneuronen vorgelegt
+ * alle 6 Werte werden dem Netz als Input-Neuronen vorgelegt
  */
 void test_net(float *sectorarray) {
 	uint8_t i;
 
-	//zum Testen des Netzwerks
+	// zum Testen des Netzwerks
 	static float testinputs[1][NO_INPUT_NEURONS] = { { 0, 0, 0, 0, 0, 0 } };
 
 	for (i = 0; i < NO_INPUT_NEURONS; i++)
@@ -181,7 +181,7 @@ void test_net(float *sectorarray) {
 }
 
 /**
- * Auslesen der Werte der Outputneuronen aus dem Netz nach Test durch Vorlage der Inputwerte
+ * Auslesen der Werte der Output-Neuronen aus dem Netz nach Test durch Vorlage der Inputwerte
  * 4 Kombinationen moeglich fuer 2 Outputs, wobei die Outputs binaer codiert sind
  *  Definition der Aktionen:
  *	0 0 Stop, keine Bewegung
@@ -194,8 +194,8 @@ void test_net(float *sectorarray) {
  * */
 void net_get_test_out(uint8_t *out1, uint8_t *out2) {
 	// die berechneten IST-Outputwerte digitalisieren auf 0 oder 1
-	*out1 = (outputarr[0] < 0.5) ? 0 : 1;
-	*out2 = (outputarr[1] < 0.5) ? 0 : 1;
+	*out1 = (outputarr[0] < 0.5f) ? 0 : 1;
+	*out2 = (outputarr[1] < 0.5f) ? 0 : 1;
 }
 
 /**
@@ -204,22 +204,22 @@ void net_get_test_out(uint8_t *out1, uint8_t *out2) {
 void set_init_patterns_in_array(void) {
 	uint16_t i, j;
 
-	no_of_pairs = NO_PAIRS; // Anzahl der Eintrage wieder auf Initial setzen
+	no_of_pairs = NO_PAIRS;	// Anzahl der Eintrage wieder auf Initial setzen
 
-	//Arbeitsarray der Inputpatterns mit dem Defaultarray belegen
+	// Arbeitsarray der Input-Patterns mit dem Default-Array belegen
 	for (i = 0; i < no_of_pairs; i++) {
 		for (j = 0; j < NO_INPUT_NEURONS; j++)
 			inputs[i][j] = inputs_def[i][j];
 	}
 
-	//Arbeitsarray mit den Zieloutputs nach dem Defaultarray belegen
+	// Arbeitsarray mit den Ziel-Outputs nach dem Default-Array belegen
 	for (i = 0; i < no_of_pairs; i++) {
 		//inputs[i][1],outputarr[0],outputarr[1],targets[i][0], targets[i][1]);
 		for (j = 0; j < NO_OUTPUT_NEURONS; j++)
 			targets[i][j] = targets_def[i][j];
 	}
 
-	//nun auch wieder die Zufallsgewichtungen in den Neuronenverbindungen einstellen
+	// nun auch wieder die Zufallsgewichtungen in den Neuronenverbindungen einstellen
 	net_set_rnd_weights();
 }
 
@@ -227,7 +227,7 @@ void set_init_patterns_in_array(void) {
  *  Setzen der zufaelligen Verbindungsgewichte
  */
 void net_set_rnd_weights(void) {
-	if (net != NULL) { //falls Netz initial, wird dies alles beim Erzeugen des Netzes selbst gemacht
+	if (net != NULL) {	// falls Netz initial, wird dies alles beim Erzeugen des Netzes selbst gemacht
 		srand_statement();
 
 		/* initialize weights and deltas */
@@ -247,19 +247,19 @@ void net_init(void) {
 
 	net_set_rnd_weights();
 
-	//Arbeitsarray mit den Inputpatterns auf 0
+	// Arbeitsarray mit den Inputpatterns auf 0
 	for (i = 0; i < NO_PAIRS; i++) {
 		for (j = 0; j < NO_INPUT_NEURONS; j++)
 			inputs[i][j] = 0;
 	}
 
-	//Arbeitsarray mit den Zieloutputs auf 0
+	// Arbeitsarray mit den Zieloutputs auf 0
 	for (i = 0; i < NO_PAIRS; i++) {
 		for (j = 0; j < NO_OUTPUT_NEURONS; j++)
 			targets[i][j] = 0;
 	}
 
-	no_of_pairs = 0; //nix im Array, total leer
+	no_of_pairs = 0;	// nix im Array, total leer
 }
 
 /**
@@ -272,12 +272,12 @@ void bot_neuralnet_behaviour(Behaviour_t* data) {
 	case STATE_NEURALNET_INIT:
 		neuralnet_state = STATE_NEURALNET_WORK; //1
 
-		//Falls bei Start sofort active, dann muss ohne Botenfunktion der Wert gesetzt werden
+		// Falls bei Start sofort active, dann muss ohne Botenfunktion der Wert gesetzt werden
 		if (max_trainings == 0)
 			max_trainings = MAX_TRAINING_DEF;
 
 		if (net == NULL) {
-			//In- Outputarrays uebertragen mit den vordefinierten Patterns
+			// In- Output-Arrays uebertragen mit den vordefinierten Patterns
 			set_init_patterns_in_array();
 
 			LOG_DEBUG("Netz Init mit Zufallswerten: (max %i)\n", max_trainings);
@@ -312,12 +312,12 @@ void bot_neuralnet_behaviour(Behaviour_t* data) {
 				net_train(net);
 				i++;
 
-			} //while, naechstes zu trainierendes Pattern
+			} // while, naechstes zu trainierendes Pattern
 
 			error = error / no_of_pairs; // geteilt durch anzahl der Testpatterns
 
 			/* Gesamtfehler berechnen */
-			total_error = (t == 0) ? error : 0.9 * total_error + 0.1 * error;
+			total_error = (t == 0) ? error : 0.9f * total_error + 0.1f * error;
 
 			/* naechster Lernschritt */
 			t++;
@@ -329,20 +329,20 @@ void bot_neuralnet_behaviour(Behaviour_t* data) {
 		LOG_DEBUG("Number of training performed: %i (max %i)\n", t, max_trainings);
 		LOG_DEBUG("End: output error: %f \n", total_error);
 
-		//jetzt die Wunsch und Istwerte ausgeben der Input-Patterns
+		// jetzt die Wunsch und Istwerte ausgeben der Input-Patterns
 		for (i=0; i< no_of_pairs; i++) {
-			net_compute (net, /*inputs (i)*/inputs[i], outputarr);
+			net_compute (net, /*inputs (i)*/ inputs[i], outputarr);
 			error = net_compute_output_error (net, targets[i]);
 			LOG_DEBUG("Pattern: %f %f Out:%f %f Ziel:%f %f\n", inputs[i][0], inputs[i][1],outputarr[0],outputarr[1],targets[i][0], targets[i][1]);
 		} // for
 #endif // DEBUG_BEHAVIOUR_NN
-		//wieder auf 0 setzen; wird entweder durch Botenfunktion auf gewuenschten Wert gesetzt oder
-		//vom Verhalten selbst falls Aufruf erfolgt ohne Botenfunktion durch einfaches Aktivieren via Screen
+		// wieder auf 0 setzen; wird entweder durch Botenfunktion auf gewuenschten Wert gesetzt oder
+		// vom Verhalten selbst falls Aufruf erfolgt ohne Botenfunktion durch einfaches Aktivieren via Screen
 		max_trainings = 0;
 		return_from_behaviour(data);
 		break;
 	}
-} //bot_neuralnet_behaviour
+} // bot_neuralnet_behaviour
 
 /**
  * Ruft das neuralnet-Verhalten auf, das Netz wird mit den Inputpatterns trainiert
@@ -366,7 +366,7 @@ void bot_neuralnet(Behaviour_t * caller) {
 void net_check_one_step(Behaviour_t * caller) {
 	// nur trainierbar wenn auch Patternpaare drin stehen
 	if (no_of_pairs > 0) {
-		max_trainings = 1; // nur 1x Netz durchlaufen lassen
+		max_trainings = 1;	// nur 1x Netz durchlaufen lassen
 		switch_to_behaviour(caller, bot_neuralnet_behaviour, BEHAVIOUR_OVERRIDE);
 		neuralnet_state = STATE_NEURALNET_INIT;
 	}
@@ -400,7 +400,7 @@ static void neuralnet_disp_key_handler(void) {
 			LOG_DEBUG("Netz noch ungelernt, wird jetzt wenigstens 1x trainiert");
 			// Koennte hier auch gleich ueber max Anzahl Iterationen trainieren,
 			// aber fuer Anschauungseffekt zum Fahren mit untrainiertem Netz so gelassen
-			net_check_one_step(NULL); //wenigstens 1x Netz durchlaufen lassen
+			net_check_one_step(NULL);	// wenigstens 1x Netz durchlaufen lassen
 		}
 
 		bot_drive_neuralnet(NULL);
@@ -432,7 +432,7 @@ void neuralnet_display(void) {
 	display_puts("NET Drive: 5");
 #endif
 
-	neuralnet_disp_key_handler(); // aufrufen des NN Key-Handlers
+	neuralnet_disp_key_handler();	// Aufrufen des NN Key-Handlers
 }
 #endif // DISPLAY_NEURALNET
 

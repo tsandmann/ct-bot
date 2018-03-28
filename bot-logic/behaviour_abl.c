@@ -749,6 +749,7 @@ void bot_abl(Behaviour_t* caller, const char* filename) {
 	}
 	switch_to_behaviour(caller, bot_abl_behaviour, BEHAVIOUR_OVERRIDE);
 	if_state = 0;
+
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
@@ -757,6 +758,7 @@ void bot_abl(Behaviour_t* caller, const char* filename) {
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
 #endif
+
 	abl_sp = ABL_STACK_SIZE - 1;
 	LOG_DEBUG("bot_abl(): loading first segment (512 bytes) of instructions");
 	load_program(0); // i_fetch() checks for NULL

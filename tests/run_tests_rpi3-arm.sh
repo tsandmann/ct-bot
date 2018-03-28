@@ -43,7 +43,7 @@ for filename in $MYDIR/pc/*.h; do
 	fi
 
 	if [[ $rc != 0 ]]; then
-		echo ""; echo ""; echo "TEST $filename FOR RPI3 FAILED."; echo ""; echo ""
+		echo ""; echo ""; echo "TEST $filename FOR RPI3-arm FAILED."; echo ""; echo ""
 		make DEVICE=PC clean >/dev/null
 		exit $rc;
 	fi
@@ -52,6 +52,6 @@ for filename in $MYDIR/pc/*.h; do
 	echo ""
 done
 
-echo ""; echo ""; echo "ALL TESTS FOR RPI3 PASSED."; echo ""; echo ""
+echo ""; echo ""; echo "ALL TESTS FOR RPI3-arm PASSED."; echo ""; echo ""
 
 exit 0;

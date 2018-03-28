@@ -36,9 +36,9 @@
  * Compile-time options
  ****************************************/
 
-#define DEFAULT_MOMENTUM 0.1
-#define DEFAULT_LEARNING_RATE 0.25
-#define DEFAULT_WEIGHT_RANGE 1.0
+#define DEFAULT_MOMENTUM 0.1f
+#define DEFAULT_LEARNING_RATE 0.25f
+#define DEFAULT_WEIGHT_RANGE 1.0f
 
 /****************************************
  * Initialization
@@ -57,13 +57,13 @@ net_randomize (network_t *net, float range)
   int l, nu, nl;
 
   assert (net != NULL);
-  assert (range >= 0.0);
+  assert (range >= 0.0f);
 
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
         net->layer[l].neuron[nu].weight[nl] =
-          2.0 * range * ((float) rand() / RAND_MAX - 0.5);
+          2.0f * range * ((float) rand() / RAND_MAX - 0.5f);
       }
     }
   }
@@ -83,7 +83,7 @@ net_reset_weights (network_t *net)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        net->layer[l].neuron[nu].weight[nl] = 0.0;
+        net->layer[l].neuron[nu].weight[nl] = 0.0f;
       }
     }
   }
@@ -103,7 +103,7 @@ net_reset_deltas (network_t *net)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        net->layer[l].neuron[nu].delta[nl] = 0.0;
+        net->layer[l].neuron[nu].delta[nl] = 0.0f;
       }
     }
   }
@@ -125,12 +125,12 @@ net_use_bias(network_t *net, int flag)
   if (flag != 0) {
     /* permanently set output of bias neurons to 1 */
     for (l = 0; l < net->no_of_layers; l++) {
-      net->layer[l].neuron[net->layer[l].no_of_neurons].output = 1.0;
+      net->layer[l].neuron[net->layer[l].no_of_neurons].output = 1.0f;
     }
   } else {
     /* permanently set output of bias neurons to 0 */
     for (l = 0; l < net->no_of_layers; l++) {
-      net->layer[l].neuron[net->layer[l].no_of_neurons].output = 0.0;
+      net->layer[l].neuron[net->layer[l].no_of_neurons].output = 0.0f;
     }
   }
 }
@@ -300,7 +300,7 @@ void
 net_set_momentum (network_t *net, float momentum)
 {
   assert (net != NULL);
-  assert (momentum >= 0.0);
+  assert (momentum >= 0.0f);
 
   net->momentum = momentum;
 }
@@ -313,7 +313,7 @@ float
 net_get_momentum (const network_t *net)
 {
   assert (net != NULL);
-  assert (net->momentum >= 0.0);
+  assert (net->momentum >= 0.0f);
 
   return net->momentum;
 }
@@ -326,7 +326,7 @@ void
 net_set_learning_rate (network_t *net, float learning_rate)
 {
   assert (net != NULL);
-  assert (learning_rate >= 0.0);
+  assert (learning_rate >= 0.0f);
 
   net->learning_rate = learning_rate;
 }
@@ -873,7 +873,7 @@ sigma (float x)
 static inline float
 sigma (float x)
 {
-  return 1.0 / (1.0 + exp (-x));
+  return 1.0f / (1.0f + exp (-x));
 }
 
 #endif
@@ -894,7 +894,7 @@ propagate_layer (layer_t *lower, layer_t *upper)
   assert (upper != NULL);
 
   for (nu = 0; nu < upper->no_of_neurons; nu++) {
-    value = 0.0;
+    value = 0.0f;
     for (nl = 0; nl <= lower->no_of_neurons; nl++) {
       value += upper->neuron[nu].weight[nl] * lower->neuron[nl].output;
     }
@@ -943,14 +943,14 @@ net_compute_output_error (network_t *net, const float *target)
   assert (net != NULL);
   assert (target != NULL);
 
-  net->global_error = 0.0;
+  net->global_error = 0.0f;
   for (n = 0; n < net->output_layer->no_of_neurons; n++) {
     output = net->output_layer->neuron[n].output;
     error = target[n] - output;
-    net->output_layer->neuron[n].error = output * (1.0 - output) * error;
+    net->output_layer->neuron[n].error = output * (1.0f - output) * error;
     net->global_error += error * error;
   }
-  net->global_error *= 0.5;
+  net->global_error *= 0.5f;
 
   return net->global_error;
 }
@@ -990,7 +990,7 @@ backpropagate_layer (layer_t *lower, layer_t *upper)
       error += upper->neuron[nu].weight[nl] * upper->neuron[nu].error;
     }
     output = lower->neuron[nl].output;
-    lower->neuron[nl].error = output * (1.0 - output) * error;
+    lower->neuron[nl].error = output * (1.0f - output) * error;
   }
 }
 
@@ -1203,8 +1203,8 @@ net_jolt (network_t *net, float factor, float range)
   int l, nu, nl;
 
   assert (net != NULL);
-  assert (factor >= 0.0);
-  assert (range >= 0.0);
+  assert (factor >= 0.0f);
+  assert (range >= 0.0f);
 
   /* modify weights */
   for (l = 1; l < net->no_of_layers; l++) {
@@ -1212,10 +1212,10 @@ net_jolt (network_t *net, float factor, float range)
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
         if (fabs (net->layer[l].neuron[nu].weight[nl]) < range) {
           net->layer[l].neuron[nu].weight[nl] =
-            2.0 * range * ((float) rand() / RAND_MAX - 0.5);
+            2.0f * range * ((float) rand() / RAND_MAX - 0.5f);
         } else {
           net->layer[l].neuron[nu].weight[nl] *=
-            1.0 + 2.0 * factor * ((float) rand() / RAND_MAX - 0.5);
+            1.0f + 2.0f * factor * ((float) rand() / RAND_MAX - 0.5f);
         }
       }
     }
@@ -1240,7 +1240,7 @@ net_add_neurons (network_t *net, int layer, int neuron, int number,
   assert (0 <= layer && layer < net->no_of_layers);
   assert (0 <= neuron);
   assert (number >= 0);
-  assert (range >= 0.0);
+  assert (range >= 0.0f);
 
   /* special case to conveniently add neurons at the end of the layer */
   if (neuron == -1) {
