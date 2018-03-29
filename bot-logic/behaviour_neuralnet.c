@@ -29,9 +29,6 @@
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
 
-/** \todo: fix warnings */
-#pragma GCC diagnostic warning "-Wdouble-promotion"
-
 #include <stdlib.h>
 #include <timer.h>
 #ifdef PC
