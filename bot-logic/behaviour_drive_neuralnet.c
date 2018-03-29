@@ -34,9 +34,6 @@
 
 #include <stdlib.h>
 
-/** \todo: fix warnings */
-#pragma GCC diagnostic warning "-Wsign-conversion"
-
 static uint8_t nn_drive_state = 0;	/**< Status des Fahr-Verhaltens */
 
 static uint8_t check_sector_state = 0;	/**< Status des Sector-Pruef-Verhaltens */
