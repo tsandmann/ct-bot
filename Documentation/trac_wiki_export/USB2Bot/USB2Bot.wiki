@@ -1,0 +1,51 @@
+= USB-2-Bot =
+
+Bitte beachten sie folgenden '''[wiki:Installationsanleitung#usb-adapter Hinweis]''' bei Verwendung der Sonderheft-Entwicklungsumgebung.
+
+== Beschreibung ==
+
+siehe auch:
+  * '''[http://www.heise.de/ct/artikel/An-der-Leine-290394.html c't 7/2006, S. 223]''': An der Leine, Debuggen des c't-Bot über USB
+  * '''[http://www.heise.de/ct/projekte/ct-bot/pdf/schaltplan-usb-2-bot.pdf Schaltplan]''' (PDF)
+  * '''[http://www.heise.de/ct/projekte/ct-bot/pdf/bestueckung-usb-2-bot.pdf Bestückungsplan]''' (PDF)
+  * '''[wiki:ct-Bot-Hardware#USB-2-Bot-Adapter Stückliste]'''
+
+== Nachfolger ==
+
+Die USB-2-Bot-Platinen sind mittlerweile ausverkauft. Als Alternative dazu kann man das "USB to TTL Serial Cable (5.0V)" von FTDI verwenden ([http://www.segor.de/#Q=TTL-232R-5V&M=1 TTL-232R-5V]). In puncto Software und Treiber bleibt alles beim Alten. Allerdings passt das Pinout nicht und man muss die 6-polige durch eine 8-polige Buchse ersetzen. Folgende Beschaltung ist zu verwenden:
+
+ * schwarzes Kabel (GND) herausnehmen und an Pin 8 beim c't-Bot (J4) oder Erweiterungsmodul (J12)
+ * oranges Kabel (Sendeleitung zum Bot) in Pin 2 beim c't-Bot (J4) oder Erweiterungsmodul (J12)
+ * gelbes Kabel (Sendeleitung zum PC) in Pin 3 beim c't-Bot (J4) oder Erweiterungsmodul (J12)
+
+Die anderen Leitungen werden nicht gebraucht und bleiben am besten im (alten) 6-poligen Gehaeuse (im Bild zur Seite gebogen), damit es keine Kurzschlüsse gibt:
+
+||[[Image(usb-to-ttl-cable_ct-bot-version.jpg, border=1, right, 300)]]
+
+== Treiber / Installation ==
+
+[http://www.ftdichip.com/Drivers/VCP.htm VCP-Treiber von FTDI]
+
+Details zur [wiki:Installationsanleitung#usb-adapter Installation]
+
+== Aufbauhinweise zum USB-2-Bot-Adapter ==
+
+Bei den Bauteilen LED1, LED2, C3 bitte die Polung (siehe Hinweise in der '''[wiki:ct-Bot-Hardware#USB-2-Bot-Adapter Stückliste]''') beachten. Die Stiftleiste J2 ist für Erweiterungen gedacht und bleibt unbestückt.
+
+||[[Image(usb-2-bot-1.jpg, left, border=1, 300)]]||[[Image(usb-2-bot-2.jpg, border=1, right, 300)]]||
+
+Für die USB-Buchse und das Verbindungskabel zum Bot muss man das mitgelieferte Gehäuse bearbeiten. Wer nicht feilen will, kann ein Teppichmesser nehmen. Dieses aber bitte immer vom Körper weg zeigend verwenden, sonst ist die Verletzungsgefahr zu gross. Mit dem Teppichmesser ritzt man das Gehäuse kräftig ein und bricht dann die überflüssigen Teile mit einer Zange aus.
+
+||[[Image(usb-2-bot-4.jpg, border=1, right, 300)]]||[[Image(usb-2-bot-5.jpg, left, border=1, 300)]]||
+||[[Image(usb-2-bot-6.jpg, border=1, right, 300)]]||[[Image(usb-2-bot-7.jpg, left, border=1, 300)]]||
+
+
+Die beiden LED sind für eine erste Funktionskontrolle des Adapters und müssen im Betrieb nicht sichtbar sein. Bohrungen dafür sind nicht erforderlich. Je nach Toleranzen kann es erforderlich sein, nach dem Aufstecken des Flachkabels von dessen Stecker ein wenig Material abzufeilen, damit das Gehäuse sauber schließt.
+
+[[Image(usb-2-bot-3.jpg, border=1, 300)]]
+
+An das freie Ende des Kabels die 8-polige Buchsenleiste in der Reihenfolge der Kabeladern anlöten, bei Bedarf mit ein wenig Schrumpfschlauch oder Heisskleber isolieren. Die Leiste wird auf J4 der Robot-Hauptplatine aufgesteckt, Pin 1 zeigt zum danebenliegenden Quarz. Verdrehtes Aufstecken ist bei einem Akku-versorgten Robot in der Regel unschädlich, es kommen dann aber keine Daten an.
+
+[[Image(usb-2-bot-8.jpg, border=1, 300)]]
+
+Informationen zur Treiberinstallation finden sich in unserer allgemeinen '''[wiki:Installationsanleitung#usb-adapter Installationsanleitung]'''. Wie der USB-2-Bot-Adapter mit dem Erweiterungsmodul harmoniert findet sich in der '''[wiki:ct-Bot-Erweiterung Beschreibung zu Letzterem]'''.

@@ -51,7 +51,7 @@ void bot_servo_behaviour(Behaviour_t * data) {
 	BLOCK_BEHAVIOUR(data, 1500); // 1.5 s warten
 
 	return_from_behaviour(data); // Verhalten aus
-	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_active, SERVO_OFF);
+	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_id, SERVO_OFF);
 	servo_set(servo_id, SERVO_OFF); // Servo aus
 	servo_id = 0;
 }

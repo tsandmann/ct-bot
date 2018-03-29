@@ -1,0 +1,1687 @@
+Index: E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_calibrate_sharps.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_calibrate_sharps.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_calibrate_sharps.c	(working copy)
+@@ -1,314 +1,312 @@
+-/*
+- * c't-Bot
+- * 
+- * This program is free software; you can redistribute it
+- * and/or modify it under the terms of the GNU General
+- * Public License as published by the Free Software
+- * Foundation; either version 2 of the License, or (at your
+- * option) any later version. 
+- * This program is distributed in the hope that it will be 
+- * useful, but WITHOUT ANY WARRANTY; without even the implied
+- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+- * PURPOSE. See the GNU General Public License for more details.
+- * You should have received a copy of the GNU General Public 
+- * License along with this program; if not, write to the Free 
+- * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+- * MA 02111-1307, USA.
+- * 
+- */
+-
+-/*! 
+- * @file 	behaviour_calibrate_sharps.c
+- * @brief 	Kalibriert die Distanzsensoren des Bots
+- * 
+- * Einige Zeilen sind auskommentiert. Sie waren dazu gedacht, die Kalibrierung zu automatisieren, 
+- * das geht aber zurzeit (noch) nicht, weil die Positionsbestimmung fuer kleine Distanzen etwas
+- * zu ungenau ist (=> Encoderdatenauswertung checken!)
+- * 
+- * @author 	Timo Sandmann (mail@timosandmann.de)
+- * @date 	21.04.2007
+- */
+-
+-#include "bot-logic/bot-logik.h"
+-
+-#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+-#include <math.h>
+-#include <stdio.h>
+-#include <string.h>
+-
+-#include "sensor.h"
+-#include "display.h"
+-#include "gui.h"
+-#include "rc5-codes.h"
+-#include "log.h"
+-
+-#ifdef MCU
+-	#include <avr/eeprom.h>
+-#else
+-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
+-	#define eeprom_write_byte(ptr, x)	*ptr = x
+-	#define eeprom_write_block(pRam, pEeprom, n)	memcpy(pEeprom, pRam, n)	// eeprom_write_block ist andersrum!
+-#endif
+-
+-//static Behaviour_t* data = NULL;
+-//static float start_x = 0;
+-//static float start_head = 0;
+-static uint8_t last_toggle = 0;			/*!< letztes Toggle-Bit der Distsensoren */
+-static uint8_t step = 0;				/*!< Abstand zum naechsten Messpunkt [cm] */
+-static uint8_t count = 0;				/*!< aktueller Messpunkt */
+-static int16_t distL = 0;				/*!< Rohdaten des linken Sharps */
+-static int16_t distR = 0;				/*!< Rohdaten des rechten Sharps */
+-static uint8_t distance = 0;			/*!< Entfernung zum Hindernis [cm] */
+-static int8_t measure_count = 0;		/*!< Counter fuer Sharp-Messungen */
+-static uint8_t userinput_done = 0;		/*!< 1: User war schon fleissig, 0: warten */
+-
+-static distSens_t buffer[2][14];		/*!< Puffer des Kalibrierungsergebnisses im RAM */
+-static uint8_t volt_offset = 0;			/*!< Offset des Spannungswertes */
+-
+-static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
+-static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
+-
+-static void goto_next_pos(void);		/*!< Stellt den Bot auf die naechste Position bzw. laesst den User das tun */
+-
+-static const uint8_t max_steps = 14;	/*!< Anzahl der Entfernungen, an denen gemessen wird */
+-
+-///*!
+-// * @brief	Hilfsfunktion fuer wait_for_stop()
+-// * @see		wait_for_stop()
+-// */
+-//static void wait_for_stop_helper(void) {
+-//	speedWishLeft = BOT_SPEED_STOP;
+-//	speedWishRight = BOT_SPEED_STOP;
+-//	
+-//	/* Nachlauf abwarten */
+-//	if (fabs(v_enc_left) < 1.0f && fabs(v_enc_right) < 1.0f) {
+-//		/* zurueck zum Aufrufer */
+-//		pNextJob = pLastJob;	// wurde zuvor von wait_for_stop() gerettet
+-//	}
+-//}
+-//
+-///*!
+-// * @brief	Haelt den Bot an und wartet den Nachlauf ab
+-// * anschliessend geht's mit dem Aufrufer weiter
+-// */
+-//static inline void wait_for_stop(void) {
+-//	pLastJob = pNextJob;
+-//	pNextJob = wait_for_stop_helper;
+-//}
+-
+-/*!
+- * @brief	Hilfsfunktion fuer wait_for_userinput()
+- * @see		wait_for_userinput()
+- */
+-static void wait_for_userinput_helper(void) {
+-	/* Einagbe abwarten */
+-	if (userinput_done) {
+-		userinput_done = 0;
+-		/* zurueck zum Aufrufer */
+-		pNextJob = pLastJob;	// wurde zuvor von wait_for_userinput() gerettet
+-	}
+-}
+-
+-/*!
+- * @brief	Haelt den Bot an und wartet eine Useraktion ab
+- * anschliessend geht's mit dem Aufrufer weiter
+- */
+-static inline void wait_for_userinput(void) {
+-	pLastJob = pNextJob;
+-	pNextJob = wait_for_userinput_helper;
+-}  
+-
+-/*!
+- * @brief			Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis	
+- * @param sensor	0: links, 1: rechts
+- */
+-static int16_t calc_distance(uint8_t sensor) {
+-//	float dHead = (start_head - heading) * 2.0f*M_PI/360.0f;
+-//	float dX = start_x - x_enc;
+-//	float s_m = dX / cos(dHead);
+-//	float dS = tan(dHead) * DISTSENSOR_POS_SW;
+-//	float result = sensor == 0 ? s_m - dS : s_m + dS;
+-//	return result;
+-	return distance * 10;	// cm in mm umrechnen
+-}
+-
+-/*!
+- * @brief	Schreibt Spannung und Entfernung in den RAM-Puffer
+- */
+-static void update_data(void) {
+-	int16_t dist = calc_distance(0);
+-//	LOG_INFO("%u: links: %d", count, dist);
+-	buffer[0][count].dist = dist/5;
+-	buffer[0][count].voltage = distL;
+-	dist = calc_distance(1);
+-//	LOG_INFO("%u: rechts: %d", count, dist);
+-	buffer[1][count].dist = dist/5;
+-	buffer[1][count].voltage = distR;
+-	
+-	if (count != max_steps-1)
+-		/* neue Entfernung */ 
+-		pNextJob = goto_next_pos;		
+-	else {
+-		/* fertig */
+-		count++;
+-		pNextJob = NULL;
+-	}
+-}
+-
+-/*!
+- * @brief	Misst die Entfernung mit den Sharps
+- */
+-static void measure_distance(void) {
+-	if (last_toggle != sensDistLToggle) {
+-		/* auf neue Messung pruefen */
+-		last_toggle = sensDistLToggle;
+-		measure_count++;
+-	}
+-	/* zweimal vier Messungen abwarten */
+-	if (measure_count == 4) {
+-		distL = (float)sensDistL / 8.0f - volt_offset;
+-		distR = (float)sensDistR / 8.0f - volt_offset;
+-	} else if (measure_count == 8) {
+-		distL += (float)sensDistL / 8.0f - volt_offset;
+-		distR += (float)sensDistR / 8.0f - volt_offset;
+-		distL >>= 1;
+-		distR >>= 1;	
+-		if (distL > 255 || distR > 255) {
+-			/* Offset zu kleine => erhoehen und neu messen */
+-			volt_offset += 5;
+-//			LOG_INFO("Offset-Update auf %u", volt_offset);
+-		} else {
+-			/* Messwerte ok */
+-			last_toggle = 1;
+-			pNextJob = update_data;
+-		}
+-		measure_count = 0;
+-	}
+-}
+-
+-/*!
+- * @brief	Stellt den Bot auf die naechste Position bzw. laesst den User das tun
+- */
+-static void goto_next_pos(void) {
+-	//bot_drive_distance(data, 0, -50, step);	// step cm zurueck
+-	distance += step;
+-	count++;
+-	pNextJob = measure_distance;
+-	wait_for_userinput();
+-}
+-
+-/*!
+- * @brief			Ersetzt die Sensorauswertungsfunktion, damit wir hier die Rohdaten bekommen
+- * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
+- * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+- * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
+- * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
+- */ 
+-void sensor_dist_direct(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt) {
+-	*p_sens = volt;	
+-	*p_toggle = ~*p_toggle;
+-}
+-
+-/*!
+- * @brief		Das eigentliche Verhalten
+- * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
+- * @see			bot_calibrate_sharps()
+- * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
+- * @see goto_next_pos(), @see measure_distance(), @see update_data()
+- */
+-void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
+-	if (pNextJob) pNextJob();
+-	else {
+-		/* fertig! */
+-		display_clear();
+-		sensor_update_distance = sensor_dist_lookup;	// Sensorauswertung wieder aktivieren
+-		/* Puffer ins EEPROM schreiben */
+-		eeprom_write_byte((uint8_t*)&sensDistOffset, volt_offset);
+-		eeprom_write_block(buffer[0], (uint8_t*)sensDistDataL, max_steps*sizeof(distSens_t));
+-		eeprom_write_block(buffer[1], (uint8_t*)sensDistDataR, max_steps*sizeof(distSens_t));
+-		return_from_behaviour(data);
+-		/* Fuer sensor_correction.h formatierte Logausgabe, erleichtert das Speichern der Init-EEPROM- / Sim-Werte */
+-		LOG_INFO("SENSDIST_OFFSET %u", volt_offset);
+-		char tmp_s[14*7+1];	// 14 Zeichen pro Durchlauf + '\0'
+-		uint8_t i, j, k;
+-		LOG_INFO("SENSDIST_DATA_LEFT:");
+-		for (k=0; k<2; k++) {
+-			for (j=0; j<2; j++) {
+-				tmp_s[0] = '\0';
+-				for (i=0; i<max_steps/2; i++) {
+-					sprintf(tmp_s, "%s{%u/2,%u/5},", tmp_s, buffer[k][i+j*max_steps/2].voltage*2, buffer[k][i+j*max_steps/2].dist*5);		
+-				}
+-				if (j==1) tmp_s[strlen(tmp_s)-1] = '\0';	// kein Komma ausgeben, falls letzter Wert
+-				LOG_INFO("%s \\", tmp_s);
+-			}
+-			if (k==0) LOG_INFO("SENSDIST_DATA_RIGHT:");
+-		}
+-	}
+-}
+-
+-/*!
+- * @brief			Kalibriert die Distanzsensoren des ct-Bots
+- * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+- */
+-void bot_calibrate_sharps(Behaviour_t *caller) {
+-	/* Inits */
+-//	data = caller;
+-//	start_head = heading;
+-//	start_x = x_enc + 100;
+-	last_toggle = 1;
+-	measure_count = -4;
+-	step = 5;
+-	distance = 10;
+-	volt_offset = 0;
+-	count = 0;
+-	userinput_done = 0;
+-	
+-	sensor_update_distance = sensor_dist_direct;	// Sensorauswertung deaktivieren
+-	
+-	uint8_t i;
+-	for (i=0; i<sizeof(screen_functions)/sizeof(screen_functions[0]); i++) {
+-		if (screen_functions[i] == bot_calibrate_sharps_display) break;
+-	}
+-	display_screen = i;
+-	display_clear();
+-	
+-	/* Als erstes Entfernung / Spannung messen */
+-	pNextJob = measure_distance;
+-	
+-	wait_for_userinput();
+-	
+-	/* Verhalten an */
+-	switch_to_behaviour(caller, bot_calibrate_sharps_behaviour, OVERRIDE);
+-}
+-
+-/*!
+- * @brief	Displayhandler fuer bot_calibrate_sharps-Verhalten
+- */
+-void bot_calibrate_sharps_display(void) {
+-	/* Displayausgabe */
+-	display_cursor(1,1);
+-	if (count != max_steps && pNextJob == wait_for_userinput_helper) {
+-		display_printf("Sharp-Kalibr. %2u/%2u", count+1 , max_steps);
+-		display_cursor(2,1);
+-		display_printf("Bot bitte auf %2u cm", distance);
+-		display_cursor(3,1);
+-		display_printf("stellen und mit");
+-		display_cursor(4,1);
+-		display_printf("\"Mute\" bestaetigen");
+-		
+-		/* Keyhandler */
+-		if (RC5_Code == RC5_CODE_MUTE) {
+-			userinput_done = 1;
+-			RC5_Code = 0;
+-		}
+-	} else if (pNextJob != NULL) {
+-		display_cursor(2,1);
+-		display_printf("thinking...         ");
+-	} else if (count == max_steps) {
+-		display_printf("fertig :-)");
+-	} else {
+-		display_printf("run calibrate_sharps");	
+-	}
+-}
+-
+-#endif	// BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
++/*
++ * c't-Bot
++ * 
++ * This program is free software; you can redistribute it
++ * and/or modify it under the terms of the GNU General
++ * Public License as published by the Free Software
++ * Foundation; either version 2 of the License, or (at your
++ * option) any later version. 
++ * This program is distributed in the hope that it will be 
++ * useful, but WITHOUT ANY WARRANTY; without even the implied
++ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
++ * PURPOSE. See the GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public 
++ * License along with this program; if not, write to the Free 
++ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307, USA.
++ * 
++ */
++
++/*! 
++ * @file 	behaviour_calibrate_sharps.c
++ * @brief 	Kalibriert die Distanzsensoren des Bots
++ * 
++ * Einige Zeilen sind auskommentiert. Sie waren dazu gedacht, die Kalibrierung zu automatisieren, 
++ * das geht aber zurzeit (noch) nicht, weil die Positionsbestimmung fuer kleine Distanzen etwas
++ * zu ungenau ist (=> Encoderdatenauswertung checken!)
++ * 
++ * @author 	Timo Sandmann (mail@timosandmann.de)
++ * @date 	21.04.2007
++ */
++
++#include "bot-logic/bot-logik.h"
++
++#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
++#include <math.h>
++#include <stdio.h>
++#include <string.h>
++
++#include "sensor.h"
++#include "display.h"
++#include "gui.h"
++#include "rc5-codes.h"
++#include "log.h"
++
++#ifdef MCU
++	#include <avr/eeprom.h>
++#else
++	#include "eeprom-emu.h"
++#endif
++
++//static Behaviour_t* data = NULL;
++//static float start_x = 0;
++//static float start_head = 0;
++static uint8_t last_toggle = 0;			/*!< letztes Toggle-Bit der Distsensoren */
++static uint8_t step = 0;				/*!< Abstand zum naechsten Messpunkt [cm] */
++static uint8_t count = 0;				/*!< aktueller Messpunkt */
++static int16_t distL = 0;				/*!< Rohdaten des linken Sharps */
++static int16_t distR = 0;				/*!< Rohdaten des rechten Sharps */
++static uint8_t distance = 0;			/*!< Entfernung zum Hindernis [cm] */
++static int8_t measure_count = 0;		/*!< Counter fuer Sharp-Messungen */
++static uint8_t userinput_done = 0;		/*!< 1: User war schon fleissig, 0: warten */
++
++static distSens_t buffer[2][14];		/*!< Puffer des Kalibrierungsergebnisses im RAM */
++static uint8_t volt_offset = 0;			/*!< Offset des Spannungswertes */
++
++static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
++static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
++
++static void goto_next_pos(void);		/*!< Stellt den Bot auf die naechste Position bzw. laesst den User das tun */
++
++static const uint8_t max_steps = 14;	/*!< Anzahl der Entfernungen, an denen gemessen wird */
++
++///*!
++// * @brief	Hilfsfunktion fuer wait_for_stop()
++// * @see		wait_for_stop()
++// */
++//static void wait_for_stop_helper(void) {
++//	speedWishLeft = BOT_SPEED_STOP;
++//	speedWishRight = BOT_SPEED_STOP;
++//	
++//	/* Nachlauf abwarten */
++//	if (fabs(v_enc_left) < 1.0f && fabs(v_enc_right) < 1.0f) {
++//		/* zurueck zum Aufrufer */
++//		pNextJob = pLastJob;	// wurde zuvor von wait_for_stop() gerettet
++//	}
++//}
++//
++///*!
++// * @brief	Haelt den Bot an und wartet den Nachlauf ab
++// * anschliessend geht's mit dem Aufrufer weiter
++// */
++//static inline void wait_for_stop(void) {
++//	pLastJob = pNextJob;
++//	pNextJob = wait_for_stop_helper;
++//}
++
++/*!
++ * @brief	Hilfsfunktion fuer wait_for_userinput()
++ * @see		wait_for_userinput()
++ */
++static void wait_for_userinput_helper(void) {
++	/* Einagbe abwarten */
++	if (userinput_done) {
++		userinput_done = 0;
++		/* zurueck zum Aufrufer */
++		pNextJob = pLastJob;	// wurde zuvor von wait_for_userinput() gerettet
++	}
++}
++
++/*!
++ * @brief	Haelt den Bot an und wartet eine Useraktion ab
++ * anschliessend geht's mit dem Aufrufer weiter
++ */
++static inline void wait_for_userinput(void) {
++	pLastJob = pNextJob;
++	pNextJob = wait_for_userinput_helper;
++}  
++
++/*!
++ * @brief			Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis	
++ * @param sensor	0: links, 1: rechts
++ */
++static int16_t calc_distance(uint8_t sensor) {
++//	float dHead = (start_head - heading) * 2.0f*M_PI/360.0f;
++//	float dX = start_x - x_enc;
++//	float s_m = dX / cos(dHead);
++//	float dS = tan(dHead) * DISTSENSOR_POS_SW;
++//	float result = sensor == 0 ? s_m - dS : s_m + dS;
++//	return result;
++	return distance * 10;	// cm in mm umrechnen
++}
++
++/*!
++ * @brief	Schreibt Spannung und Entfernung in den RAM-Puffer
++ */
++static void update_data(void) {
++	int16_t dist = calc_distance(0);
++//	LOG_INFO("%u: links: %d", count, dist);
++	buffer[0][count].dist = dist/5;
++	buffer[0][count].voltage = distL;
++	dist = calc_distance(1);
++//	LOG_INFO("%u: rechts: %d", count, dist);
++	buffer[1][count].dist = dist/5;
++	buffer[1][count].voltage = distR;
++	
++	if (count != max_steps-1)
++		/* neue Entfernung */ 
++		pNextJob = goto_next_pos;		
++	else {
++		/* fertig */
++		count++;
++		pNextJob = NULL;
++	}
++}
++
++/*!
++ * @brief	Misst die Entfernung mit den Sharps
++ */
++static void measure_distance(void) {
++	if (last_toggle != sensDistLToggle) {
++		/* auf neue Messung pruefen */
++		last_toggle = sensDistLToggle;
++		measure_count++;
++	}
++	/* zweimal vier Messungen abwarten */
++	if (measure_count == 4) {
++		distL = (float)sensDistL / 8.0f - volt_offset;
++		distR = (float)sensDistR / 8.0f - volt_offset;
++	} else if (measure_count == 8) {
++		distL += (float)sensDistL / 8.0f - volt_offset;
++		distR += (float)sensDistR / 8.0f - volt_offset;
++		distL >>= 1;
++		distR >>= 1;	
++		if (distL > 255 || distR > 255) {
++			/* Offset zu kleine => erhoehen und neu messen */
++			volt_offset += 5;
++//			LOG_INFO("Offset-Update auf %u", volt_offset);
++		} else {
++			/* Messwerte ok */
++			last_toggle = 1;
++			pNextJob = update_data;
++		}
++		measure_count = 0;
++	}
++}
++
++/*!
++ * @brief	Stellt den Bot auf die naechste Position bzw. laesst den User das tun
++ */
++static void goto_next_pos(void) {
++	//bot_drive_distance(data, 0, -50, step);	// step cm zurueck
++	distance += step;
++	count++;
++	pNextJob = measure_distance;
++	wait_for_userinput();
++}
++
++/*!
++ * @brief			Ersetzt die Sensorauswertungsfunktion, damit wir hier die Rohdaten bekommen
++ * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
++ * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
++ * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
++ * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
++ */ 
++void sensor_dist_direct(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt) {
++	*p_sens = volt;	
++	*p_toggle = ~*p_toggle;
++}
++
++/*!
++ * @brief		Das eigentliche Verhalten
++ * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
++ * @see			bot_calibrate_sharps()
++ * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
++ * @see goto_next_pos(), @see measure_distance(), @see update_data()
++ */
++void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
++	if (pNextJob) pNextJob();
++	else {
++		/* fertig! */
++		display_clear();
++		sensor_update_distance = sensor_dist_lookup;	// Sensorauswertung wieder aktivieren
++		/* Puffer ins EEPROM schreiben */
++		eeprom_write_byte((uint8_t*)&sensDistOffset, volt_offset);
++		eeprom_write_block(buffer[0], (uint8_t*)sensDistDataL, max_steps*sizeof(distSens_t));
++		eeprom_write_block(buffer[1], (uint8_t*)sensDistDataR, max_steps*sizeof(distSens_t));
++		return_from_behaviour(data);
++		/* Fuer sensor_correction.h formatierte Logausgabe, erleichtert das Speichern der Init-EEPROM- / Sim-Werte */
++		LOG_INFO("SENSDIST_OFFSET %u", volt_offset);
++		char tmp_s[14*7+1];	// 14 Zeichen pro Durchlauf + '\0'
++		uint8_t i, j, k;
++		LOG_INFO("SENSDIST_DATA_LEFT:");
++		for (k=0; k<2; k++) {
++			for (j=0; j<2; j++) {
++				tmp_s[0] = '\0';
++				for (i=0; i<max_steps/2; i++) {
++					sprintf(tmp_s, "%s{%u/2,%u/5},", tmp_s, buffer[k][i+j*max_steps/2].voltage*2, buffer[k][i+j*max_steps/2].dist*5);		
++				}
++				if (j==1) tmp_s[strlen(tmp_s)-1] = '\0';	// kein Komma ausgeben, falls letzter Wert
++				LOG_INFO("%s \\", tmp_s);
++			}
++			if (k==0) LOG_INFO("SENSDIST_DATA_RIGHT:");
++		}
++	}
++}
++
++/*!
++ * @brief			Kalibriert die Distanzsensoren des ct-Bots
++ * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
++ */
++void bot_calibrate_sharps(Behaviour_t *caller) {
++	/* Inits */
++//	data = caller;
++//	start_head = heading;
++//	start_x = x_enc + 100;
++	last_toggle = 1;
++	measure_count = -4;
++	step = 5;
++	distance = 10;
++	volt_offset = 0;
++	count = 0;
++	userinput_done = 0;
++	
++	sensor_update_distance = sensor_dist_direct;	// Sensorauswertung deaktivieren
++	
++	uint8_t i;
++	for (i=0; i<sizeof(screen_functions)/sizeof(screen_functions[0]); i++) {
++		if (screen_functions[i] == bot_calibrate_sharps_display) break;
++	}
++	display_screen = i;
++	display_clear();
++	
++	/* Als erstes Entfernung / Spannung messen */
++	pNextJob = measure_distance;
++	
++	wait_for_userinput();
++	
++	/* Verhalten an */
++	switch_to_behaviour(caller, bot_calibrate_sharps_behaviour, OVERRIDE);
++}
++
++/*!
++ * @brief	Displayhandler fuer bot_calibrate_sharps-Verhalten
++ */
++void bot_calibrate_sharps_display(void) {
++	/* Displayausgabe */
++	display_cursor(1,1);
++	if (count != max_steps && pNextJob == wait_for_userinput_helper) {
++		display_printf("Sharp-Kalibr. %2u/%2u", count+1 , max_steps);
++		display_cursor(2,1);
++		display_printf("Bot bitte auf %2u cm", distance);
++		display_cursor(3,1);
++		display_printf("stellen und mit");
++		display_cursor(4,1);
++		display_printf("\"Mute\" bestaetigen");
++		
++		/* Keyhandler */
++		if (RC5_Code == RC5_CODE_MUTE) {
++			userinput_done = 1;
++			RC5_Code = 0;
++		}
++	} else if (pNextJob != NULL) {
++		display_cursor(2,1);
++		display_printf("thinking...         ");
++	} else if (count == max_steps) {
++		display_printf("fertig :-)");
++	} else {
++		display_printf("run calibrate_sharps");	
++	}
++}
++
++#endif	// BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+Index: E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_turn.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_turn.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/bot-logic/behaviour_turn.c	(working copy)
+@@ -33,16 +33,14 @@
+ 	#include <avr/eeprom.h>
+ 	#define ANGLE_CORRECT	1						/*!< Drehfehler-Init */
+ #else
+-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
+-	#define eeprom_read_byte(x)			*x			/*!< Pseudo-EEPROM-Funktion fuer PC */
+-	#define eeprom_write_byte(ptr, x)	*ptr = x	/*!< Pseudo-EEPROM-Funktion fuer PC */
++	#include "eeprom-emu.h"
+ 	#define ANGLE_CORRECT	0						/*!< Drehfehler-Init */
+ #endif	// MCU
+ 
+ /* EEPROM-Variablen immer deklarieren, damit die Adressen sich nicht veraendern je nach #define */
+-uint8 EE_SECTION err15=ANGLE_CORRECT	*1;			/*!< Fehler bei Drehungen unter 15 Grad */
+-uint8 EE_SECTION err45=ANGLE_CORRECT	*2;			/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
+-uint8 EE_SECTION err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
++uint8 EEPROM err15=ANGLE_CORRECT	*1;			/*!< Fehler bei Drehungen unter 15 Grad */
++uint8 EEPROM err45=ANGLE_CORRECT	*2;			/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
++uint8 EEPROM err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
+ 
+ 
+ #ifdef BEHAVIOUR_TURN_AVAILABLE
+Index: E:/eclipse/ct-bot test/ct-Bot/motor.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/motor.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/motor.c	(working copy)
+@@ -46,6 +46,9 @@
+ #ifdef MCU
+ 	#include <avr/eeprom.h>
+ #endif
++#ifdef PC
++	#include "eeprom-emu.h"
++#endif
+ 
+ int16 speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
+ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
+@@ -86,11 +89,9 @@
+ //	static volatile uint8 acc_test[2];			/*!< nur Testcase */
+ //	static volatile uint16 acc_test_dt[2];		/*!< nur Testcase */
+ #endif	// SPEED_CONTROL_AVAILABLE
+-#ifdef MCU
+-	/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
+-	/*! EEPROM-Kopie von pwm_values */
+-	uint8_t __attribute__ ((section (".eeprom"),aligned (1))) pwmSlow[4] = {255, 255, 255, 255};
+-#endif
++
++/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
++uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+ 	
+ direction_t direction;		/*!< Drehrichtung der Motoren */
+ 
+Index: E:/eclipse/ct-bot test/ct-Bot/include/eeprom-emu.h
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/include/eeprom-emu.h	(revision 0)
++++ E:/eclipse/ct-bot test/ct-Bot/include/eeprom-emu.h	(revision 0)
+@@ -0,0 +1,67 @@
++/*
++ * c't-Bot
++ * 
++ * This program is free software; you can redistribute it
++ * and/or modify it under the terms of the GNU General
++ * Public License as published by the Free Software
++ * Foundation; either version 2 of the License, or (at your
++ * option) any later version. 
++ * This program is distributed in the hope that it will be 
++ * useful, but WITHOUT ANY WARRANTY; without even the implied
++ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
++ * PURPOSE. See the GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public 
++ * License along with this program; if not, write to the Free 
++ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307, USA.
++ * 
++ */
++
++/* @file 	eeprom-emu.h  
++ * @brief 	Low-Level Routinen fuer den Zugriff auf das EEPROM des c't-Bots
++ * @author 	Achim Pankalla (achim.pankalla@gmx.de)
++ * @date 	01.03.07
++*/
++#ifndef eeprom_emu_H_
++#define eeprom_emu_H_
++
++#ifdef PC
++#include <stddef.h>
++
++/*!
++ * Flagge die bei Wahr die EEPROM Datei mit den Werten der EEP Datei initialisiert.
++ */
++extern uint8 eeprom_init;
++
++/*!
++ * Initialisiert den EEPROM-Manager fuer den Simulierten Bot. Danach steht dem PC-Bot
++ * auch ein EEPROM zur Verfuegung.
++ */ 
++extern void init_eeprom_man(void);
++
++/*!
++ * Speichern Daten im EEPROM.
++ * @param address Adresse im EEPROM zwischen 0 und 1023.
++ * @param data Variable mit den abzulegenen Daten.
++ */ 
++extern void eeprom_write_byte(uint8  *adr, uint8 value);
++extern void eeprom_write_word(uint16 *adr, uint16 value);
++
++/*! 
++ * Laden Daten aus dem EEPROM.
++ * @param address Adresse im EEPROM zwischen 0 und 1023.
++ * @return Wert der Speicheraddresse im EEPROM
++ */ 
++extern uint8  eeprom_read_byte(uint8  *adr);
++extern uint16 eeprom_read_word(uint16 *adr);
++
++/*! 
++ * Kopiert ein Block aus den EEPROM oder in das EEPROM
++ * @param address Adresse im Speicher.
++ * @param address Adresse im EEPROM.
++ */ 
++extern void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t size);
++extern void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size);
++
++#endif
++#endif
+Index: E:/eclipse/ct-bot test/ct-Bot/include/global.h
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/include/global.h	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/include/global.h	(working copy)
+@@ -60,11 +60,12 @@
+ 	#define On                    1		/*!< An */
+ 	#define Off                   0		/*!< Aus */
+ 
++	#ifdef PC							/*!< Unterscheidung der EEPROM definition */
++		#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))
++	#endif
+ 	#ifdef MCU
+-		#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	/*!< Shortcut fuer EEPROM-Section */
+-	#else
+-		#define EE_SECTION														/*!< Shortcut fuer EEPROM-Section */
+-	#endif	// MCU
++		#define EEPROM __attribute__ ((section (".eeprom")))
++	#endif
+ 
+ 	#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+ 	
+Index: E:/eclipse/ct-bot test/ct-Bot/include/gui.h
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/include/gui.h	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/include/gui.h	(working copy)
+@@ -31,9 +31,7 @@
+ 
+ extern int8 max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
+ extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Zeiger auf die Display-Funktionen */
+-#ifdef MCU
+-	extern uint8 __attribute__ ((section (".eeprom"))) resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
+-#endif
++extern uint8 EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
+ 
+ /*! 
+  * @brief 			Display-Screen Anzeige
+Index: E:/eclipse/ct-bot test/ct-Bot/mcu/mini-fat.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/mcu/mini-fat.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/mcu/mini-fat.c	(working copy)
+@@ -31,7 +31,7 @@
+ #ifdef MCU
+ #include "avr/eeprom.h"
+ /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
+-uint32 __attribute__ ((section (".eeprom"))) eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
++uint32 EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
+ 
+ #ifdef MMC_AVAILABLE	
+ 
+Index: E:/eclipse/ct-bot test/ct-Bot/sensor.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/sensor.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/sensor.c	(working copy)
+@@ -41,9 +41,8 @@
+ #ifdef MCU
+ 	#include <avr/eeprom.h>
+ #else
+-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
+-	#define eeprom_read_byte(x)	*x											/*!< Pseudo-EEPROM-Funktion fuer PC */
+-#endif	// MCU
++	#include "eeprom-emu.h"
++#endif
+ 
+ // Defines einiger, haeufiger benoetigter Konstanten
+ #define DEG2RAD (2*M_PI/360)	/*!< Umrechnung von Grad nach Bogenmass */ 
+@@ -59,9 +58,9 @@
+ /*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
+ void (* sensor_update_distance)(int16* const p_sens, uint8* const p_toggle, const distSens_t* ptr, int16 volt) = sensor_dist_lookup;
+ 
+-distSens_t EE_SECTION sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
+-distSens_t EE_SECTION sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+-uint8_t EE_SECTION sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
++distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
++distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
++uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
+ 
+ int16 sensBorderL=0;	/*!< Abgrundsensor links */
+ int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
+@@ -163,7 +162,7 @@
+ 	else  volt = (volt_16 >> 3) - offset;
+ 	
+ 	/* Spannung in LT-Table suchen */
+-	uint8 pivot = eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
++	uint8 pivot = eeprom_read_byte((uint8*)&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
+ 	if (volt > pivot) {
+ 		/* in unterer Haelfte suchen */
+ 		i = 0;
+@@ -175,7 +174,7 @@
+ 	}
+ 	uint8_t tmp=0;
+ 	for (; i<n; i++) {
+-		tmp = eeprom_read_byte(&ptr->voltage);
++		tmp = eeprom_read_byte((uint8*)&ptr->voltage);
+ 		if (volt > tmp)	// aufsteigend suchen, damit der kritische Fall (kleine Entfernung) schneller gefunden wird
+ 			break;	// ptr zeigt jetzt auf die naechst kleinere Spannung
+ 		ptr++; 
+@@ -187,7 +186,7 @@
+ 	} 
+ 	
+ 	/* Entfernung berechnen und speichern */
+-	uint8 distance = lin_interpolate(eeprom_read_byte(&(ptr-1)->voltage), eeprom_read_byte(&(ptr-1)->dist), tmp, eeprom_read_byte(&ptr->dist), volt);
++	uint8 distance = lin_interpolate(eeprom_read_byte((uint8*)&(ptr-1)->voltage), eeprom_read_byte((uint8*)&(ptr-1)->dist), tmp, eeprom_read_byte((uint8*)&ptr->dist), volt);
+ 	*p_sens = distance >= SENS_IR_MAX_DIST/5 ? SENS_IR_INFINITE : distance * 5;	// Distanz ist gefuenftelt in den Ref.-Daten;
+ 	
+ 	/* Sensorupdate-Info toggeln */
+Index: E:/eclipse/ct-bot test/ct-Bot/pc/mini-fat.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/pc/mini-fat.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/pc/mini-fat.c	(working copy)
+@@ -36,6 +36,9 @@
+ #include "mmc-vm.h"
+ #include "mmc-emu.h"
+ 
++/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
++uint32 EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
++
+ /*! 
+  * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) nullen
+  * Danach kommen so viele size kByte Nullen
+Index: E:/eclipse/ct-bot test/ct-Bot/pc/eeprom-emu_pc.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/pc/eeprom-emu_pc.c	(revision 0)
++++ E:/eclipse/ct-bot test/ct-Bot/pc/eeprom-emu_pc.c	(revision 0)
+@@ -0,0 +1,455 @@
++/*
++ * c't-Bot
++ * 
++ * This program is free software; you can redistribute it
++ * and/or modify it under the terms of the GNU General
++ * Public License as published by the Free Software
++ * Foundation; either version 2 of the License, or (at your
++ * option) any later version. 
++ * This program is distributed in the hope that it will be 
++ * useful, but WITHOUT ANY WARRANTY; without even the implied
++ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
++ * PURPOSE. See the GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public 
++ * License along with this program; if not, write to the Free 
++ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307, USA.
++ * 
++ */
++
++/* @file 	eeprom-emu_pc.c  
++ * @brief 	Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots
++ * @author 	Achim Pankalla (achim.pankalla@gmx.de)
++ * @date 	07.06.2007
++*/
++
++#include "ct-Bot.h"
++
++#ifdef PC
++
++#include <stdio.h>
++#include <string.h>
++
++#include "log.h"
++
++extern uint8 EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM als Sectionreferenz*/
++extern uint8 __attribute__ ((section (".s1eeprom"))) __attribute__((aligned(1))) _eeprom_start1__;
++extern uint8 __attribute__ ((section (".s2eeprom"))) __attribute__((aligned(1))) _eeprom_start2__;
++
++/*! Normiert PC EEPROM Adressen*/
++#define EEPROM_ADDR(x) ((uint32)x - (uint32)&_eeprom_start2__ - ((uint32)&_eeprom_start2__ - (uint32)&_eeprom_start1__))
++/*! Defines zum Mitloggen von EEPROM Zugriffen*/
++#define LOG_LOAD 	if(addrconv) {LOG_DEBUG("LOAD: %s : %d", ctab[lastctabi].varname, (uint16)dataline[0] + (uint16)dataline[1]*256);}\
++					else {LOG_DEBUG("load-addr=0x%x/%d", address,(uint16)dataline[0] + (uint16)dataline[1]*256);}
++#define LOG_STORE 	if(addrconv) {LOG_DEBUG("STORE: %s : %d", ctab[lastctabi].varname, data);}\
++					else {LOG_DEBUG("load-addr=0x%x/%d", address, data);}
++									
++#ifdef __AVR_ATmega644__  /*! Dieser Prozessor hat 2048Bytes EEPROM*/
++	#define EE_SIZE 2048
++#else
++	#define EE_SIZE 1024
++#endif
++
++#define EEPROM_FILENAME	"./eeprom.bin" 		/*<! Name und Pfad der EEPROM Datei. Verzeichnis muss existieren. Backslash doppeln!*/
++#define MAX_VAR 200  						/*<! Maximale Anszahl von Variablen*/
++#define EEMAP_MCU "../debug-mcu-w32/eeprom_mcu.map"  /*<! Pfade fuer MAP / EEP Dateien */ 
++#define EEMAP_PC  "./eeprom_pc.map"
++#define EEP_PC    "./ct-bot.eep"
++
++typedef struct addrtab {					/*<! Spezieller Datentype fuer Adresskonvertierung*/
++	char varname[20];
++	uint32 simaddr;
++	uint32 botaddr;
++	uint32 size;
++	uint32 access;
++	} AddrCTab;
++
++static AddrCTab ctab[MAX_VAR]; 				/*<! Adresskonvertierungstabelle */
++static uint16 tsize=0; 						/*<! Anzahl Eintraege in der Tabelle */
++static uint8 addrconv = 0;                  /*<! Adresskonvertierung ein-/ausschalten*/
++static uint16 lastctabi = 0;                /*<! Letzter Zugriffsindex auf ctab*/
++uint8 eeprom_init = 0;						/*<! Flagge fuer EEPROM Initialsierung*/
++
++/*! 
++ * Diese Funktion konvertiert die Adressen der EEPROM Variablen des PC so,
++ * das sie den Adressen im realen ct-bot entsprechen. Dafuer wird mit der Funktion
++ * create_ctab ein Adresstabelle angelegt, diese nutzt diese Funktion.
++ * @param address Adresse im EEPROM zwischen 0 und EE_SIZE-1.
++ * @return Die neue Adresse fÃ¼r den realen Bot.
++ */
++static uint32 conv_eeaddr(uint32 addr){
++	int8 i;
++	int32 adiff;
++
++	if(!addrconv) //Keine Adresskonvertierung
++		return(addr);
++	for(i=0; i<tsize; i++){
++		adiff = addr - ctab[i].simaddr;
++		if(adiff < 0)
++			return(0xffffffff);
++		if(adiff < ctab[i].size){
++			lastctabi = i; //Letzer guelten Index merken
++			return(ctab[i].botaddr + adiff);
++		}
++	}
++	return(0xffffffff);
++}
++
++/*!
++ * Diese Funktion uberprueft das vorhanden sein der eeprom.bin und initialisiert sie
++ * gegebenenfalls mit der Initwerten der eep Datei.
++ * Es wird dabei die Adresskovertierung benutzt, wenn die EEPROM Simulation im MCU-Modus 
++ * ist.
++ * -----
++ *  0 = EEPROM Datei OK
++ *  1 = Fehler aufgetreten
++ * -----
++ * @param initfile EEP Datei des PC Kodes.
++ * @return Status der Funktion
++ */
++static uint16 check_eeprom_file(char *initfile){
++	FILE *fpr, *fpw; //Filepointer fuer Dateizugriffe
++	uint16 i; //Laufvariable
++	char data[2]; //Datenspeicher
++	
++	/*eeprom file vorhanden*/
++	if(!(fpw = fopen(EEPROM_FILENAME, "r+b"))){ //Testen, ob Datei vorhanden ist.
++		int16 i; //Laufvariable
++		
++		if(!(fpw = fopen(EEPROM_FILENAME, "w+b"))){ //wenn nicht, dann erstellen
++			LOG_INFO("->Kann EEPROM-Datei nicht erstellen");
++			return(1);
++		}
++		for(i = 0; i < EE_SIZE; i++) //Leeres EEPROM erstellen
++			fwrite("\377", 1, 1, fpw);
++		fclose(fpw);
++		LOG_INFO("->Leere EEPROM-Datei erstellt");
++ 	}
++	
++	/*Initialsieren der eeprom.bin, wenn gewuenscht*/
++	if(eeprom_init){
++		if(!(fpr = fopen(initfile, "rb"))){ //Datei oeffnen
++			LOG_INFO("->EEP nicht gefunden");
++			return(1);
++		}
++		if(!(fpw = fopen(EEPROM_FILENAME, "rb+"))){ //Datei oeffnen
++			LOG_INFO("->EEPROM-Datei kann nicht beschrieben werden");
++			return(1);
++		}
++		
++		/*EEP-Datei in EEPROM-Datei kopieren*/
++		for(i=0; i<EE_SIZE; i++){
++			/*Daten kopieren*/
++			if(!fread(data, 1, 1, fpr))
++				break;
++			if(addrconv){ //EEPROM-Datei im MCU-Modus
++				uint32 naddr;//Konvertierte Adresse
++				
++				naddr = conv_eeaddr((uint32)i);
++				if(naddr != 0xffffffff){
++					fseek(fpw, (int32)naddr, SEEK_SET);
++				}
++				else{
++					continue; //Nichts schreiben Adresse nicht belegt
++				}
++			}
++			fwrite(data, 1, 1, fpw);
++		}
++		fclose(fpr);
++		fclose(fpw);
++		LOG_INFO("->EEPROM-Datei mit Daten init.");
++	}
++	return(0);
++}
++
++/*!
++ * Diese Funktion erstellt aus den beiden im Post erstellten MAP Dateien eine Tabelle
++ * zum umrechnen der PC-Adressen in die des Winavr Compiler. Dadurch kann die EEPROM 
++ * Datei in einen zum EEPROM des Bot kompatiblen Format gehalten werden.
++ * Wichtige Informationen werden Ã¼ber LOG_INFO angezeigt.
++ * ----
++ * Ergebniskodes der Funktion
++ * 0 = Fehlerfrei
++ * 1 = Sim Mapfile nicht vorhanden
++ * 2 = Bot Mapfile nicht vorhanden
++ * 3 = Unterschiedlicher Variablenbestand
++ * 4 = Zuviele Variablen
++ * 5 = EEPROM voll
++ * 6 = Unterschiedliche Variablenanzahl
++ * 
++ * @param simfile MAP mit den Adressen der EEPROM-Variablen in der PC EXE.
++ * @param botfile MAP mit den Adressen der EEPROM-Variablen im MCU EXE.
++ * @return Statuskodes.
++ */
++static uint16 create_ctab(char *simfile, char *botfile){
++	FILE *fps, *fpb;
++	char sline[250], bline[250]; //Textzeilen aus Dateien
++	char d[30], d1[30], d2[30], vname_s[30], vname_b[20]; //Dummy und Variablennamen
++	int32 addr_s, addr_b; //Adressen der Variablen
++	char saddr[30], ssize[30]; //Stringvarianten fuer die Bot Daten
++	uint32 size; //Variablengroesse
++	int16 i, ii; //Laufvariablen
++	uint16 vc = 0; //Variablenzaehler
++
++	/*Dateien oeffnen*/
++	if(!(fps=fopen(simfile,"r"))){
++		LOG_INFO("->EEPROM-MAP fuer PC fehlt");
++		return(1);
++	}
++	if(!(fpb=fopen(botfile,"r"))){
++		LOG_INFO("->EEPROM-MAP fuer MCU fehlt");		
++		return(2);
++	}
++
++	/*Anzahl Variablen vergleichen*/
++	while(fgets(sline, 249, fps)) vc++;
++	while(fgets(sline, 249, fpb)) vc--;
++	if(vc){
++		fclose(fps);
++		fclose(fpb);
++		LOG_INFO("->Unterschiedliche Variablenanzahl");
++		return(6);
++	}
++	rewind(fps);
++	rewind(fpb);
++
++	/*Tabelle erstellen*/
++	while(fgets(sline, 249, fps)){
++		rewind(fpb);
++		sscanf(&sline[47], "%x %s", &addr_s, vname_s);
++		while(fgets(bline, 249, fpb)){
++			/*Variablennamen suchen*/
++			sscanf(&bline[4], "%s %s %s %s %s %s", d1, d, d, d, d2, vname_b);
++			sprintf(saddr, "0x%s", d1);
++			sscanf(saddr, "%x", &addr_b);
++			sprintf(ssize, "0x%s", &d2[4]);
++			sscanf(ssize, "%x", &size);
++			if(!strcmp(&vname_s[1], vname_b)){
++				/*Daten kopieren*/
++				strcpy(ctab[tsize].varname, vname_b);
++				ctab[tsize].simaddr = addr_s;
++				ctab[tsize].botaddr = addr_b;
++				ctab[tsize].size    = size;
++				ctab[tsize++].access  = 0;
++
++				/*Fehlerabbrueche*/
++				if(tsize == MAX_VAR){
++					LOG_INFO("->Mehr als %n Variablen",MAX_VAR);
++					return(4);
++				}
++				if(addr_s > EE_SIZE){
++					LOG_INFO("->EEPROM voll");
++					return(5);
++				}
++				
++				/*Erfolg markieren*/
++				addr_b = -1;
++				break;
++			}
++		}
++		if(addr_b > -1){ //Keine passende Variable gefunden
++			LOG_INFO("->Unterschiedliche Variablen");
++			return(3);
++		}
++	}
++
++	/*Dateien schliessen*/
++	fclose(fps);
++	fclose(fpb);
++	
++	/*Tabelle nach Sim-Adressen sortieren*/
++	for(ii=tsize-1; ii > 0; ii--){
++		for(i=0; i < ii; i++){
++			if(ctab[i].simaddr > ctab[i+1].simaddr){
++				long simaddr, botaddr, size;
++				char vname[30];
++			
++				/*Daten umkopieren*/
++				strcpy(vname, ctab[i+1].varname);
++				simaddr = ctab[i+1].simaddr;
++				botaddr = ctab[i+1].botaddr;
++				size    = ctab[i+1].size;
++
++				strcpy(ctab[i+1].varname, ctab[i].varname);
++				ctab[i+1].simaddr = ctab[i].simaddr;
++				ctab[i+1].botaddr = ctab[i].botaddr;
++				ctab[i+1].size    = ctab[i].size;
++
++				strcpy(ctab[i].varname, vname);
++				ctab[i].simaddr = simaddr;
++				ctab[i].botaddr = botaddr;
++				ctab[i].size    = size;
++			}
++		}
++	}
++	return(0);
++}
++
++/*! 
++ * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fÃ¼r die Erstellung der
++ * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
++ * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
++ * Statusinformationen werden ueber DEBUG_INFO angezeigt.
++ */
++void init_eeprom_man(void){
++	uint16 status; //Status von create_ctab
++	uint16 sflag; //Sectionstatus
++	
++	LOG_INFO("EEPROM-Manager");
++
++	/*Adresskonvertierungstabelle anlegen*/
++	if((status=create_ctab(EEMAP_PC, EEMAP_MCU))){
++			LOG_INFO("->EEPROM im PC-Modus");
++	}
++	else {
++			LOG_INFO("->EEPROM im MCU-Modus");
++			addrconv = 1;
++	}
++	
++	/*Sections ueberpruefen*/
++	if((&_eeprom_start2__ - &_eeprom_start1__) > 0 && (&resetsEEPROM - &_eeprom_start2__) >0){
++		LOG_INFO("->Sections liegen wohl korrekt");
++		LOG_INFO("->Section Abstand 0x%X", (&_eeprom_start2__ - &_eeprom_start1__));
++		sflag = 0;
++	}
++	else{
++		LOG_INFO("->Sections liegen falsch");
++		sflag = 1;
++	}
++	
++	/*eeprom.bin checken*/ 
++	if(sflag || check_eeprom_file(EEP_PC)){
++		LOG_INFO("EEPROM-Emulation fehlerhaft");
++	}
++	else{
++		LOG_INFO("->EEPROM Groesse %d Bytes", EE_SIZE);
++		LOG_INFO("EEPROM-Emulation einsatzbereit");
++	}
++	return;
++}
++
++/*! 
++ * Traegt die uebergebenen Daten in das simulierte EEPROM ein. Dieses simulierte EEPROM 
++ * besteht aus einer Datei. 
++ * Es koennen Bytes (uint8 size = 1) und Integer (uint16 size = 2) uebergeben werden.
++ * @param address Adresse im EEPROM zwischen 0 und EE_SIZE-1.
++ * @param data Daten die abgelegt werden sollen.
++ * @param size Groesse der Daten in Byte.
++ */  
++static void store_parameter(uint16 address, uint16 data, uint8 size) {
++	FILE  *fpw; 	//Dateizeiger
++	uint8 dataline[2];	//Speicher fuer Datenausgabe
++
++//	LOG_STORE
++	if(address > (size == 1 ? EE_SIZE-1 : EE_SIZE-2)) //Adresse checken
++		return;
++
++	if(!(fpw = fopen(EEPROM_FILENAME, "r+b"))){ //Testen, ob Datei vorhanden ist.
++			return;
++	}
++
++	//Daten eintragen
++	fseek(fpw, address, SEEK_SET); //Schreibzeiger setzen
++	dataline[0] = data%256;
++	dataline[1] = data/256;
++	fwrite(dataline, 1, size, fpw);	//Daten schreiben
++
++	fclose(fpw);
++	return;	
++}
++
++/*! 
++ * Liest die gewuenschten Daten aus eine simulierten EEPROM. Dieses simulierte EEPROM 
++ * besteht aus der Datei eeprom.bin. 
++ * @param address Adresse im EEPROM zwischen 0 und EE_SIZE-1.
++ * @param size Groesse der Daten in Byte.
++ * @return Aus dem EEPROM gelesener Wert.
++ */  
++static uint16 load_parameter(uint16 address, uint8 size) {
++	FILE *fpr; 	//Dateizeiger
++	uint8 dataline[2] = {0,0};	//String fuer Datenausgabe
++
++	if(address > (size == 1 ? EE_SIZE-1 : EE_SIZE-2)) //Adresse checken
++		return((size == 1 ? 0xff : 0xffff));
++
++	if(!(fpr = fopen(EEPROM_FILENAME, "rb"))){ //Datei oeffnen
++		return((size == 1 ? 0xff : 0xffff));
++	}
++
++	//Daten eintragen
++	fseek(fpr, address, SEEK_SET); //Lesezeiger setzen
++	fread(dataline, 1, size, fpr);	//Daten lesen);
++	fclose(fpr);
++//	LOG_LOAD
++	return((uint16)dataline[0] + (uint16)dataline[1]*256);	
++}
++
++/*!
++ * Liest ein Byte aus den simulierten EEPROM
++ * @param addr Adresse im EEPROM
++ * @return Aus dem EEPROM gelesener Wert.
++ */  
++uint8 eeprom_read_byte(uint8 *addr) {
++	return((uint8)load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), 1));
++}
++
++/*!
++ * Liest ein Word aus den simulierten EEPROM
++ * @param addr Adresse im EEPROM
++ * @return Aus dem EEPROM gelesener Wert.
++ */  
++uint16 eeprom_read_word(uint16 *addr) {
++	return(load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), 2));
++}
++
++/*!
++ * Schreibt ein Byte in das simulierte EEPROM
++ * @param addr Adresse im EEPROM
++ * @param Zu schreibender Wert.
++ */  
++void eeprom_write_byte(uint8 *addr, uint8 value) {
++	store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), (uint16)value, 1);
++}
++
++/*!
++ * Schreibt ein Word in das simulierte EEPROM
++ * @param addr Adresse im EEPROM
++ * @param Zu schreibender Wert.
++ */  
++void eeprom_write_word(uint16 *addr, uint16 value) {
++	store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), value, 2);
++}
++
++/*!
++ * Liest ein Speicherblock aus dem simulierte EEPROM
++ * @param pointer_ram Adresse im Hauptspeicher
++ * @param pointer_eeprom Adresse im EEPROM
++ * @param Groesze des Block.
++ */  
++void eeprom_read_block (void *pointer_ram, const void *pointer_eeprom, size_t size) {
++	uint32 i;
++	uint8 *ram;
++	
++	ram = (uint8 *)pointer_ram;
++	for(i=0; i< size; i++){
++		ram[i]=(uint16)load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(pointer_eeprom)) + i, 1);
++	}
++}
++
++/*!
++ * Schreibt ein Speicherblock in das simulierte EEPROM
++ * @param pointer_ram Adresse im Hauptspeicher
++ * @param pointer_eeprom Adresse im EEPROM
++ * @param Groesze des Block.
++ */  
++void eeprom_write_block (const void *pointer_ram, void *pointer_eeprom, size_t size) {
++	uint32 i;
++	uint8 *ram;
++	
++	ram = (uint8 *)pointer_ram;
++	for(i=0; i< size; i++){
++		store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(pointer_eeprom)) + i, (uint16)ram[i] ,1);
++	}
++}
++
++#endif
+Index: E:/eclipse/ct-bot test/ct-Bot/Documentation/eeprom-simulation.html
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/Documentation/eeprom-simulation.html	(revision 0)
++++ E:/eclipse/ct-bot test/ct-Bot/Documentation/eeprom-simulation.html	(revision 0)
+@@ -0,0 +1,245 @@
++<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
++<HTML>
++<HEAD>
++	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
++	<TITLE></TITLE>
++	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.2  (Win32)">
++	<META NAME="AUTHOR" CONTENT="Achim Pankalla">
++	<META NAME="CREATED" CONTENT="20060528;19455600">
++	<META NAME="CHANGEDBY" CONTENT="Achim Pankalla">
++	<META NAME="CHANGED" CONTENT="20070617;18142584">
++	<STYLE TYPE="text/css">
++	<!--
++		@page { size: 21cm 29.7cm; margin: 2cm }
++		P { margin-bottom: 0.21cm }
++	-->
++	</STYLE>
++</HEAD>
++<BODY LANG="de-DE" DIR="LTR">
++<P ALIGN=CENTER STYLE="margin-bottom: 0cm"><B>EEPROM Simulation f&uuml;r
++PC</B></P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><FONT SIZE=3><B>Author: </B></FONT>
++</P>
++<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>Achim Pankalla
++(achim.pankalla@gmx.de)</FONT></P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><B>Beschreibung:</B></P>
++<P ALIGN=LEFT STYLE="margin-bottom: 0cm; font-style: normal">Die
++EEPROM Simulation f&uuml;r den PC stellt das EEPROM des <I>Atmel
++MEGA32(664) Prozessor</I> auch dem Simulierten ct-bot zur Verf&uuml;gung.
++Der Zugriff auf dieses EEPROM erfolgt &uuml;ber gleichnamige
++Funktionen, wie sie auch der avr-gcc besitzt und auch die
++Variablendefinition erfolgt &uuml;ber die gleichen Konstrukte. Eine
++Unterscheidung &uuml;ber #ifdef's ist also nicht notwendig.<BR>Durch
++diese EEPROM-Simulation, ist der Simulator dem realen Bot ein schritt
++n&auml;her gekommen und Programme mit EEPROM-Zugriffe k&ouml;nnen mit
++der Simulation getestet werden. Mehr noch, sie k&ouml;nnen auch das
++Simulierte EEPROM auf den ct-bot &uuml;bertragen oder das EEPROM vom
++ct-bot abziehen und f&uuml;r die Simulation nutzen.</P>
++<P ALIGN=LEFT STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm; font-style: normal"><B>Implementierung:</B></P>
++<P STYLE="margin-bottom: 0cm">Alle Funktionen und Einstellungen der
++EEPROM Simulation findet Sie in den Dateien <I>pc/eeprom-emu_pc.c</I>
++und <I>include/eeprom-emu.h</I>. Das EEPROM selbst wird durch eine
++Bin&auml;re Datei (genau 1K bzw. 2K gross) repr&auml;sentiert (und
++kann so mit einen HexEditor bearbeitet werden), deren Pfad in der
++C-Datei festgelegt wird. Standard Pfad ist das Heimatverzeichnis des
++Ct-Sim. Nat&uuml;rlich k&ouml;nnen Sie das jederzeit &auml;ndern,
++dies geht &uuml;ber die Konstante <FONT COLOR="#000000"><FONT FACE="Courier New, monospace"><FONT SIZE=2>EEPROM_FILENAME.</FONT></FONT></FONT>
++<FONT FACE="Times New Roman, serif">Der Name </FONT><FONT FACE="Times New Roman, serif"><I>eeprom.bin</I></FONT>
++<FONT FACE="Times New Roman, serif">sollte dabei belassen werden.</FONT><BR>Die
++Datei wird automatisch neu angelegt, wenn sie noch nicht existiert.
++Dann besteht der Inhalt nur aus 0xFF, wie es auch beim
++unintialisierten EEPROM des Atmel der Fall ist.<BR>Damit die
++EEPROM-Funktionen des PC korrekt auf die Datei zugreifen k&ouml;nnen
++und nur ein Adressraum von 0 bis 1023(2047) entsteht, bedarf es bei
++der PC Implementierung (mit PC ist allgemein der Kode f&uuml;r die
++Simulation gemeint, mag das OS nun Win, Linux oder MacOS hei&szlig;en)
++eines Tricks. Die Emulation muss wissen welche Speicheradresse die
++erste Variable hat.<BR>Daf&uuml;r gibt es die beiden Variablen
++<I>_eeprom_start1__</I> und <I>_eeprom_start2_</I><SPAN STYLE="font-style: normal">_
++in </SPAN><I>ctbot.c</I><SPAN STYLE="font-style: normal">. Diese
++stehen dort, damit sie auf jeden Fall vor der ersten EEPROM Variable
++definiert werden und damit ihre Sections (.</SPAN><I>s1eeprom</I> <SPAN STYLE="font-style: normal">+
++.</SPAN><I>s2eeprom</I><SPAN STYLE="font-style: normal">) auf jeden
++Fall vor der Section .</SPAN><I>eeprom</I> <SPAN STYLE="font-style: normal">liegen.
++Sie d&uuml;rfen also auf keine Fall eine EEPROM Variable vor diesen
++definieren. Deshalb sind auch solche Variablen in </SPAN><I><B>command</B></I><SPAN STYLE="font-style: normal"><B>.</B></SPAN><I><B>c</B></I>
++im Moment <SPAN STYLE="font-style: normal">tabu (au&szlig;er die
++Abarbeitung im Makefile erfolgt nach </SPAN><I>ctbot.c</I><SPAN STYLE="font-style: normal">,
++was im Moment nicht der Fall ist). Sollten einmal eine neue Datei
++hinzugef&uuml;gt werden, die durch &bdquo;managed make&ldquo; vor
++</SPAN><I>ctbot.c</I> <SPAN STYLE="font-style: normal">landen und
++eeprom Variablen enthalten, muss man wahrscheinlich dieses
++Startvariablen in die neue Datei verlegen, vor deren EEPROM
++Variablen.</SPAN></P>
++<P STYLE="margin-bottom: 0cm; font-style: normal">Durch diesen Trick
++kann die Speicheradresse der ersten EEPROM Variable auch ohne
++Linkerscript ermittelt werden und auch verschiedene
++Section-Alignments (im Moment bei MinGW und Linux unterschiedlich)
++der Linker haben keine Auswirkung.</P>
++<P STYLE="margin-bottom: 0cm; font-style: normal">Auch beim
++Generieren eines neuen ct-bot.exe wird eine EEP mit den
++Initialisierungen der EEPROM-Variablen im post-build angelegt. Diese
++Datei kann die EEPROM-Simulation auch als Initialisierung f&uuml;r
++ihr MCU-Kompatibles EEPROM benutzen oder diese Datei kann direkt als
++EEPROM-Datei benutzt werden, wenn die Simulation im PC-Modus ist,
++gleiches gilt nat&uuml;rlich umgekahr auch f&uuml;r die EEP Datei des
++MCU Exe.</P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><B>Nutzung der EEPROM Simulation</B>.</P>
++<P STYLE="margin-bottom: 0cm">Die EEPROM-Simulation unterscheidet
++sich nur in ein paar Details von den realen Funktionen unter WinAVR
++und ct-bot. Nat&uuml;rlich hat der PC kein EEPROM, dies wird durch
++eine Datei im Binary Format emuliert. Der Dateinamen und der Pfad
++wird &uuml;ber die Konstante EEPROM_FILENAME in <I>eeprom</I>-<I>emu</I>_<I>pc</I>.<I>c</I>
++festgelegt. Ein weiterer Unterschied ist, das beim WinAVR &uuml;ber
++ein DEFINE der Prozessortyp festgelegt wird, entweder ATMega32 oder
++ATMega664. Dieses DEFINE wird normalerweise beim PC Compiler nicht
++&uuml;bergeben. Standartm&auml;&szlig;ig wird von einem ATMega32 mit
++1024 Byte EEPROM ausgegangen, der Simulator kennt aber die Konstante
++f&uuml;r den ATMega664 und erh&ouml;ht den EEPROM Speicher auf 2048
++Bytes. Sollte schon eine 1K Datei f&uuml;rs EEPROM bestehen, so muss
++diese gel&ouml;scht werden, damit die Gr&ouml;&szlig;ere angelegt
++wird. Wird direkt die erstellte <I>ct-bot.eep</I> Datei genutzt, ist
++dies nat&uuml;rlich nicht notwendig.</P>
++<P STYLE="margin-bottom: 0cm">Alle wichtigen Informationen werden
++beim Start des ct-bot.exe im Log-Fenster angezeigt, dort sieht man
++auch alle eventuellen Fehler und ob die Simulation ordnungsgem&auml;&szlig;
++arbeiten kann. Es erfolgt kein beenden des <I>ct-bot.exe</I> bei
++Problemen, ein Funktion des EEPROM ist dann aber nicht gegeben.</P>
++<P STYLE="margin-bottom: 0cm">Generell unterscheidet die Simulation
++zwei Modi:</P>
++<OL>
++	<LI><P STYLE="margin-bottom: 0cm">PC-Modus</P>
++	<P STYLE="margin-bottom: 0cm">In diesen Modus entspricht die
++	eeprom.bin nicht dem EEPROM des realen ct-bot und darf deshalb auch
++	nicht auf ihn aufgespielt werden. Dieser Modus wird ohne jedes zu
++	tun erreicht. Er ben&ouml;tigt keine weiteren Eintr&auml;ge in Post
++	build. 
++	</P>
++	<P STYLE="margin-bottom: 0cm">Wenn eine ct-bot.eep erstellt im
++	Binary Format, so kann diese direkt benutzt werden.</P>
++	<LI><P STYLE="margin-bottom: 0cm">MCU-Modus</P>
++	<P STYLE="margin-bottom: 0cm">Ist dieser Modus erreicht, kann man
++	als EEPROM-Datei einen EEPROM Abzug vom ct-bot verwenden.
++	Voraussetzung ist nat&uuml;rlich, das der Bot auch mit zuletzt
++	erstellten Programm bespielt ist. Nat&uuml;lich kann man auch die
++	EEPROM-Datei auf den Bot nutzen.<BR>Der MCU-Modus kann nur erreicht
++	werden, wenn sowohl beim avr-ggc als auch unter der PC Oberfl&auml;che
++	map-Datei erstellt werden, daf&uuml;r sind im Post Build die
++	folgenden Befehle einzutragen:</P>
++	<P STYLE="margin-bottom: 0cm">Debug-W32: <B>objcopy -j .eeprom
++	--change-section-lma .eeprom=0 -O binary ct-Bot.exe
++	ct-Bot.eep;objdump -t ct-bot.exe | grep &quot;(sec  5)&quot; | grep
++	&quot;(nx 0)&quot; &gt; eeprom_pc.map</B></P>
++	<P STYLE="margin-bottom: 0cm">Debug-MCU-W32: <B>avr-objcopy -O ihex
++	-R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom
++	--set-section-flags=.eeprom=&quot;alloc,load&quot;
++	--change-section-lma .eeprom=0 -O binary ct-Bot.elf
++	ct-Bot.eep;avr-objdump -t ct-bot.elf | grep &quot;O \.eeprom&quot; &gt;
++	eeprom_mcu.map</B></P>
++	<P STYLE="margin-bottom: 0cm"><B>(Achtung! Zwischen sec und 5 zwei
++	Spaces)</B></P>
++	<P STYLE="margin-bottom: 0cm">Diese Befehlssequence des PC gelten
++	nat&uuml;rlich auch f&uuml;r MacOS oder Linux. 
++	</P>
++	<P STYLE="margin-bottom: 0cm">Anhand dieser MAP-Datei k&ouml;nnen
++	die Routinen des EEPROM-Manager &uuml;ber eine
++	Konvertierungsfunktion die eeprom-Datei bot-kompatible halten.
++	Nat&uuml;rlich kann man trotzdem dieses EEPROM mit der EEP-Datei
++	initialisieren.</P>
++</OL>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm">M&ouml;chte man die vorhandene oder
++noch nicht vorhandene EEPROM-Datei mit den Daten aus der EEP-Datei
++initialisieren, so muss man die ct-bot.exe mit dem Parameter <I>-i
++</I>starten, dabein spielt es keine Rolle in welchen Modus die
++Emulation arbeitet. Der Pfad der EEP-Datei wird in der Konstante
++<FONT COLOR="#000000"><FONT FACE="Courier New, monospace"><FONT SIZE=2>EEP_PC
++</FONT></FONT></FONT><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>eingetragen.</FONT></FONT></FONT></P>
++<P STYLE="margin-bottom: 0cm"><FONT COLOR="#000000"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>F&uuml;r
++das Debuggen von Zugriffen auf das EEPROM, stehen unter anderen die
++DEFINES LOG_STORE und LOG_LOAD zur Verf&uuml;gung, die im MCU Modus
++sogar den Variablennamen anzeigen. Andere Variationen sind auch noch
++denkbar.</FONT></FONT></FONT></P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm; font-style: normal"><B>Grenzen der
++Implementierung</B></P>
++<P STYLE="margin-bottom: 0cm; font-style: normal; font-weight: medium">
++Im Moment erstellen gleiche Compilerversionen (zu &Uuml;berpr&uuml;fen
++mit &ndash;version) auch (fast) gleiche EEPROM-Sections. Damit es
++auch mit verschiedenen Compiler Version geht (und ich mich auch nicht
++auf die gleichen Versionen verlasssen will) habe ich die
++Adresskonvertierung eingef&uuml;hrt, damit dies kein Problem mehr
++ist.</P>
++<P STYLE="margin-bottom: 0cm; font-style: normal; font-weight: medium">
++Es gibt aber keine Garantien daf&uuml;r, das zuk&uuml;nftige Compiler
++Versionen nicht die Reihenfolge der Variablen im Code &auml;ndern.
++Ein Einf&uuml;gen neuer EEPROM Variablen kann auch zu Verschiebungen
++der Adressen f&uuml;hren. Nach solchen &Auml;nderungen ist man nur
++auf der sicheren Seite, wenn das EEPROM initialisiert wird (sprich
++Sie Ihre alte eeprom.bin bzw. auf den Atmel das EEPROM l&ouml;schen).
++Einmal erstellte Werte sind dann nat&uuml;rlich futsch. Wenn man den
++Einfluss von Kodeerg&auml;nzungen kontrollieren will, kann man dies
++vor und nach der &Auml;nderungen mit objdump machen (oder falls Sie
++die Befehle f&uuml;r die MAP-Dateien im Post-Build benutzen, schauen
++Sie in die MAP-Dateien), mit den richtigen Parametern kann man sich
++die Adressverteilung anzeigen lassen. Sie k&ouml;nnen dann sehen, ob
++die neuen Variablen nun hinten angeh&auml;ngt wurden (dann brauch das
++eeprom nicht gel&ouml;scht werden) oder sie dazwischen gelandet sind
++(dann sind die alten Daten unbrauchbar), daf&uuml;r sollten sie aber
++vorher in eclipse Projekt-&gt;clean aufrufen.<BR>Die Implementierung
++des EEPROM auf den PC kontrolliert nicht, ob nicht 1K bzw. 2K an
++Daten &uuml;berschritten wird. Der EEPROM-Manager meckert dann aber
++im LOG. (Der avg-gcc wird dann aber auch meckern). 
++</P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><B>Funktionen</B></P>
++<P STYLE="margin-bottom: 0cm"><B>Nur in eeprom-emu_pc.c sichtbare
++Funktionen</B></P>
++<P STYLE="margin-bottom: 0cm">store_parameter() - Speichern von
++Informationen im simulierten EEPROM</P>
++<P STYLE="margin-bottom: 0cm">load_parameter() - Laden von
++Informationen aus dem simulierten EEPROM</P>
++<P STYLE="margin-bottom: 0cm">init_eeprom() - Erstellt
++Adresskonvertierungstabelle</P>
++<P STYLE="margin-bottom: 0cm">conv_eeaddr() - Wandelt PC Adresse in
++ct-bot Adresse</P>
++<P STYLE="margin-bottom: 0cm">create_ctab() - Erstellt
++Adresskonvertierungstabelle</P>
++<P STYLE="margin-bottom: 0cm">check_eeprom_file() - Erstellt leeres
++EEPROM, wenn n&ouml;tig und initialisiert es, wenn gew&uuml;nscht</P>
++<P STYLE="margin-bottom: 0cm">init_eeprom_man() - Initialisiert die
++EEPROM Emulation</P>
++<P STYLE="margin-bottom: 0cm"><B>Zugriffsfunktionen f&uuml;r den PC
++(Identisch zu denen von WinAVR)</B></P>
++<P STYLE="margin-bottom: 0cm">eeprom_read_byte()</P>
++<P STYLE="margin-bottom: 0cm">eeprom_write_byte()</P>
++<P STYLE="margin-bottom: 0cm">eeprom_read_word()</P>
++<P STYLE="margin-bottom: 0cm">eeprom_write_word()</P>
++<P STYLE="margin-bottom: 0cm">eeprom_write_block()</P>
++<P STYLE="margin-bottom: 0cm">eeprom_read_block()</P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><FONT SIZE=3><B>Dateien:</B></FONT></P>
++<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>eeprom-emu.h Include
++Dateinamen mit Funktionsparameter</FONT></P>
++<P STYLE="margin-bottom: 0cm"><FONT SIZE=3>eeprom-emu_pc.c Funktionen
++fuer den ct-Sim</FONT></P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++<P STYLE="margin-bottom: 0cm"><BR>
++</P>
++</BODY>
++</HTML>
+\ No newline at end of file
+Index: E:/eclipse/ct-bot test/ct-Bot/ct-Bot.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/ct-Bot.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/ct-Bot.c	(working copy)
+@@ -39,6 +39,7 @@
+ 	#include "bot-2-sim.h"
+ 	#include "tcp.h"
+ 	#include "tcp-server.h"
++	#include "eeprom-emu.h"
+ 	#include <pthread.h>
+ 	#include <unistd.h>
+ 	#include <stdlib.h>
+@@ -83,6 +84,12 @@
+ #include "gui.h"
+ #include "ui/available_screens.h"
+ 
++//Moeglichst frueh section erzwingen, damit sie VOR .eeprom liegt!!!
++#ifdef PC
++	uint8 __attribute__ ((section (".s1eeprom"))) _eeprom_start1__ = 0;
++	uint8 __attribute__ ((section (".s2eeprom"))) _eeprom_start2__ = 0;
++#endif
++
+ /*!
+  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
+  * bevor wir loslegen koennen.
+@@ -93,7 +100,7 @@
+ 		PORTB=0; DDRB=0;
+ 		PORTC=0; DDRC=0;
+ 		PORTD=0; DDRD=0;
+-			
++
+ 		wdt_disable();	// Watchdog aus!
+ 		timer_2_init();
+ 		
+@@ -133,6 +140,7 @@
+ 
+ 	#ifdef PC
+ 		bot_2_sim_init();
++		init_eeprom_man();
+ 	#endif
+ 
+ 	#ifdef DISPLAY_AVAILABLE
+@@ -237,6 +245,7 @@
+ 		puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
+ 		puts("\t   ID  \tDie ID aus ASCII-Zeichen");		
+ 		puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
++		puts("\t-i \t Initialisiert das EEPROM mit den Daten der EEP-Datei"); 
+ 		puts("\t-h\tZeigt diese Hilfe an");
+ 		exit(1);
+ 	}
+@@ -271,7 +280,6 @@
+ 		int slog	=0;
+ 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
+ 
+-
+ 		/* Die Kommandozeilenargumente komplett verarbeiten */
+ 		while ((ch = getopt(argc, argv, "hsTt:M:c:l:e:d:")) != -1) {
+ 			switch (ch) {
+@@ -348,6 +356,9 @@
+ 					slog=1;					
+ 				}				
+ 				break;			
++			case 'i':
++				eeprom_init = 1;
++				break;
+ 			case 'h':
+ 			default:
+ 				/* -h oder falscher Parameter, Usage anzeigen */
+Index: E:/eclipse/ct-bot test/ct-Bot/ui/misc.c
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/ui/misc.c	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/ui/misc.c	(working copy)
+@@ -32,11 +32,11 @@
+ #include "timer.h"
+ #ifdef MCU
+ 	#include <avr/eeprom.h>
++#else
++	#include "eeprom-emu.h"
+ #endif
+ 
+-#ifdef MCU
+-	uint8 __attribute__ ((section (".eeprom"))) resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
+-#endif
++uint8 EEPROM resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
+ 
+ #ifdef DISPLAY_AVAILABLE
+ 	#ifdef MISC_DISPLAY_AVAILABLE
+Index: E:/eclipse/ct-bot test/ct-Bot/ct-Bot.h
+===================================================================
+--- E:/eclipse/ct-bot test/ct-Bot/ct-Bot.h	(revision 1162)
++++ E:/eclipse/ct-bot test/ct-Bot/ct-Bot.h	(working copy)
+@@ -31,7 +31,7 @@
+ /************************************************************
+ * Module switches, to make code smaller if features are not needed
+ ************************************************************/
+-//#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
++#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
+ //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
+ //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
+ //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */

@@ -86,10 +86,12 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic warning "-Wcpp"
 #warning "RemoteCall-Display geht nur mit aktivem Keypad, Display wurde daher deaktiviert"
 #pragma GCC diagnostic pop
+
 #endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif // ! KEYPAD_AVAILABLE || ! BEHAVIOUR_REMOTECALL_AVAILABLE
 
@@ -182,13 +184,16 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 	keypad_row = row;
 	keypad_col = col;
 	keypad_mode = mode;
+
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
+
 	keypad_result = keypad_buffer - 1;
 #if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
+
 #endif
 }
 
@@ -349,24 +354,24 @@ void gui_display(uint8_t screen) {
 	LED_off(LED_WEISS);
 #endif // LED_AVAILABLE && RC5_AVAILABLE
 
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+/** Steuerung der Display-Beleuchtung in Abhaengigkeit von der Umgebungshelligkeit */
+#ifdef AUTO_DISPLAYLIGHT
 #define RC_LDR 8 // Wert zwischen 1 und 9 einstellbar
-	/* Steuerung der Display-Beleuchtung in Abhaengigkeit von der Umgebungshelligkeit */
 	/* Bestimmung der mittleren Helligkeit aus beiden Sensoren */
-	int sensLDR_average = (sensLDRR + sensLDRL) / 2;
+	int16_t sensLDR_average = (sensLDRR + sensLDRL) / 2;
 
 	/* Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit */
-	static int sensLDR_average_old;
+	static int16_t sensLDR_average_old;
 	sensLDR_average = (RC_LDR * sensLDR_average_old + (10 - RC_LDR) * sensLDR_average) / 10;
 	sensLDR_average_old = sensLDR_average;
 
-	/* falls der eingestellte Wert ueberschritten wird, Display einschalten und umgekehrt */
+	/* Falls der eingestellte Wert ueberschritten wird, Display einschalten und umgekehrt */
 	if (sensLDR_average > 300) {
-		ENA_on(ENA_DISPLAYLIGHT);
+		ENA_on(ENA_MOUSE_SENSOR);
 	} else {
-		ENA_off(ENA_DISPLAYLIGHT);
+		ENA_off(ENA_MOUSE_SENSOR);
 	}
-#endif // EXPANSION_BOARD_MOD_AVAILABLE
+#endif // AUTO_DISPLAYLIGHT
 }
 
 /**

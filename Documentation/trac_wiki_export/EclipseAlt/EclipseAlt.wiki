@@ -1,0 +1,10 @@
+== Installation des Eclipse-Plugins für alte Eclipse-Versionen ==
+
+ 1. Help / Software Updates / Find and install
+ 1. Search for new features, Next
+ 1. New remote site: '''!http://subclipse.tigris.org/update_1.2.x'''
+ 1. Finish
+ 1. Nach wenigen Jahren meldet sich der Update Manager, dann kann man Subclipse auswählen
+ 1. Paarmal "Next", dann "Finish"
+
+Mit Bildchen gibt es das ganze auch in der [http://subclipse.tigris.org/install.html Anleitung von Subclipse]

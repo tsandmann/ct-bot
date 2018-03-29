@@ -85,4 +85,4 @@ void net_overwrite (network_t *, const network_t *);
 
 #endif // BEHAVIOUR_NEURALNET_AVAILABLE
 
-#endif /* LWNEURALNET_H */
+#endif // LWNEURALNET_H

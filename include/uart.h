@@ -36,9 +36,9 @@
 #define BAUD_TOL 3
 #include <util/setbaud.h>
 
-#if BAUD == 115200
+#if BAUD == 115200 && ! defined BOT_2_RPI_AVAILABLE
 #define UART_BUFSIZE_IN 0x50
-#elif BAUD > 115200
+#elif BAUD > 115200 || defined BOT_2_RPI_AVAILABLE
 #define UART_BUFSIZE_IN 0xfe
 #else // < 115200
 #define UART_BUFSIZE_IN 0x45

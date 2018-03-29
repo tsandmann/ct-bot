@@ -1,0 +1,21 @@
+= Logging vom c't-Bot aus =
+
+Wenn man herausfinden will, ob die Sensoren des Bots gut kalibriert sin, ob das eigene Verhalten alles richtig macht oder was die Sensoren so sehen, bieten sich die Log-Funktionen im Code an. Die Log-Ausgaben kann man entweder an den c't-Sim übertragen oder auf eine MMC-/SD-Karte schreiben. Formatiert man die Ausgaben richtig, so kann man sie später leicht in Excel oder Open Office Calc importieren und grafisch darstellen. Das kann dann so [wiki:Sensorkalibrierung] aussehen.
+
+Im Code muss man lediglich an den Stellen, an denen man Daten ausgeben will solche Zeilen einfügen:
+
+{{{
+LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d\tTime:\t%lu", (int16)x_pos, target_speed_r,TIMER_GET_TICKCOUNT_32);
+}}}
+
+Das erzeugt dann eine durch Tabs getrennte Ausgabe, die jede Tabellenkalkulation leicht importieren kann.
+
+Wohin die Log-Ausgaben gehen, stellt man in der Datei ct-Bot.h ein, indem man die Kommentarzeichen vor dem gewünschten Ziel entfernt:
+
+{{{
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
+//#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
+//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
+//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
+//#define LOG_MMC_AVAILABLE		/*!< Logging in eine txt-Datei auf MMC */
+}}}

@@ -102,21 +102,25 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 	int16_t old;
 	old = target_speed_l;
 	target_speed_l += left;
-	if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX))
+	if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX)) {
 		target_speed_l = old;
-	if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0)
+	}
+	if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0) {
 		target_speed_l = BOT_SPEED_MIN;
-	else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0)
+	} else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0) {
 		target_speed_l = -BOT_SPEED_MIN;
+	}
 
 	old = target_speed_r;
 	target_speed_r += right;
-	if ((target_speed_r <-BOT_SPEED_MAX) ||(target_speed_r > BOT_SPEED_MAX))
+	if ((target_speed_r <-BOT_SPEED_MAX) || (target_speed_r > BOT_SPEED_MAX)) {
 		target_speed_r = old;
-	if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0)
+	}
+	if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0) {
 		target_speed_r = BOT_SPEED_MIN;
-	else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
+	} else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0) {
 		target_speed_r = -BOT_SPEED_MIN;
+	}
 #else
 	(void) left;
 	(void) right;

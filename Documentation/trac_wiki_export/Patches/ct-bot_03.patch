@@ -1,0 +1,65 @@
+### Eclipse Workspace Patch 1.0
+#P anonymous_ct-Bot
+Index: Changelog.txt
+===================================================================
+RCS file: /ctbot/ct-Bot/Changelog.txt,v
+retrieving revision 1.91
+diff -u -r1.91 Changelog.txt
+--- Changelog.txt	14 Jul 2006 16:12:37 -0000	1.91
++++ Changelog.txt	20 Jul 2006 17:51:18 -0000
+@@ -1,5 +1,8 @@
+ CHANGELOG fuer c't-Bot
+ ======================
++
++2006-07-13  Frank Menzel(menzelfr@gmx.de) Korrekturen in sensor.c bzgl. Geschwindigkeitsberechnung mit Maus
++
+ 2006-07-11  Benjamin Benz (bbe@heise.de) Sensor-correction grob an ct-sim angepasst
+ 
+ 2006-07-11  Frank Menzel(menzelfr@gmx.de) Korrekturen bzgl. Logausgabe
+Index: sensor.c
+===================================================================
+RCS file: /ctbot/ct-Bot/sensor.c,v
+retrieving revision 1.16
+diff -u -r1.16 sensor.c
+--- sensor.c	10 Jul 2006 08:20:45 -0000	1.16
++++ sensor.c	20 Jul 2006 17:51:18 -0000
+@@ -282,12 +282,19 @@
+ 			a1=old_y-s1*old_x;
+ 			a2=y_mou-s2*x_mou;
+ 			/* Schnittpunkt berechnen */
+-			xd=(a2-a1)/(s1-s2);
+-			yd=(s1*a2-s2*a1)/(s1-s2);
++			if ((s1-s2)!=0) {   // Division durch 0 abgefangen
++			  xd=(a2-a1)/(s1-s2);
++			  yd=(s1*a2-s2*a1)/(s1-s2);
++			}
++			else
++			{ xd = 0;
++			  yd = 0;
++			}
+ 			/* Radius ermitteln */
+ 			radius=sqrt((x_mou-xd)*(x_mou-xd)+(y_mou-yd)*(y_mou-yd));
+ 			/* Vorzeichen des Radius feststelen */
+-			if (dHead>0) {
++			//if (dHead>0) {
++			  if (lastHead>0) {  // Winkelaenderung seit den letzten 250ms
+ 				/* Drehung links, Drehpunkt liegt auf oder links vom Mittelpunkt
+ 				 * daher negativer Radius */
+ 				 radius=-radius;
+@@ -309,8 +316,14 @@
+ 			/* Geschwindigkeiten berechnen */
+ 			right_radius=radius-WHEEL_DISTANCE;
+ 			left_radius=radius+WHEEL_DISTANCE;
+-			v_mou_right=lastHead/360*2*M_PI*right_radius*4;
+-			v_mou_left=lastHead/360*2*M_PI*left_radius*4;
++			if (dHead==0) {  // keine Winkelaenderung; Geschwindigkeit gleich der zurueckgelegten Strecke
++				v_mou_left  = v_mou_center * 4;
++				v_mou_right = v_mou_center * 4;
++			}
++			else {
++			  v_mou_right=lastHead/360*2*M_PI*right_radius*4;
++			  v_mou_left=lastHead/360*2*M_PI*left_radius*4;
++			}
+ 			lastDistance=0;
+ 			lastHead=0;
+ 			old_x=x_mou;

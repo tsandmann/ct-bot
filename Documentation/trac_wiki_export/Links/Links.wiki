@@ -1,0 +1,15 @@
+[[PageOutline(1-999)]]
+
+= Links rund um den c't-Bot =
+
+== Datenblätter ==
+  * Aktuelle Standard-CPU des Bots: [http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42719-ATmega1284P_Datasheet.pdf ATmega1284P]
+  * Ursprüngliche CPU [http://ww1.microchip.com/downloads/en/DeviceDoc/doc2503.pdf ATmega32]
+  * Herzstück des Funkmoduls [http://www.lantronix.com/pdf/WiPort_UG.pdf WiPort]
+  * Datenblatt einer [http://www.alldatasheet.net/datasheet-pdf/pdf/98499/HITACHI/HB28E016MM2.html Hitachi-MMC-Karte]
+
+== Leserprojekte ==
+  * Diplomarbeit mit einer [http://www.db-thueringen.de/servlets/DerivateServlet/Derivate-13826/Schmidt_Diplom_ct-Bot.pdf Ladestation und WLAN] sowie einer schicken Einführung für den c't-Bot
+
+== Andere Robotikthemen ==
+  * Fliegende Drohne aus [http://www.spiegel.de/video/video-37124.html Berlin]

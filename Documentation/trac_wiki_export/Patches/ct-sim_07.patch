@@ -1,0 +1,114 @@
+Index: Changelog.txt
+===================================================================
+RCS file: /ctbot/ct-Sim/Changelog.txt,v
+retrieving revision 1.23
+diff -u -r1.23 Changelog.txt
+--- Changelog.txt	14 Jun 2006 10:15:47 -0000	1.23
++++ Changelog.txt	21 Jun 2006 19:44:56 -0000
+@@ -1,5 +1,10 @@
+ CHANGELOG fuer c't-Sim
+ ======================
++2006-06-21 Achim Pankalla (achim.pankalla@gmx.de)
++		   Die neue Funktion "watchGP2D12Obstacle" eingefuehrt, sie sorgt dafuer, das
++		   der Simulator nun nicht mehr Abstandswerte in Meter, sondern Analogwert, wie der
++		   richtige ct-bot sie von den GP2D12 Sensoren bekommt, liefert.
++
+ 2006-06-14 Benjamin Benz (bbe@heise.de) DTD und xml-files angepasst
+ 
+ 2006-05-12 Benjamin Benz (bbe@heise.de) Kommentare aktualisiert
+Index: ctSim/ctSim/Model/World.java
+===================================================================
+RCS file: /ctbot/ct-Sim/ctSim/ctSim/Model/World.java,v
+retrieving revision 1.13
+diff -u -r1.13 World.java
+--- ctSim/ctSim/Model/World.java	21 May 2006 15:25:44 -0000	1.13
++++ ctSim/ctSim/Model/World.java	21 Jun 2006 19:44:58 -0000
+@@ -56,6 +56,7 @@
+  * @author Lasse Schwarten (lasse@schwarten.org)
+  * @author Christoph Grimmer (c.grimmer@futurio.de)
+  * @author Werner Pirkl (morpheus.the.real@gmx.de)
++ * @author Achim Pankalla (achim.pankalla@gmx.de)
+  */
+ public class World extends Thread {
+ 
+@@ -391,6 +392,61 @@
+ 		System.out.println(botName + " hatte einen Unfall!");
+ 		return false;
+ 	}
++	/**
++	 * Liefert die Distanz als Analogwert eines simulierten IR Sensors GP2D12 zum 
++	 * naechesten Objekt zurueck, das man sieht, wenn man von der uebergebenen Position 
++	 * aus in Richtung des uebergebenen Vektors schaut.
++	 * Die Kurve des simulierten Sensor wird getrennt links und rechts ueber die Parameter
++	 * a + b gesteuert (siehe ct 6 2006). Dabei wurde eine real aufgenohmene Sensorkennlinie
++	 * zur Parameterbestimmung herangezogen.
++	 * Um es noch realer zu machen, wird noch ein Zufallswert eingebracht.
++	 * 
++	 * @param pos
++	 *            Die Position, von der aus der Seh-Strahl verfolgt wird
++	 * @param heading
++	 *            Die Blickrichtung
++	 * @param openingAngle
++	 *            Der Oeffnungswinkel des Blickstrahls
++	 * @param botBody
++	 *            Der Koerper des Roboter, der anfragt
++	 * @return Die Distanz zum naechsten Objekt in Metern
++	 */
++	public double watchGP2D12Obstacle(char side, Point3d pos, Vector3d heading,
++			double openingAngle, Shape3D botBody) {
++		double distanz; //Ergebnis der Messung in m
++		double a = 0, b = 0; //Variablen der Berechungsformel
++		int i = 0; //Laufvariable
++		double [] aLeft = {-398.4, 3354.67, 4354.62, 5028.00, 0.0}; //a Werte fuer die linken Hyperbeln 
++		double [] bLeft = {585.4, 111.67, 52.85, 28.4, 0.0}; //b Werte fuer die linken Hyperbeln
++		double [] mpLeft = {0.08, 0.17, 0.30, 999.0, -0.1};//Messgrenzpunkte fuer die linken Kurvenveraenderungen
++		double [] aRight = {-404.57, 3339.56, 4550.77, 5136.0, 0.0}; //a Werte fuer die rechten Hyperbeln 
++		double [] bRight = {574.57, 106.56, 35.31, 15.8, 0.0}; //b Werte fuer die rechten Hyperbeln
++		double [] mpRight = {0.08, 0.17, 0.30, 999.0, -0.1};//Messgrenzpunkte fuer die rechten Kurvenveraenderungen
++		
++		//Vom simulierten Sensor, den Messwert holen
++		distanz = watchObstacle(pos, heading, openingAngle, botBody);
++		
++		//Abhaengig von der Position mit einer realen Sensorkurve Analogwert errechnen. 
++		if (side == 'L') {
++			for (i = 0; mpLeft[i] > 0.0; i++)
++				if(distanz <= mpLeft[i]){
++					a = aLeft[i];
++					b = bLeft[i];
++					break;
++				}
++		}
++		else{
++			for (i = 0; mpRight[i] > 0.0; i++)
++				if(distanz <= mpRight[i]){
++					a = aRight[i];
++					b = bRight[i];
++					break;
++				}
++		}
++//		System.out.println("Seite=" + side + " Distanz="+ distanz+" i="+ i + " a="+ a +" b="+ b + "\n");
++		return ((a /(distanz * 100) + b)/1000.0) + (Math.random()*5/1000);
++	}
++
+ 
+ 	/**
+ 	 * Liefert die Distanz in Metern zum naechesten Objekt zurueck, das man
+Index: ctSim/ctSim/Model/Bots/CtBotSim.java
+===================================================================
+RCS file: /ctbot/ct-Sim/ctSim/ctSim/Model/Bots/CtBotSim.java,v
+retrieving revision 1.4
+diff -u -r1.4 CtBotSim.java
+--- ctSim/ctSim/Model/Bots/CtBotSim.java	21 May 2006 15:25:44 -0000	1.4
++++ ctSim/ctSim/Model/Bots/CtBotSim.java	21 Jun 2006 19:45:00 -0000
+@@ -319,9 +319,9 @@
+ 		
+ 		// IR-Abstandssensoren aktualisieren
+ 		if (updateSensIr) {
+-			this.setSensIrL(getWorld().watchObstacle(getSensIRPosition('L'),
++			this.setSensIrL(getWorld().watchGP2D12Obstacle('L', getSensIRPosition('L'),
+ 					new Vector3d(newHeading), SENS_IR_ANGLE, (Shape3D)getNodeReference(BOTBODY)));
+-			this.setSensIrR(getWorld().watchObstacle(getSensIRPosition('R'),
++			this.setSensIrR(getWorld().watchGP2D12Obstacle('R', getSensIRPosition('R'),
+ 					new Vector3d(newHeading), SENS_IR_ANGLE, (Shape3D)getNodeReference(BOTBODY)));
+ 		}
+ 

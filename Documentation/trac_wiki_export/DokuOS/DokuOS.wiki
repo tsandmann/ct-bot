@@ -1,0 +1,261 @@
+[[PageOutline(1-999)]]
+
+= Multithreading auf dem c't-Bot =
+
+== Einleitung ==
+
+Um mehrere Aufgaben parallel abzuarbeiten, teil man sie in Threads ein. Threads abstrahieren von der realen CPU, repräsentieren die Abarbeitung von Aufgaben und ermöglichen so die Aufteilung einer einzige realen CPU auf mehrere zu bearbeitende Jobs. Jeder Job bekommt dabei für eine bestimmte Zeitspanne die ''eine'' CPU zugeteilt. [[BR]]
+Threads können entweder lauffähig oder blockiert sein. Der lauffähige Thread mit der höchsten Priorität bekommt die reale CPU zugeteilt und arbeitet somit seine Aufgabe (weiter) ab. Der Vorteil des Multithreadings liegt insbesondere darin, dass ein Thread unterbrochen werden kann (präemptives Scheduling, siehe [wiki:DokuOS#Dispatching Dispatching]), wenn ein Thread höherer Priorität (das entspricht einer wichtigeren Aufgabe) laufen - also CPU-Zeit beanspruchen - möchte. Dadurch ist es möglich, Aufgaben nach ihrer logischen Zugehörigkeit Threads zuzuteilen, ohne die Auswirkung ihrer Laufzeit auf das Gesamtsystem berücksichtigen zu müssen. So überträgt ein Thread mit niedriger Priorität beispielsweise immer dann die vom Bot gesammelten Informationen über die Umgebung (Map) zur Anzeige an einen PC, wenn gerade keine weiteren Aufgaben anstehen. Ist hingegen aktuell keine weitere Rechenzeit verfügbar, wird diese Übertragung solange verzögert, bis dafür wieder Zeit zur Verfügung steht. Außerdem kann ein Thread die Kontrolle über die CPU auch freiwillig für eine gewisse Zeit abgeben, wenn er im Moment nichts weiter zu tun hat, er "schläft" dann für diese Zeit.
+
+Jeder Thread hat eine feste Priorität und muss daher regelmäßig die Kontrolle abgeben, damit Threads niedrigerer Priorität die Chance bekommen zu laufen. Für den Thread der niedrigsten Priorität gilt das natürlich nicht, dieser Thread wird vom System vorgegeben und ist der so genannte "Idle-Thread", er läuft immer dann, wenn sonst niemand laufen möchte, also im gesamten System keine CPU-Zeit beansprucht wird. Aus dem Anteil seiner Laufzeit an der gesamten CPU-Zeit lässt sich die CPU-Auslastung berechnen.
+
+Es gibt grundsätzlich zwei Möglichkeiten um zwischen Threads (Aufgaben) zu wechseln: Kooperativ oder präemptiv. [[BR]]
+Im kooperativen Fall ist ein Thread selbst und direkt für den Wechsel zu einem anderen Thread verantwortlich, er möchte also die Kontrolle von sich aus abgeben, z.B. weil er auf neue Daten wartet. Diese explizite Variante stellt die einfachere Möglichkeit dar, weil dem Compiler zur Compilezeit dieser Threadwechsel bekannt ist (nämlich durch den Aufruf einer entsprechenden Funktion im Code des Threads). [[BR]]
+Der präemptive Fall hingegen ist für den Compiler völlig transparent. Es ist zur Compilezeit noch gar nicht bekannt, ''wann'' es zum präemptiven Threadwechsel kommen wird. Der Zeitpunkt ergibt sich erst zur Laufzeit. Daher muss im Allgemeinen das Betriebssystem (im Fall des c't-Bots ist es Teil des Frameworks) dafür sorgen, dass solch ein Threadwechsel das System nicht beeinträchtigt. ''Nach'' einem präemptiven Threadswitch muss ein Thread seinen kompletten Kontext (also den Status der CPU inkl. allen Registerinhalten usw.) exakt so vorfinden, wie dieser ''vor'' seiner Unterbrechung war. Aus Sicht des Threads hat also eigentlich ''nichts'' stattgefunden (er könnte seine Unterbrechung höchstens dadurch feststellen, dass die Systemzeit weiter fortgeschritten ist, als er das eigentlich erwartet hätte).
+
+
+== Datenstrukturen ==
+
+Threads - die einzige Abstraktion, die das c't-Bot-Betriebssystem bietet - besitzen eine Kontext, der den aktuellen Status enthält und werden durch "Thread Control Blocks" (TCBs) implementiert. Ein TCB enthält einen Zeiger auf den Stack des Threads, einen Zeitstempel der nächsten sowie der letzten Ausführung und einen Zeiger auf ein Signal:
+ * Der Stack eines jeden Threads, der zurzeit nicht läuft, enthält dessen Kontext. Der Kontext des (einzigen) aktuell laufenden Threads befindet sich in den CPU-Registern. Sobald einem Thread die CPU entzogen wird (er ist zu diesem Zeitpunkt entweder weiterhin lauffähig oder blockiert, aber eben nicht mehr laufend), wird der Kontext auf seinem Stack gesichert.
+ * Die Zeitstempel der nächsten bzw. letzten Ausführung werden gesetzt, sobald ein Thread die Kontrolle abgibt (der Zeitpunkt der nächsten Laufzeit liegt in der Zukunft) bzw. wenn er zur Ausführung ausgewählt wird. Mit der letzten Ausführung ist dabei der Zeitpunkt gemeint, zu dem der Thread das letzte Mal die CPU zugeteilt bekam, also der ''Beginn'' seiner letzten Laufzeit. Durch die aktuelle Systemzeit und dem Zeitstempel der nächsten Ausführung ergibt sich zusammen mit einem eventuell gesetzten Signal (s.u.) indirekt der Zustand eines Threads: Wartet der Thread nicht auf ein Signal und ist die aktuelle Systemzeit größer oder gleich dem Zeitstempel der nächsten Ausführung, ist der Thread lauffähig (er ''kann'' also laufen und tut dies genau dann, wenn es keinen lauffähigen Thread höherer Priorität gibt). Andernfalls ist der Thread ''blockiert'', weil seine nächste Laufzeit größer der aktuellen Systemzeit ist, also in der Zukunft liegt, oder weil er auf die Freigabe eines Signals wartet. Sobald der Zeitpunkt seiner nächsten Laufzeit erreicht ist (und es ist kein gesperrtes Signal zugewiesen) oder das Signal freigegeben wurde (und der Zeitpunkt der nächsten Ausführung liegt in der Vergangenheit), wechselt sein Status auf ''lauffähig''. Ob er in diesem Fall auch wirklich läuft, hängt davon ab, ob es einen weiteren lauffähigen Thread höherer Priorität gibt oder nicht.
+ * Die bereits erwähnten Signale ermöglichen eine Synchronisation zwischen zwei Threads: Wird einem Thread ein Signal zugewiesen, ist er automatisch blockiert, solange dieses Signal gesperrt ist. Ist das Signal freigegeben oder ist einem Thread gar kein Signal zugewiesen, hängt der Status des Threads nur vom Zeitpunkt seiner nächsten Laufzeit ab.
+
+Insgesamt ist ein TCB also wie folgt aufgebaut:
+{{{
+#!C
+typedef struct {
+	void * stack;			/*!< Stack-Pointer */
+	uint32_t nextSchedule;		/*!< Zeitpunkt der naechsten Ausfuehrung */
+	uint16_t lastSchedule;		/*!< Zeitpunkt der letzten Ausfuehrung, untere 16 Bit */
+	os_signal_t * wait_for;		/*!< Zeiger auf ein Signal, bis zu dessen Freigabe blockiert wird */
+} Tcb_t;
+}}}
+
+
+Die Daten aller Threads werden in einem Array von TCBs gespeichert: {{{Tcb_t os_threads[OS_MAX_THREADS]}}}. [[BR]]
+Weiterhin zeigt {{{Tcb_t * os_thread_running}}} jederzeit auf den TCB des aktuell laufenden Threads.
+
+
+== Parameter ==
+
+{{{
+#!C
+#define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
+#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
+#define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
+#define OS_TIME_SLICE		10	/*!< Dauer einer Zeitscheibe in ms */
+#define OS_CONTEXT_SIZE		17	/*!< Groesse des Kontextes eines Threads [Byte] */
+
+#define OS_DEBUG		/*!< Schalter fuer Debug-Code */
+#define OS_KERNEL_LOG_AVAILABLE	/*!< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
+}}}
+
+ * {{{OS_MAX_THREADS}}} definiert die maximale Anzahl an Threads, die es im System geben kann. Der Wert sollte nicht größer als nötig gewählt werden, um nicht unnötig Ressourcen zu verschwenden. Es werden typischer Weise mindestens zwei Threads benötigt, ein Main-Thread und ein Idle-Thread. [[BR]]
+ * {{{OS_TIME_SLICE}}} legt die Länge einer Zeitscheibe fest und ist im Normalfall auf 10 ms eingestellt. Wichtig ist dies im Zusammenhang mit der Funktion os_thread_yield(), die einen Thread für den Rest seiner Zeitscheibe schlafen legt. Der Thread wird in diesem Fall also für 10 ms abzüglich seiner bisherigen Laufzeit blockiert, um Threads mit niedrigerer Priorität auszuführen. [[BR]]
+ * {{{OS_KERNEL_STACKSIZE}}} und {{{OS_IDLE_STACKSIZE}}} definieren die Stackgröße für interne Threads, auf ihre Bedeutung wird im Abschnitt [wiki:DokuOS#Debugging  Debugging] näher eingegangen. [[BR]]
+ * {{{OS_CONTEXT_SIZE}}} gibt an, wie viele Register von der Funktion os_switch_thread() auf dem Stack gesichert werden, siehe [wiki:DokuOS#Thread-Wechsel Thread-Wechsel]. [[BR]]
+ * Die beiden Schalter {{{OS_DEBUG}}} und {{{OS_KERNEL_LOG_AVAILABLE}}} ermöglichen Debugging-Ausgaben über die LOG-Funktionalität.
+
+
+== Anwender-Funktionen ==
+
+Ein Thread kann durch Aufruf einer der im Folgenden näher erklärten Funktionen Einfluss auf das Systemverhalten nehmen. Die Funktionen lassen sich grob in drei Klassen einteilen: Thread-Management, Zeit-Management und Synchronisation.
+
+=== Thread-Management ===
+
+Um einen neuen Thread zu erzeugen, ruft man die Funktion {{{Tcb_t * os_create_thread(void * pStack, void * pIp)}}} auf. Die Reihenfolge der Aufrufe bestimmt die Priorität der Threads: Bei jedem Aufruf bekommt der neue Thread die höchste noch freie Priorität. Der Thread mit höchster Priorität muss also als Erstes erzeugt werden und der Idle-Thread zum Schluss. Indirekt folgt daraus, dass ein Thread nur Threads mit niedrigerer Priorität als seiner Eigenen erzeugen kann. [[BR]]
+Als Parameter erwartet die Funktion einen Zeiger auf das Ende des Stacks für den neuen Thread und einen Zeiger auf seine Main-Funktion, die bei der ersten CPU-Zuteilung des Threads ausgeführt wird. Als Rückgabewert bekommt man einen Zeiger auf den TCB des neuen Threads oder {{{NULL}}}, falls die Thread-Erzeugung fehlschlug.
+
+=== Zeit-Management ===
+
+Die Funktion {{{void os_thread_sleep(uint32_t ms)}}} ist die Erste von zwei Funktionen zum expliziten, kooperativen Threadwechsel. Sie bewirkt, dass der aufrufende Thread für die Zeitspanne der als Parameter übergebenen Millisekunden blockiert wird. Dabei ist zu beachten, dass der Thread nicht zwangsläufig nach Ablauf dieser Zeitspanne sofort wieder läuft, es wird nur sichergestellt, dass er bis zum zukünftigen Zeitpunkt t = ''jetzt'' + ms Millisekunden blockiert wird. Die Implementierung der Funktion ist sehr einfach und ist hier zum besseren Verständnis mit angegeben:
+{{{
+#!C
+static inline void os_thread_sleep(uint32_t ms) {
+	uint32_t sleep_ticks = MS_TO_TICKS(ms); // Zeitspanne in Timer-Ticks umrechnen
+	uint32_t now = TIMER_GET_TICKCOUNT_32;  // Aktuelle Systemzeit
+	os_thread_running->nextSchedule = now + sleep_ticks;
+	os_schedule(now); // Aufruf des Schedulers
+}
+}}}
+[[BR]]
+
+Die zweite Funktion, die explizit einen Threadwechsel hervorruft, ist {{{void os_thread_yield(void)}}}. Sie dient dazu, die periodische Abarbeitung einer Aufgabe solange zu unterbrechen, bis das Periodenende erreicht ist, also eine neue Periode beginnt. Beim c't-Bot-Betriebssystem beträgt die Periodenlänge systemweit konstant 10 ms ({{{OS_TIME_SLICE}}}). Ein Aufruf von {{{os_thread_yield()}}} bewirkt also, dass der aufrufende Thread für eine Zeitspanne dt = 10 ms - ''eigene Laufzeit'' blockiert wird. [[BR]]
+Die Implementierung sieht prinzipiell wie folgt aus (die tatsächliche Implementierung führt noch ein paar zusätzliche Sicherheitschecks durch):
+{{{
+#!C
+void os_thread_yield(void) {
+	uint32_t now = TIMER_GET_TICKCOUNT_32; // aktuelle Systemzeit
+	uint16_t runtime = (uint16_t)now - (uint16_t)os_thread_running->lastSchedule; // bisherige Laufzeit berechnen
+	if (runtime > MS_TO_TICKS(OS_TIME_SLICE)) {
+		/* Zeitscheibe wurde bereits ueberschritten ==> kein Threadwechsel */
+		os_thread_running->lastSchedule = now; // Timestamp zuruecksetzen
+	} else {
+		/* Wir haben noch Zeit frei, die wir dem naechsten Thread schenken koennen */
+		os_thread_running->nextSchedule = now + (uint16_t)(MS_TO_TICKS(OS_TIME_SLICE) - runtime); // blockieren
+		/* Scheduler aufrufen */
+		os_schedule(now);
+	}
+}
+}}}
+[[BR]]
+
+Ein typischer Anwendungsfall ist beispielsweise eine Routine, die in jeder Periode Sensordaten auswertet und anschließend wartet, bis die nächste Periode beginnt:
+{{{
+WIEDERHOLE_ENDLOS {
+    DATENAUSWERTUNG;
+    os_thread_yield();
+}
+}}}
+
+=== Synchronisation ===
+
+Zur Synchronisation von Threads gibt es zwei grundsätzlich verschiedene Klassen von Funktionen. Die Erste verhindert jegliche Threadwechsel und ist dazu gedacht, um kurze kritische Abschnitte atomar (also ohne Unterbrechung) ausführen zu können. Die zweite Klasse von Funktionen hingegen bietet eine feingranulare Möglichkeit zum Schutz von gemeinsam genutzten Ressourcen. [[BR]]
+ * Die Funktionen {{{os_enterCS()}}} und {{{os_exitCS()}}} bieten die Möglichkeit, den zwischen ihnen eingeschlossenen Code-Block garantiert ohne Threadwechsel auszuführen. Das Verfahren ist analog zum Ausschalten der Interrupts des Mikrocontrollers, deaktiviert aber nicht das Interrupt-System des Prozessors, sondern den Scheduler des Betriebssystems und bietet somit einen Schutz-Mechanismus auf höherer Ebene. Der eingeschlossene kritische Abschnitt sollte allerdings möglichst kurz sein, denn die Deaktivierung des Schedulers über einen längeren Zeitraum beeinträchtigt das Zeitverhalten des Systems (es kann für diese Zeitspanne nicht garantiert werden, dass der Thread höchster Priorität die CPU zugeteilt bekommt). Beim Aufruf von {{{os_exitCS()}}} wird der Scheduler aufgerufen, falls seit dem Aufruf von {{{os_enterCS()}}} ein Scheduler-Aufruf erfolgt ist, dieser aber wegen des kritischen Abschnitts abgebrochen wurde.
+
+ * In die zweite angesprochene Klasse fallen die vier Funktionen {{{os_signal_set()}}}, {{{os_signal_release()}}}, {{{os_signal_lock()}}} und {{{os_signal_unlock()}}}. Ein zugewiesenes Signal bewirkt, dass der Thread, dem es zugewiesen ist, blockiert wird, sobald das Signal von einem beliebigen Thread gesperrt wird.
+  * {{{os_signal_set(os_signal_t * signal)}}} weist dem ausführenden Thread das Signal zu, dessen Adresse als Parameter übergeben wurde. Ein eventuell vorher zugewiesenes Signal wird dabei vom Thread getrennt. Es kann derzeit also maximal ein Signal pro Thread zugewiesen werden. Ein Signal kann aber gleichzeitig mehreren Threads zugewiesen sein.
+  * {{{os_signal_release(os_signal_t * signal)}}} entfernt das aktuell zugewiesene Signal vom aufrufenden Thread wieder. Der Thread wird also zukünftig nicht mehr blockiert, wenn das Signal gesperrt wird. Auf das Signal an sich hat der Aufruf dieser Funktion keinerlei Auswirkung. Der Parameter ''*signal'' hat in der derzeitigen Implementierung keine Bedeutung und wird von der Funktion nicht ausgewertet. Er ist für zukünftige Erweiterungen vorgesehen, um diese zu ermöglichen, sollte er beim Aufruf der Funktion aber korrekt gesetzt werden, also einen Zeiger auf das zu trennende Signal enthalten.
+  * {{{os_signal_lock(os_signal_t * signal)}}} sperrt das Signal, dessen Adresse der Funktion als Parameter übergeben wurde. Die Implementierung sieht derzeit nicht vor, dass ein Thread ein Signal sperrt, das ihm selbst zugewiesen ist. Dies ist zwar möglich, führt aber nicht zur sofortigen Blockierung des Threads (die Funktion ruft den Scheduler nicht explizit auf). Ein Thread kann seine Blockierung aber durch einen anschließenden Aufruf von {{{os_thread_sleep(0)}}} erzwingen.
+  * {{{os_signal_unlock(os_signal_t * signal)}}} gibt ein Signal wieder frei. (Nur) durch das Signal blockierte Threads werden hierdurch lauffähig und bekommen durch den sofortigen Aufruf des Schedulers die CPU zugeteilt, sofern es sich um den lauffähigen Thread höchster Priorität handelt.
+ Eine typische Anwendung finden Signale und die vier zugehörigen Funktionen beim klassischen Producer- / Consumer-Szenario: Der Producer wird blockiert, wenn der gemeinsame Puffer voll ist und deblockiert, sobald wieder Platz im Puffer ist. Der Consumer hingegen wird blockiert, falls der Puffer leer ist und beim Eintreffen neuer Daten wieder deblockiert.
+
+
+== Thread-Wechsel ==
+
+Jeder Thread benötigt zur Ausführung nicht nur Rechenzeit der CPU, sondern auch Speicher. Letzterer lässt sich in drei Gruppen einteilen: CPU-interne Register, Stackspeicher (ein Teil des RAMs) und gemeinsam genutztes RAM. Dabei ist der Stackspeicher threadlokal und bedarf daher keinem besonderen Schutz. Diese Eigenschaft macht sich das Betriebssystem außerdem zu Nutze und legt auf dem Stack eines Threads weitere private Daten des Threads ab. Das gemeinsam genutzte RAM wird vom Compiler bereits entsprechend eingeteilt und dem Code zugewiesen, so dass hier zum Multithreading keine weiteren Dingen berücksichtigt werden müssen. Lediglich die CPU-internen Register bedürfen einer besonderen Behandlung beim Threadwechsel. [[BR]]
+Die AVR-Architektur besitzt folgenden Speicher:[[BR]]
+[[Image(MemoryMap1.png, nolink)]] [[BR]] aus ''ATmega{164|324|644}P/V Datasheet (8011C–AVR–10/06);  Figure 6-2''
+
+Das interne SRAM braucht aus den bereits genannten Gründen nicht gesondert behandelt zu werden. Von den I/O-Registern ist nur der Stackpointer, der aus den beiden acht Bit breiten Registern ''SPL'' (0x3D) und ''SPH'' (0x3E) besteht, und das ''Statusregister (SREG)'' (0x3F) wichtig. Alle weiteren I/O-Register werden beim Threadwechsel nicht weiter behandelt, eventuelle Ressourcenkonflikte müssen explizit vom Benutzer ausgeschlossen werden! ''Insbesondere bedeutet dies, dass Zugriffe auf diese Register (z.B. EEPROM, UART, Port-Pins usw.) geschützt werden müssen, beispielsweise durch {{{os_enterCS()}}} und {{{os_exitCS()}}}, falls sie von unterschiedlichen Threads aus erfolgen.'' [[BR]]
+Die verbleibenden Register sind 32 General Purpose Register: [[BR]]
+[[Image(MemoryMap2.png, nolink)]] [[BR]] modifiziert aus ''ATmega{164|324|644}P/V Datasheet (8011C–AVR–10/06); Figure 5-2''
+
+Folgende der erwähnten Register bilden den Kontext eines Threads:
+ 1. Der Stackpointer ''SP'', 16 Bit groß, bestehend aus den Registern ''SPL'' und ''SPH''
+ 1. Das Prozessor-Statusregister ''SREG'', acht Bit groß
+ 1. Die 32 General Purpose Register ''!r0'' bis ''!r31'', jeweils acht Bit groß
+
+Beim Wechsel von Threads muss zunächst der Kontext des Threads, dem bisher die CPU zugeteilt war, auf seinem Stack gesichert werden. Der aktuelle Stackpointer wird im TCB des noch aktiven Threads gespeichert. Anschließend wird auf den neuen Zielthread umgeschaltet, indem der Stackpointer der CPU auf den Stack des Zielthreads gesetzt wird. Dazu wird der letzte gültige Stackpointer des Zielthreads aus seinem TCB geladen und in das CPU-Register geschrieben. Nun muss noch der beim letzten Threadwechsel auf dem Stack gesicherte Kontext in die CPU-Register geladen werden. Ab diesem Zeitpunkt läuft der Zielthread normal weiter. Da sein Kontext vor dem Wechsel zu einem anderen Thread komplett auf seinem Stack gesichert und nach dem Wechsel zurück zu ihm wiederhergestellt wurde, hat der Thread selbst von den Wechseln nichts mitbekommen. Dabei spielt es keine Rolle, ob der Thread bewusst seine Kontrolle an einen anderen Thread abgegeben hat, oder ob dies ohne sein Wissen geschah. Es besteht aber trotzdem ein Unterschied zwischen den beiden Varianten:
+
+=== Kooperativer Thread-Wechsel ===
+
+Im kooperativen Fall wurde der Threadwechsel explizit durch den Aufruf einer Funktion ausgelöst. Dem Compiler ist in diesem Fall bekannt, dass der Code erst nach der Rückkehr aus dieser Funktion weiterläuft. Daher muss der Compiler berücksichtigen, dass die aufgerufene Funktion einige Register gemäß der ABI verändern kann. Der Compiler sorgt von sich aus dafür, dass die Inhalte dieser Register vor dem Funktionsaufruf gesichert werden, falls jene nach dem Funktionsaufruf weiterhin benötigt werden. Anstatt der aufgerufenen Funktion läuft im Fall eines Threadwechsels aber eben nicht nur diese, sondern ein anderer Thread. Daher muss das Betriebssystem dafür Sorge tragen, dass der von Funktionsaufrufen gemäß ABI nicht veränderte Kontext gerettet und korrekt wiederhergestellt wird. Ein kooperativer Threadswitch ist also im Prinzip ein erweiterter Funktionsaufruf, bei dem zusätzlicher Kontext durch das Betriebssystem gesichert wird. [[BR]]
+Die vom Compiler bei einem Funktionsaufruf automatisch gesicherten General Purpose Register sind in der Memory-Map gelb hinterlegt. Hinzu kommt noch das Statusregister des Prozessors, auch dieses darf jede Funktion beliebig verändern. Das Register ''!r1'' nimmt eine besondere Rolle ein, der Compiler erwartet in diesem immer eine Null. Falls eine Funktion das Register jedoch beschreibt, muss sie selbst dafür sorgen, dass es vor einem Funktionsaufruf auf null zurück gesetzt wird. Insgesamt bleiben also die Register ''!r2'' bis ''!r17'' und die Stackpointer-Register ''SPL'' und ''SPH'' übrig, die beim Threadwechsel explizit gerettet werden müssen, damit ein Thread zum Zeitpunkt des Weiterlaufens dort exakt die Werte vorfindet, die er erwartet. Der Stackpointer wird im Zuge des Threadwechsels im TCB des Threads gesichert. Da der Stack an sich threadlokal ist, wird er zum Speichern des übrigen Kontextes verwendet. Dies erfolgt in der Funktion {{{os_switch_thread(Tcb_t * from, Tcb_t * to)}}}, die als Parameter die Adressen der TCBs von Ursprungs- und Zielthread erwartet, da der TCB den Stackpointer eines nicht laufenden Threads enthält und den des Ursprungsthreads nun speichert. Bevor der eigentliche Threadswitch erfolgt und der Kontext gesichert wird, setzt die Funktion den Zeiger {{{os_thread_running}}} auf den TCB des Zielthreads, der ab jetzt laufen soll. Anschließend folgen einige Assembler-Anweisungen, die das Sichern des Kontexts erledigen:
+{{{
+#!C
+__asm__ __volatile__(
+	"in r1, __SREG__		; r1 == 0		\n\t"
+	"cli				; interrupts off	\n\t"
+	"push r1			; push SREG		\n\t"
+	"push r2			; save GP registers	\n\t"
+	"push r3						\n\t"
+	"push r4						\n\t"
+	"push r5						\n\t"
+	"push r6						\n\t"
+	"push r7						\n\t"
+	"push r8						\n\t"
+	"push r9						\n\t"
+	"push r10						\n\t"
+	"push r11						\n\t"
+	"push r12						\n\t"
+	"push r13						\n\t"
+	"push r14						\n\t"
+	"push r15						\n\t"
+	"push r16						\n\t"
+	"push r17						\n\t"
+}}}
+
+Im ersten Schritt wird das ''Statusregister'' in Register ''!r1'' geladen (Register !r1 enthält beim Aufruf dieser Funktion immer die Null, daher kann es hier als temporärer Zwischenspeicher verwendet werden, wenn es vor der Rückkehr aus der Funktion wieder auf null gesetzt wird). Das Statusregister enthält auch das Interrupt-Flag, das somit automatisch gesichert wird. Im nächsten Schritt werden die Interrupts global deaktiviert, um die folgenden Anweisungen atomar auszuführen (eigentlich müsste nur der Tausch des Stackpointers atomar erfolgen, wenn aber zwischen den einzelnen Push-Operaten ein Interrupt aufträte, würden im Zuge der Interruptbehandlung unter Umständen weitere Register auf dem Stack gesichert und anschließend wieder entfernt - das benötigt unnötig viel Speicherplatz auf dem Stack). Wenn später das Statusregister zurückgeschrieben wird, werden dadurch auch die Interrupts wieder aktiviert, falls sie es vor dem Aufruf dieser Funktion waren. [[BR]]
+Im zweiten Schritt wird der Stackpointer im TCB des Ursprungsthreads gesichert und auf den letzten Wert des Zielthreads gesetzt, der dazu aus seinem TCB geladen wird. Das erledigt der folgende Code, die Adresse des TCBs des Zielthreads wird im Pointer-Register ''X'' sowie die des Ursprungsthreads im Pointer-Register ''Z'' erwartet:
+{{{
+#!C
+	//-- hier ist noch "from" (Z) der aktive Thread 	--//
+	"in r16, __SP_L__	; switch Stacks			\n\t"
+	"st Z+, r16						\n\t"
+	"in r16, __SP_H__					\n\t"
+	"st Z, r16						\n\t"
+		//-- live changes here --//
+	"ld r16, X+ 						\n\t"
+	"out __SP_L__, r16					\n\t"
+	"ld r16, X 						\n\t"
+	"out __SP_H__, r16					\n\t"
+	//-- jetzt ist schon "to" (X) der aktive Thread 	--//
+}}}
+Das Laden der TCB-Adressen wird hierbei dem Compiler überlassen, indem dem Inline-Assembler-Block die Parameter {{{:: "x" (&to->stack), "z" (&from->stack)}}} hinzugefügt sind. Zum jetzigen Zeitpunkt, also direkt nach diesem Code-Abschnitt, ist der Zielthread bereits aktiv und führt ab dem nächsten Funktionsrücksprung den Code aus, der dort folgt, wo der Thread in der Vergangenheit unterbrochen - also {{{os_switch_thread()}}} aufgerufen wurde. Die Interrupts sind auf jeden Fall noch global deaktiviert. Da jede Unterbrechung eines Threads durch die Funktionen {{{os_switch_thread()}}} herbeigeführt wird (die Unterbrechung im eigentlichen Sinne erfolgt mit dem Wechsel des Stackpointers - ab diesem Zeitpunkt hat die CPU keinen Bezug mehr zum Code, der bei der nächsten Funktionsrückkehr ausgeführt werden würde, denn die Adresse dieses Codes wird bei der Ausführung des Return-Befehls vom Stack geladen), wird bei der Rückkehr zu diesem Thread der Code ausgeführt, welcher direkt auf den Code vor der Unterbrechung folgt. Es wird hier lediglich der aktuelle Stackpointer an die Adresse, die im Z-Register steht (dies ist die Adresse des Feldes {{{void * stack}}} im TCB des aktuellen Threads) geschrieben, anschließend die Adresse des Stackpointers des Threads, auf den gewechselt werden soll (sie befindet sich im X-Register) geladen und diese in das Stackpointer-Register geschrieben. Sobald der Code der Funktion {{{os_switch_thread()}}} abgearbeitet wurde, wird die Rücksprungadresse vom aktuellen Stack geholt und ein Sprung an die entsprechende Code-Position ausgeführt. Es befindet sich auf dem Stack eines jeden unterbrochenen Threads als letzter Eintrag die Adresse des Codes, der unmittelbar auf den Aufruf von {{{os_switch_thread()}}} folgt. Durch den Stack- und Stackpointer-Tausch hat sich der aktuelle Stack allerdings geändert, vor dem Aufruf der Funktion war es noch der des Ursprungsthreads, unmittelbar vor der Rückkehr ist es aber bereits der Stack des Zielthreads. Somit wird bei der Funktionsrückkehr aus {{{os_switch_thread()}}} die Return-Adresse von einem anderen Stack geladen - genau das ist der eigentliche Kern des Thread-Wechsels. [[BR]]
+Der restliche Code in {{{os_switch_thread()}}} sorgt vor dem Verlassen der Funktion, also vor dem Rücksprung in den Code des Zielthreads dafür, dass dessen Kontext, der zu dem Zeitpunkt auf seinem Stack gesichert wurde, als ''dieser'' Thread (in der Vergangenheit) {{{os_switch_thread()}}} aufrief, wiederhergestellt wird:
+{{{
+#!C
+	"pop r17			; restore registers	\n\t"
+	"pop r16						\n\t"
+	"pop r15						\n\t"
+	"pop r14						\n\t"
+	"pop r13						\n\t"
+	"pop r12						\n\t"
+	"pop r11						\n\t"
+	"pop r10						\n\t"
+	"pop r9							\n\t"
+	"pop r8							\n\t"
+	"pop r7							\n\t"
+	"pop r6							\n\t"
+	"pop r5							\n\t"
+	"pop r4							\n\t"
+	"pop r3							\n\t"
+	"pop r2							\n\t"
+	"pop r1				; load SREG		\n\t"
+	"out __SREG__, r1		; restore SREG		\n\t"
+	"clr r1				; cleanup r1		    "
+}}}
+Die vorletzte Zeile sorgt dabei automatisch für die Wiederherstellung des Interrupt-Flags, welches im Statusregister ''SREG'' enthalten ist. Ab hier sind die Interrupts also genau dann wieder global aktiviert, wenn sie es vor der Unterbrechung ''dieses'' Threads (des Zielthreads) waren. Die letzte Zeile überschreibt das Register ''!r1'' mit null, wie bereits eingangs erwähnt wurde.
+
+Zusammenfassend ergibt sich also folgendes Bild: Auf dem Stack jedes Threads, der derzeit nicht läuft, befinden sich als letzte Einträge dessen Kontext gefolgt von der Rücksprungadresse des Codes, der direkt auf den Aufruf der Funktion {{{os_switch_thread()}}} folgt. Im Abschnitt [wiki:DokuOS#Debugging Debugging] wird genauer auf das Stack-Layout unterbrochener Threads eingegangen.
+
+Abschließend bleibt noch ein Punkt zu klären, nämlich der Sonderfall, dass ein Thread neu angelegt wurde, daher noch nie gelaufen sein und somit keine Historie (der Stack ist leer und enthält dementsprechend auch keine Rücksprungadresse) haben kann. Diese Ausnahme wird beim Thread-Wechsel nicht speziell behandelt. Stattdessen wird bei der Erzeugung eines neuen Threads einfach eine "künstliche" Historie erzeugt, die den Stack des neuen Thread exakt so aussehen lässt, als sei dieser Thread bereits gelaufen und direkt vor seinem Einsprungspunkt durch einen Aufruf von {{{os_switch_thread()}}} unterbrochen worden. Das Nächste, was ein Thread, der zum ersten Mal aktiviert wird, ausführt ist daher sein Einsprungspunkt, also der erste Befehl seiner "Main"-Funktion. Aufgrund dieses Tricks gibt es keine "neuen" Threads ohne Vergangenheit und der Code zum Thread-Wechsel braucht keine Ausnahmen zu berücksichtigen.
+
+=== Präemptiver Thread-Wechsel ===
+
+Für den Fall, dass ein Thread nicht selbst explizit für seine Unterbrechung gesorgt hat (also ein präemptiver Thread-Wechsel, der vom Scheduler herbeigeführt wird, weil ein Thread keine Berechtigung mehr hat, CPU-Zeit zu beanspruchen - dies ist z.B. der Fall, wenn ein Thread höherer Priorität lauffähig wurde), sondern ohne sein Wissen "von außen" unterbrochen wird, müssen ein paar weitere Dinge beachtet werden, als die bereits Erläuterten. Die im vorherigen Abschnitt zur Vereinfachung gemachte Annahme, dass ein Thread-Wechsel prinzipiell lediglich ein Funktionsaufruf mit erweitertem Kontext-Management ist, ist beim präemptiven Thread-Wechsel so nicht mehr gültig. Passte der kooperative Thread-Wechsel sehr schön in das Konzept der Programmiersprache C, indem er wie ein Funktionsaufruf explizit vom Code gewollt ist, so gibt es für den präemptiven Fall keine Analogie zu einem Sprachkonzept in C. Stattdessen lässt sich aber ein anderer dem Compiler bereits bekannter Mechanismus zur Abbildung eines präemptiven Thread-Wechsels heranziehen, die Behandlung von Interrupts: Tritt (zu einem beliebigen Zeitpunkt) ein Interrupt auf, wird die aktuelle Codeausführung unterbrochen, ein speziell für diesen Interrupt geschriebener Code - die ''Interrupt Service Routine'' ausgeführt und anschließend der unmittelbar vor dem Eintreffen des Interrupts aktive Code weiter ausgeführt. Setzt man nun den Code eines Thread an die Stelle der Interrupt Service Routine, die grundsätzlich nichts weiter ist als eine C-Funktion, erhält man genau das gewünschte Szenario: Es läuft der Code eines Threads und durch irgendein ''Ereignis'' wird zu einem beliebigen Zeitpunkt dieser Code bzw. Thread unterbrochen, der eines anderen Threads ausgeführt und der unmittelbar vor dem Eintreffen des Ereignisses aktive Code des ersten, unterbrochenen Threads weitergeführt. Es bleibt noch zu klären, wie es in diesem Modell zu dem genannten Ereignis, welches für den Threadwechsel letztlich verantwortlich ist, kommt. Ein solches Ereignis ist nichts weiter als die Entscheidung des Schedulers, ab sofort einem anderen Thread die CPU zuzuteilen. Somit ist zwar das zunächst ersatzweise eingesetzte Ereignis klar definiert, offen ist allerdings weiterhin die Frage, wann und wodurch der Aufruf des Schedulers (der das Ereignis verursacht) geschieht. Die Antwort liefert erneut das Interrupt-System, genauer gesagt ein Timer-Interrupt, der sicherstellt, dass der Scheduler regelmäßig (im Abstand von 1 ms) aufgerufen wird. Der Abschnitt [wiki:DokuOS#Dispatching Dispatching] erläutert die Funktionsweise des Schedulers genauer. Letztendlich erfolgt der durch den Scheduler angestoßene Thread-Wechsel also innerhalb der Interruptbehandlung in der Interrupt Service Routine. Die Interrupt Service Routine des Timer-Interrupts ist also indirekt für den präemptiven Threadwechsel verantwortlich. Somit läuft der eigentlich Thread-Wechsel innerhalb einer Interruptbehandlung ab. Betten wir den Thread-Wechsel als Funktionsaufruf (wie im [wiki:DokuOS#KooperativerThread-Wechsel vorherigen Abschnitt] beschrieben) in eine ''Interrupt Service Routine'' ein (''ISR''), für die durch den Compiler automatisch sicher gestellt wird, dass der Kontext des beim Eintreffen des Interrupts ausgeführten Codes gesichert wird, ist der präemptive Thread-Wechsel gleich dem im kooperativen Fall. Aus einer abstrakteren Sichtweise heraus passiert im Wesentlichen Folgendes:
+ 1. Es läuft Thread A.
+ 1. Zu einem beliebigen Zeitpunkt tritt ein Timer-Interrupt auf.
+ 1. Der Prozessor führt den für dieses Ereignis vom Compiler erzeugten Code aus, dieser sichert zunächst den aktuellen Kontext und springt dann in die zugehörige ISR.
+ 1. Die ISR ruft den Scheduler auf, welcher Thread B (mit höherer Priorität als Thread A) lauffähig macht.
+ 1. Der Scheduler führt ''explizit'' einen Thread-Wechsel von Thread A nach Thread B aus, dieser Thread-Wechsel entspricht einem Funktionsaufruf mit erweitertem Kontext-Management.
+ 1. Thread B wird dort fortgesetzt, wo er vor seiner Unterbrechung stehen blieb.
+
+Der Trick besteht nun darin, den Compiler dafür sorgen zu lassen, dass beim Eintritt in die Timer-ISR der Teil des Kontextes, der gemäß ABI innerhalb einer Funktion beliebig geändert werden darf, auf dem aktuellen Stack gesichert wird. Der Aufruf einer Funktion aus einer ISR heraus zwingt den Compiler zu genau diesem Schritt, denn die aufgerufene Funktion kann und braucht nicht zu wissen, ob sie aus einer ISR heraus aufgerufen wurde oder nicht. Ebenso muss der Compiler automatisch dafür Sorge tragen, dass das Register ''!r0'' beim Eintritt in die ISR gesichert und beim Austritt wiederhergestellt wird, denn der unterbrochene Code erwartet dort nach seiner Fortsetzung (derer er sich eigentlich gar nicht "bewusst" ist, denn er wurde von außen unterbrochen) denselben Wert wie vor der Unterbrechung. [[BR]]
+Zusammenfassend ergibt sich also: Der Compiler stellt durch automatisch erzeugten Code sicher, dass beim Eintritt in die ISR der Teil des Kontextes, der sich durch einen Funktionsaufruf ändern kann, gesichert wird und der Code des bereits bekannten (kooperativen) Thread-Wechsel sichert den Teil des Kontextes, der sich auch bei einem Funktionsaufruf nicht ändern darf. Beide Teile zusammen ergeben genau den kompletten Kontext eines Threads, so wie er zu Beginn des Abschnitts definiert wurde. Somit ist sichergestellt, dass auch bei einem präemptiven Thread-Wechsel stets der komplett Kontext des unterbrochenen Threads auf seinem Stack gesichert wird und eine doppelte Kontextsicherung sowie redundanter Code zum Threadwechsel wird vermieden.
+
+Aus dem vorgestellten Verfahren folgt außerdem, dass ein Thread, der explizit einen Thread-Wechsel auslöst (kooperativer Thread-Wechsel), nach dem einem Wechsel zu ihm zurück den Code ausführt, der dem expliziten Aufruf zum Thread-Wechsel (z.B. {{{os_thread_yiel()}}}) direkt folgt. Wird hingegen ein Thread fortgesetzt, der durch einen präemptiven Thread-Wechsel unterbrochen wurde, wird bei seiner Fortsetzung zunächst der "Rest-Code" der Timer-ISR ausgeführt, denn innerhalb dieser wurde ihm (aus Sicht des Betriebssystems) die CPU entzogen. Erst nach Ausführung des "ISR-Rest-Codes" wird ein auf diese Weise unterbrochener Thread dort fortgesetzt, wo er durch Eintreffen des Timer-Interrupts unterbrochen wurde. Hierdurch ergibt sich, dass sich bei jedem präemptiv unterbrochenen Thread die Rücksprungadresse in die Timer-ISR auf seinem Stack befindet, bei jedem kooperativ unterbrochenen Thread hingegen nur die Rücksprungadresse in seinen eigenen Code. Die Fortsetzung eines präemptiv unterbrochenen Threads erfolgt also ein wenig "indirekter" als die Fortsetzung eines Threads, der seine Unterbrechung selbst verursacht hat. Dies stellt jedoch kein Problem dar, ein präemptiv unterbrochener Thread aktiviert die Interrupts im Laufe der Abarbeitung des o.g. ISR-Rest-Codes, dafür hat der Compiler bei der Erzeugung des ISR-Codes bereits gesorgt. Ein kooperativ unterbrochener Thread stellt bei seiner Fortsetzung des Statusregister so wieder her, wie es vor seiner gewünschten Unterbrechung war inklusive des Interrupt-Flags. Zu beachten ist allerdings, dass Code in der Timer-ISR, der ''nach'' dem Scheduler-Aufruf platziert ist, nicht bei jedem Timer-Interrupt ausgeführt wird, weil die Rückkehr aus dem Scheduler nicht zwangsläufig in die Timer-ISR erfolgt! Sollte sich zwischen dem Scheduler-Aufruf und dem Ende der Timer-ISR Code befinden, wird dieser immer nur genau dann ausgeführt, wenn der Scheduler keinen Thread-Wechsel verursacht hat oder es einen Thread-Wechsel zu einem präemptiv unterbrochenen Thread gab. Sämtlicher zusätzlicher Code für die Timer-ISR sollte daher ''vor'' dem Scheduler-Aufruf stehen.
+
+
+== Dispatching ==
+
+''!ToDo''
+
+
+== Weitere Implementierungsdetails ==
+
+''!ToDo''
+
+=== os_create_thread() ===
+
+''!ToDo''
+
+=== os_idle() ===
+
+''!ToDo''
+
+
+== Debugging ==
+
+''!ToDo''
+
+
+== Utilities ==
+
+''!ToDo''
+
+=== test_and_set() ===
+
+''!ToDo''

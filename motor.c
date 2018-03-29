@@ -558,8 +558,8 @@ void servo_set(uint8_t servo, uint8_t pos) {
 	#if PID_TIME > 655 || PID_TIME < 0
 		#error PID_TIME out of range [0; 655]!
 	#endif
-	#if PID_SPEED_THRESHOLD > (BOT_SPEED_MAX/2) || PID_SPEED_THRESHOLD < BOT_SPEED_SLOW
-		#error PID_SPEED_THRESHOLD out of range [BOT_SPEED_SLOW; BOT_SPEED_MAX/2]!
+	#if PID_SPEED_THRESHOLD > (BOT_SPEED_MAX/2) || PID_SPEED_THRESHOLD < BOT_SPEED_MIN
+		#error PID_SPEED_THRESHOLD out of range [BOT_SPEED_MIN; BOT_SPEED_MAX/2]!
 	#endif
 	#if PID_START_DELAY > 255 || PID_START_DELAY < 0
 		#error PID_START_DELAY out of range [0; 255]!
