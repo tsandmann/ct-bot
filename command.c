@@ -1269,7 +1269,7 @@ void uart_calc_crc(command_t * cmd) {
 	cmd->to = crc & 0xff;
 #if defined PC && 0
 	/* CRC Test */
-	int r = rand();
+	int8_t r = rand();
 	if (r > RAND_MAX * 0.999) {
 		cmd->to++;
 	}

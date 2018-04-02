@@ -121,7 +121,7 @@ uint8_t uart_init(const char * port);
  * \param baudr gewuenschte Baudrate des UARTs
  * \return Fehlercode oder 0, wenn alles OK
  */
-uint8_t uart_init_baud(const char * port, int baudr);
+uint8_t uart_init_baud(const char * port, int32_t baudr);
 
 /**
  * Schliesst den UART-Port

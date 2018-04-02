@@ -101,7 +101,7 @@ extern char log_buffer[LOG_BUFFER_SIZE];
 /**
  * Hilfsmakro um den Format-String als Literal an snprintf() uebergeben zu koennen
  */
-#define LOG_PRINTF(...) {	unsigned int _len = strlen(log_buffer);							\
+#define LOG_PRINTF(...) {	uint16_t _len = strlen(log_buffer);							\
 							snprintf(&log_buffer[_len], LOG_BUFFER_SIZE - _len, __VA_ARGS__);	\
 						}
 
@@ -164,7 +164,7 @@ extern char log_buffer[LOG_BUFFER_SIZE];
  * \param line Zeilennummer
  * \param log_type Log-Typ
  */
-void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type);
+void log_begin(const char * filename, uint16_t line, LOG_TYPE log_type);
 
 /**
  * Gibt den Puffer entsprechend aus.
@@ -232,7 +232,7 @@ void log_end(void);
  * \param line Zeilennummer
  * \param log_type Log-Typ
  */
-void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type);
+void log_flash_begin(const char * filename, uint16_t line, LOG_TYPE log_type);
 
 /**
  * Schreibt die eigentliche Ausgabeinformation in den Puffer.

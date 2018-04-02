@@ -35,7 +35,7 @@
 #define PORT 10001			/**< Port, mit dem verbunden werden soll */
 #define SERVERPORT 10002	/**< Port fuer TCP-Server */
 
-extern int tcp_sock;		/**< Unser TCP-Socket */
+extern int16_t tcp_sock;		/**< Unser TCP-Socket */
 extern char * tcp_hostname;	/**< Hostname, auf dem ct-Sim laeuft */
 
 /**
@@ -60,7 +60,7 @@ int16_t tcp_read(void * data, int16_t length);
  * \param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
  * \return 			Der Socket
  */
-int tcp_openConnection(const char * hostname);
+int16_t tcp_openConnection(const char * hostname);
 
 /**
  * Initialisiere TCP/IP Verbindung
@@ -84,7 +84,7 @@ void * tcp_init_server(void * ptr);
  * Ermittelt wie viele Bytes auf dem TCP-Server Socket zur Verfuegung stehen
  * \return Bytes verfuegbar
  */
-int tcp_data_available(void);
+int8_t tcp_data_available(void);
 #endif // __WIN32__
 /**
  * Gibt an, ob derzeit ein TCP-Client verbunden ist
@@ -104,7 +104,7 @@ int16_t flushSendBuffer(void);
  * Schliesst eine TCP-Connection
  * \param sock Der Socket
  */
-void tcp_closeConnection(int sock);
+void tcp_closeConnection(int16_t sock);
 
 /**
  * Prueft die CRC Checksumme eines Kommandos

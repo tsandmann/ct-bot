@@ -71,7 +71,7 @@ int8_t atmega_reset(void) {
 	uart_flush();
 
 	/* perform reset on ATmega */
-	int fd = open(BOT_RESET_GPIO, O_WRONLY | O_SYNC);
+	int8_t fd = open(BOT_RESET_GPIO, O_WRONLY | O_SYNC);
 	if (fd == -1) {
 		LOG_ERROR("Unable to open Reset-GPIO \"%s\"", BOT_RESET_GPIO);
 		uart_close();
