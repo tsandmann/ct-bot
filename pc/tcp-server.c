@@ -53,7 +53,7 @@
 
 #ifdef WIN32
 #include <winsock.h>
-typedef int16_t socklen_t;
+typedef int socklen_t;
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
