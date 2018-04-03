@@ -674,17 +674,17 @@ fail:
 	return false;
 }
 
-int FatFile::peek() {
+int16_t FatFile::peek() {
 	FatPos_t pos;
 	getpos(&pos);
-	int c = read();
+	int16_t c = read();
 	if (c >= 0) {
 		setpos(&pos);
 	}
 	return c;
 }
 
-int FatFile::read(void* buf, size_t nbyte) {
+int16_t FatFile::read(void* buf, size_t nbyte) {
 	int8_t fg;
 	uint8_t blockOfCluster = 0;
 	uint8_t* dst = reinterpret_cast<uint8_t*>(buf);
@@ -1334,7 +1334,7 @@ fail:
 	return false;
 }
 
-int FatFile::write(const void* buf, size_t nbyte) {
+int16_t FatFile::write(const void* buf, size_t nbyte) {
 	// convert void* to uint8_t*  -  must be before goto statements
 	const uint8_t* src = reinterpret_cast<const uint8_t*>(buf);
 	cache_t* pc;

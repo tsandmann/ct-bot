@@ -83,8 +83,8 @@ public:
 	// return true on success, false on failure (in which case, the string
 	// is left unchanged).  reserve(0), if successful, will validate an
 	// invalid string (i.e., "if (s)" will be true afterwards)
-	unsigned char reserve(unsigned int size);
-	inline unsigned int length(void) const {return len;}
+	unsigned char reserve(uint16_t size);
+	inline uint16_t length(void) const {return len;}
 
 	// creates a copy of the assigned value.  if the value is null or
 	// invalid, or if the memory allocation fails, the string will be
@@ -106,8 +106,8 @@ public:
 	unsigned char concat(const char *cstr);
 	unsigned char concat(char c);
 	unsigned char concat(unsigned char c);
-	unsigned char concat(int num);
-	unsigned char concat(unsigned int num);
+	unsigned char concat(int16_t num);
+	unsigned char concat(uint16_t num);
 	unsigned char concat(long num);
 	unsigned char concat(unsigned long num);
 	unsigned char concat(float num);
@@ -120,8 +120,8 @@ public:
 	String & operator += (const char *cstr)		{concat(cstr); return (*this);}
 	String & operator += (char c)			{concat(c); return (*this);}
 	String & operator += (unsigned char num)		{concat(num); return (*this);}
-	String & operator += (int num)			{concat(num); return (*this);}
-	String & operator += (unsigned int num)		{concat(num); return (*this);}
+	String & operator += (int16_t num)			{concat(num); return (*this);}
+	String & operator += (uint16_t num)		{concat(num); return (*this);}
 	String & operator += (long num)			{concat(num); return (*this);}
 	String & operator += (unsigned long num)	{concat(num); return (*this);}
 	String & operator += (float num)		{concat(num); return (*this);}
@@ -132,8 +132,8 @@ public:
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, const char *cstr);
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, char c);
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned char num);
-	friend StringSumHelper & operator + (const StringSumHelper &lhs, int num);
-	friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned int num);
+	friend StringSumHelper & operator + (const StringSumHelper &lhs, int16_t num);
+	friend StringSumHelper & operator + (const StringSumHelper &lhs, uint16_t num);
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, long num);
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long num);
 	friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
@@ -142,7 +142,7 @@ public:
 
 	// comparison (only works w/ Strings and "strings")
 	operator StringIfHelperType() const { return buffer ? &String::StringIfHelper : 0; }
-	int compareTo(const String &s) const;
+	int16_t compareTo(const String &s) const;
 	unsigned char equals(const String &s) const;
 	unsigned char equals(const char *cstr) const;
 	unsigned char operator == (const String &rhs) const {return equals(rhs);}
@@ -155,16 +155,16 @@ public:
 	unsigned char operator >= (const String &rhs) const;
 	unsigned char equalsIgnoreCase(const String &s) const;
 	unsigned char startsWith( const String &prefix) const;
-	unsigned char startsWith(const String &prefix, unsigned int offset) const;
+	unsigned char startsWith(const String &prefix, uint16_t offset) const;
 	unsigned char endsWith(const String &suffix) const;
 
 	// character acccess
-	char charAt(unsigned int index) const;
-	void setCharAt(unsigned int index, char c);
-	char operator [] (unsigned int index) const;
-	char& operator [] (unsigned int index);
-	void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index=0) const;
-	void toCharArray(char *buf, unsigned int bufsize, unsigned int index=0) const
+	char charAt(uint16_t index) const;
+	void setCharAt(uint16_t index, char c);
+	char operator [] (uint16_t index) const;
+	char& operator [] (uint16_t index);
+	void getBytes(unsigned char *buf, uint16_t bufsize, uint16_t index=0) const;
+	void toCharArray(char *buf, uint16_t bufsize, uint16_t index=0) const
 		{ getBytes((unsigned char *)buf, bufsize, index); }
 	const char* c_str() const { return buffer; }
 	char* begin() { return buffer; }
@@ -173,22 +173,22 @@ public:
 	const char* end() const { return c_str() + length(); }
 
 	// search
-	int indexOf( char ch ) const;
-	int indexOf( char ch, unsigned int fromIndex ) const;
-	int indexOf( const String &str ) const;
-	int indexOf( const String &str, unsigned int fromIndex ) const;
-	int lastIndexOf( char ch ) const;
-	int lastIndexOf( char ch, unsigned int fromIndex ) const;
-	int lastIndexOf( const String &str ) const;
-	int lastIndexOf( const String &str, unsigned int fromIndex ) const;
-	String substring( unsigned int beginIndex ) const { return substring(beginIndex, len); };
-	String substring( unsigned int beginIndex, unsigned int endIndex ) const;
+	int16_t indexOf( char ch ) const;
+	int16_t indexOf( char ch, uint16_t fromIndex ) const;
+	int16_t indexOf( const String &str ) const;
+	int16_t indexOf( const String &str, uint16_t fromIndex ) const;
+	int16_t lastIndexOf( char ch ) const;
+	int16_t lastIndexOf( char ch, uint16_t fromIndex ) const;
+	int16_t lastIndexOf( const String &str ) const;
+	int16_t lastIndexOf( const String &str, uint16_t fromIndex ) const;
+	String substring( uint16_t beginIndex ) const { return substring(beginIndex, len); };
+	String substring( uint16_t beginIndex, uint16_t endIndex ) const;
 
 	// modification
 	void replace(char find, char replace);
 	void replace(const String& find, const String& replace);
-	void remove(unsigned int index);
-	void remove(unsigned int index, unsigned int count);
+	void remove(uint16_t index);
+	void remove(uint16_t index, uint16_t count);
 	void toLowerCase(void);
 	void toUpperCase(void);
 	void trim(void);
@@ -199,17 +199,17 @@ public:
 
 protected:
 	char *buffer;	        // the actual char array
-	unsigned int capacity;  // the array length minus one (for the '\0')
-	unsigned int len;       // the String length (not counting the '\0')
+	uint16_t capacity;  // the array length minus one (for the '\0')
+	uint16_t len;       // the String length (not counting the '\0')
 protected:
 	void init(void);
 	void invalidate(void);
-	unsigned char changeBuffer(unsigned int maxStrLen);
-	unsigned char concat(const char *cstr, unsigned int length);
+	unsigned char changeBuffer(uint16_t maxStrLen);
+	unsigned char concat(const char *cstr, uint16_t length);
 
 	// copy and move
-	String & copy(const char *cstr, unsigned int length);
-	String & copy(const __FlashStringHelper *pstr, unsigned int length);
+	String & copy(const char *cstr, uint16_t length);
+	String & copy(const __FlashStringHelper *pstr, uint16_t length);
        #if __cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__)
 	void move(String &rhs);
 	#endif
@@ -222,8 +222,8 @@ public:
 	StringSumHelper(const char *p) : String(p) {}
 	StringSumHelper(char c) : String(c) {}
 	StringSumHelper(unsigned char num) : String(num) {}
-	StringSumHelper(int num) : String(num) {}
-	StringSumHelper(unsigned int num) : String(num) {}
+	StringSumHelper(int16_t num) : String(num) {}
+	StringSumHelper(uint16_t num) : String(num) {}
 	StringSumHelper(long num) : String(num) {}
 	StringSumHelper(unsigned long num) : String(num) {}
 	StringSumHelper(float num) : String(num) {}

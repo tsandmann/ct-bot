@@ -367,10 +367,10 @@ float scanFloat(const char* str, char** ptr) {
 	bool digit = false;
 	bool dot = false;
 	uint32_t fract = 0;
-	int fracExp = 0;
+	int16_t fracExp = 0;
 	uint8_t nd = 0;
 	bool neg;
-	int c;
+	int16_t c;
 	float v;
 	const char* successPtr = str;
 
@@ -418,7 +418,7 @@ float scanFloat(const char* str, char** ptr) {
 		c = *str++;
 	}
 	if (c == 'e' || c == 'E') {
-		int exp = 0;
+		int16_t exp = 0;
 		c = *str++;
 		bool expNeg = c == '-';
 		if (c == '-' || c == '+') {

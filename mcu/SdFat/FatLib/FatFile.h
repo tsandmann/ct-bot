@@ -569,7 +569,7 @@ public:
 	 *
 	 * \return The byte if no error and not at eof else -1;
 	 */
-	int peek();
+	int16_t peek();
 
 #if SDFAT_PRINT_SUPPORT
 	/** Print a file's creation date and time
@@ -605,35 +605,35 @@ public:
 	 * \param[in] prec Number of digits after decimal point.
 	 * \return The number of bytes written or -1 if an error occurs.
 	 */
-	int printField(float value, char term, uint8_t prec = 2);
+	int16_t printField(float value, char term, uint8_t prec = 2);
 
 	/** Print a number followed by a field terminator.
 	 * \param[in] value The number to be printed.
 	 * \param[in] term The field terminator.  Use '\\n' for CR LF.
 	 * \return The number of bytes written or -1 if an error occurs.
 	 */
-	int printField(int16_t value, char term);
+	int16_t printField(int16_t value, char term);
 
 	/** Print a number followed by a field terminator.
 	 * \param[in] value The number to be printed.
 	 * \param[in] term The field terminator.  Use '\\n' for CR LF.
 	 * \return The number of bytes written or -1 if an error occurs.
 	 */
-	int printField(uint16_t value, char term);
+	int16_t printField(uint16_t value, char term);
 
 	/** Print a number followed by a field terminator.
 	 * \param[in] value The number to be printed.
 	 * \param[in] term The field terminator.  Use '\\n' for CR LF.
 	 * \return The number of bytes written or -1 if an error occurs.
 	 */
-	int printField(int32_t value, char term);
+	int16_t printField(int32_t value, char term);
 
 	/** Print a number followed by a field terminator.
 	 * \param[in] value The number to be printed.
 	 * \param[in] term The field terminator.  Use '\\n' for CR LF.
 	 * \return The number of bytes written or -1 if an error occurs.
 	 */
-	int printField(uint32_t value, char term);
+	int16_t printField(uint32_t value, char term);
 
 	/** Print a file's modify date and time
 	 *
@@ -677,7 +677,7 @@ public:
 	 * \return For success read returns the next byte in the file as an int.
 	 * If an error occurs or end of file is reached -1 is returned.
 	 */
-	int read() {
+	int16_t read() {
 		uint8_t b;
 		return read(&b, 1) == 1 ? b : -1;
 	}
@@ -695,7 +695,7 @@ public:
 	 * read() called before a file has been opened, corrupt file system
 	 * or an I/O error occurred.
 	 */
-	int read(void* buf, size_t nbyte);
+	int16_t read(void* buf, size_t nbyte);
 
 	/** Read the next directory entry from a directory file.
 	 *
@@ -911,7 +911,7 @@ public:
 	 * Use getWriteError to check for errors.
 	 * \return count of characters written for success or -1 for failure.
 	 */
-	int write(const char* str) {
+	int16_t write(const char* str) {
 		return write(str, strlen(str));
 	}
 
@@ -919,7 +919,7 @@ public:
 	 * \param[in] b The byte to be written.
 	 * \return +1 for success or -1 for failure.
 	 */
-	int write(uint8_t b) {
+	int16_t write(uint8_t b) {
 		return write(&b, 1);
 	}
 
@@ -938,7 +938,7 @@ public:
 	 * for a read-only file, device is full, a corrupt file system or an I/O error.
 	 *
 	 */
-	int write(const void* buf, size_t nbyte);
+	int16_t write(const void* buf, size_t nbyte);
 
 private:
 	/** This file has not been opened. */
