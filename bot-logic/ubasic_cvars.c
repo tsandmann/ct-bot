@@ -10,6 +10,8 @@
 *
 ----------------------------------------------------------*/
 
+#include <stdint.h>
+
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 #include "sensor.h"
@@ -53,11 +55,11 @@ cvars_t cvars[] = {
     {"", NULL}
 };
 
-static int search_cvars(const char *var_name) {
-	int idx=0;
+static int16_t search_cvars(const char *var_name) {
+	int16_t idx=0;
 	// Variablenname in Tabelle suchen
 #if USE_PROGMEM
-	while((int *)pgm_read_word(&cvars[idx].pvar) != NULL &&
+	while((int16_t *)pgm_read_word(&cvars[idx].pvar) != NULL &&
 	      strncasecmp_P(var_name, cvars[idx].var_name, MAX_NAME_LEN)) {
     	idx++;
     }
@@ -69,7 +71,7 @@ static int search_cvars(const char *var_name) {
 #endif
     // keinen Tabelleneintrag gefunden!
 #if USE_PROGMEM
-    if ((int *)pgm_read_word(&cvars[idx].pvar) == NULL) {
+    if ((int16_t *)pgm_read_word(&cvars[idx].pvar) == NULL) {
 #else
     if (cvars[idx].pvar == NULL) {
 #endif
@@ -80,9 +82,9 @@ static int search_cvars(const char *var_name) {
 }
 
 void vpoke_statement(void) {
-	int idx=0;
+	int16_t idx=0;
 #if USE_PROGMEM
-	int *var_temp;
+	int16_t *var_temp;
 #endif
 
 	ubasic_accept(TOKENIZER_VPOKE);
@@ -95,7 +97,7 @@ void vpoke_statement(void) {
 	ubasic_accept(TOKENIZER_RIGHTPAREN);
 	ubasic_accept(TOKENIZER_EQ);
 #if USE_PROGMEM
-	var_temp=(int *)pgm_read_word(&cvars[idx].pvar);
+	var_temp=(int16_t *)pgm_read_word(&cvars[idx].pvar);
 	*var_temp=ubasic_expr();
 #else
 	*cvars[idx].pvar = ubasic_expr();
@@ -103,9 +105,9 @@ void vpoke_statement(void) {
 	//tokenizer_next();
 }
 
-int vpeek_expression(void) {
-	int idx=0;
-	int r=0;
+int16_t vpeek_expression(void) {
+	int16_t idx=0;
+	int16_t r=0;
 #if USE_PROGMEM
 	int16_t *var_temp;
 #endif

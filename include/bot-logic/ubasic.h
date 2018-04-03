@@ -30,6 +30,9 @@
  * Source modified by Uwe Berger (bergeruw@gmx.net); 2010, 2011
  * ------------------------------------------------------
  */
+
+#include <stdint.h>
+
 #ifndef __UBASIC_H__
 #define __UBASIC_H__
 
@@ -74,9 +77,9 @@ struct gosub_stack_t {
 // Typ-Definition for-next-Stack
 struct for_state_t {
   PTR_TYPE next_line_ptr;
-  int for_variable;
-  int to;
-  int step;
+  int16_t for_variable;
+  int16_t to;
+  int16_t step;
   unsigned char downto;
 };
 
@@ -86,25 +89,25 @@ struct linenum_cache_t {
 #if UBASIC_EXT_PROC
 	char p_name[MAX_PROG_NAME_LEN];
 #endif
-	int linenum;
+	int16_t linenum;
 	PTR_TYPE next_line_ptr;
 };
 #endif
 
 // Typ-Definition Variablen-Information
 struct varinfo_t {
-	int varnum;
+	int16_t varnum;
 #if UBASIC_ARRAY
-	int idx;
+	int16_t idx;
 #endif
 };
 
 // Typ-Definition BASIC-Integer-Variable
 struct variables_t {
-	int val;
+	int16_t val;
 #if UBASIC_ARRAY
-	int* adr;
-	int dim;
+	int16_t* adr;
+	int16_t dim;
 #endif
 };
 
@@ -114,7 +117,7 @@ struct strvariables_t {
 	char* val_adr;
 #if UBASIC_ARRAY
 	char *adr;
-	int dim;
+	int16_t dim;
 #endif
 };
 #endif
@@ -127,23 +130,23 @@ struct data_ptr_t {
 };
 #endif
 
-extern int current_linenum;
+extern int16_t current_linenum;
 
 void ubasic_init(PTR_TYPE program);
 void ubasic_run(void);
-int ubasic_finished(void);
+int16_t ubasic_finished(void);
 
 struct varinfo_t ubasic_get_varinfo(void);
-int ubasic_get_variable(struct varinfo_t var);
-void ubasic_set_variable(struct varinfo_t varum, int value);
+int16_t ubasic_get_variable(struct varinfo_t var);
+void ubasic_set_variable(struct varinfo_t varum, int16_t value);
 
 #if UBASIC_STRING
 char* strexpr(void);
 void ubasic_set_strvariable(struct varinfo_t var, char *str);
 #endif
 
-void ubasic_accept(int token);
-int ubasic_expr(void);
+void ubasic_accept(int16_t token);
+int16_t ubasic_expr(void);
 void ubasic_break(void);
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

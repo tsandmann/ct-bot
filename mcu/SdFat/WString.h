@@ -19,6 +19,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <stdint.h>
+
 #ifndef String_class_h
 #define String_class_h
 
@@ -71,8 +73,8 @@ public:
 	#endif
 	explicit String(char c);
 	explicit String(unsigned char, unsigned char base=10);
-	explicit String(int, unsigned char base=10);
-	explicit String(unsigned int, unsigned char base=10);
+	explicit String(int16_t, unsigned char base=10);
+	explicit String(uint16_t, unsigned char base=10);
 	explicit String(long, unsigned char base=10);
 	explicit String(unsigned long, unsigned char base=10);
 	explicit String(float, unsigned char decimalPlaces=2);

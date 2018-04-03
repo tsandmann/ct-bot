@@ -11,6 +11,8 @@
 *
 ----------------------------------------------------------*/
 
+#include <stdint.h>
+
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
@@ -68,18 +70,18 @@ callfunct_t callfunct[] = {
 };
 
 
-int call_statement(void) {
+int16_t call_statement(void) {
 
 	unsigned char f_typ_temp;
 	uint8_t idx=0;
 
 #if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT || defined VOID_FUNC_2INT_CHAR
-	int p1=0;
-	int p2=0;
-	int p3=0;
-	int p4=0;
+	int16_t p1=0;
+	int16_t p2=0;
+	int16_t p3=0;
+	int16_t p4=0;
 #endif
-	int r=0;
+	int16_t r=0;
 
 	ubasic_accept(TOKENIZER_CALL);
 	// Parameterliste wird durch linke Klammer eingeleitet
@@ -126,7 +128,7 @@ int call_statement(void) {
 						ubasic_accept(TOKENIZER_COMMA);
 						p1=ubasic_expr();
 						#if USE_PROGMEM
-							void (* f1)(int) = (void (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt);
+							void (* f1)(int16_t) = (void (*)(int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt);
 							f1(p1);
 						#else
 							callfunct[idx].funct_ptr.VoidFuncInt(p1);
@@ -140,7 +142,7 @@ int call_statement(void) {
 						ubasic_accept(TOKENIZER_COMMA);
 						p2=ubasic_expr();
 						#if USE_PROGMEM
-							void (* f2)(int, int) = (void (*)(int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int);
+							void (* f2)(int16_t, int16_t) = (void (*)(int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int);
 							f2(p1, p2);
 						#else
 							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
@@ -158,7 +160,7 @@ int call_statement(void) {
 						ubasic_accept(TOKENIZER_COMMA);
 						p4=ubasic_expr();
 						#if USE_PROGMEM
-							void (* f3)(int, int, int, int) = (void (*)(int, int, int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc4Int);
+							void (* f3)(int16_t, int16_t, int16_t, int16_t) = (void (*)(int16_t, int16_t, int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc4Int);
 							f3(p1, p2, p3, p4);
 						#else
 							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
@@ -174,7 +176,7 @@ int call_statement(void) {
 						ubasic_accept(TOKENIZER_COMMA);
 						ubasic_accept(TOKENIZER_STRING);
 						#if USE_PROGMEM
-							void (* f4)(int, int, char*) = (void (*)(int, int, char*)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2IntChar);
+							void (* f4)(int16_t, int16_t, char*) = (void (*)(int16_t, int16_t, char*)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2IntChar);
 							f4(p1, p2, (char*)tokenizer_last_string_ptr());
 						#else
 							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
@@ -189,7 +191,7 @@ int call_statement(void) {
 						ubasic_accept(TOKENIZER_COMMA);
 						p1=ubasic_expr();
 						#if USE_PROGMEM
-							int (* f5)(int) = (int (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.IntFuncInt);
+							int16_t (* f5)(int16_t) = (int16_t (*)(int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.IntFuncInt);
 							r=f5(p1);
 						#else
 							r=callfunct[idx].funct_ptr.IntFuncInt(p1);

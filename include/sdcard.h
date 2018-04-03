@@ -28,6 +28,7 @@
  * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat).
  */
 
+#include <stdint.h>
 
 #ifndef SPICARD_H_
 #define SPICARD_H_
@@ -123,7 +124,7 @@ public:
 	/**
 	 * \return code for the last error. See SdSpiCard.h for a list of error codes.
 	 */
-	int get_error_code() const {
+	int16_t get_error_code() const {
 		return m_errorCode;
 	}
 
@@ -136,7 +137,7 @@ public:
 	}
 
 	/** \return error data for last error. */
-	int get_error_data() const {
+	int16_t get_error_data() const {
 		return m_status;
 	}
 
