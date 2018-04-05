@@ -71,14 +71,14 @@
 #include <string.h>     // for memset()
 #include <unistd.h>     // for close()
 
-int16_t tcp_sock = 0;			/**< Unser TCP-Socket */
+int tcp_sock = 0;			/**< Unser TCP-Socket */
 char * tcp_hostname = NULL;	/**< Hostname, auf dem ct-Sim laeuft */
 
 static uint8_t sendBuffer[TCP_SEND_BUFFER_SIZE];	/**< Sendepuffer fuer ausgehende Packete */
-static int16_t sendBufferPtr = 0;						/**< Index in den Sendepuffer */
+static int sendBufferPtr = 0;						/**< Index in den Sendepuffer */
 
 #ifndef __WIN32__
-static int16_t server; /**< Server-Socket */
+static int server; /**< Server-Socket */
 static struct sockaddr_in serverAddr; /**< lokale Adresse */
 static struct sockaddr_in clientAddr; /**< Client-Adresse  */
 static socklen_t clntLen; /**< Laenge der Datenstruktur der Client-Adresse */
@@ -90,9 +90,9 @@ static socklen_t clntLen; /**< Laenge der Datenstruktur der Client-Adresse */
  * \param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
  * \return			Der Socket
  */
-int16_t tcp_openConnection(const char * hostname) {
+int tcp_openConnection(const char * hostname) {
 	struct sockaddr_in servAddr;	// server address
-	int16_t sock = 0;	// Socket descriptor
+	int sock = 0;	// Socket descriptor
 	struct hostent * he = gethostbyname(hostname);
 
 	// Ueberpruefen, ob der Hostname aufgeloest werden konnte
@@ -107,12 +107,12 @@ int16_t tcp_openConnection(const char * hostname) {
 		exit(1);
 	}
 
-	int16_t flag = 1;
+	int flag = 1;
 	setsockopt(sock,		/* socket affected */
 			IPPROTO_TCP,	/* set option at TCP level */
 			TCP_NODELAY,	/* name of option */
 			(char *) &flag,	/* the cast is historical cruft */
-			sizeof(int16_t)		/* length of option value */
+			sizeof(int)		/* length of option value */
 	);
 
 	// Prepare server address structure
@@ -136,7 +136,7 @@ int16_t tcp_openConnection(const char * hostname) {
  * Schliesst eine TCP-Connection
  * \param sock	Der Socket
  */
-void tcp_closeConnection(int16_t sock) {
+void tcp_closeConnection(int sock) {
 	close(sock);
 #ifdef WIN32
 	WSACleanup();
@@ -151,7 +151,7 @@ void tcp_closeConnection(int16_t sock) {
  */
 static inline int16_t copy2Buffer(const void * data, unsigned length) {
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
-		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (uint16_t)sizeof(sendBuffer), length);
+		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (unsigned int)sizeof(sendBuffer), length);
 		LOG_DEBUG("  ==> Trying to recover by calling flushSendBuffer()...");
 		flushSendBuffer();
 		if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
@@ -243,7 +243,7 @@ void * tcp_init_server(void * ptr) {
 		exit(1);
 	}
 
-	int16_t i = 1;
+	int i = 1;
 	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *) &i, sizeof(i));
 
 //	fcntl(server, F_SETFL, O_NONBLOCK); // non-blocking
@@ -288,11 +288,11 @@ void * tcp_init_server(void * ptr) {
  * Ermittelt wie viele Bytes auf dem TCP-Server Socket zur Verfuegung stehen
  * \return Bytes verfuegbar
  */
-int8_t tcp_data_available(void) {
-	int16_t bytes_avail;
-	int16_t ret = ioctl(tcp_sock, FIONREAD, &bytes_avail);
+int tcp_data_available(void) {
+	int bytes_avail;
+	int ret = ioctl(tcp_sock, FIONREAD, &bytes_avail);
 	if (ret < 0)	{
-		uint8_t err = errno;
+		int err = errno;
 		LOG_ERROR("tcp_data_available(): ioctl() failed: %d; %d", ret, err);
 		(void) err;
 		return -1;
@@ -309,7 +309,7 @@ void tcp_init_client(void) {
 #ifdef WIN32
 	WSADATA wsaData;
 	WORD wVersionRequested;
-	uint8_t err;
+	int err;
 
 	wVersionRequested = MAKEWORD(2, 0); // 2.0 and above version of WinSock
 	err = WSAStartup(wVersionRequested, &wsaData);
@@ -343,7 +343,7 @@ int16_t flushSendBuffer(void) {
 		return 0;
 	}
 	sendBufferPtr = 0; // Puffer auf jedenfall leeren
-	const int16_t n = send(tcp_sock, (char *) &sendBuffer, length, 0);
+	const int n = send(tcp_sock, (char *) &sendBuffer, length, 0);
 	if (n != length) {
 		LOG_ERROR("flushSendBuffer(): send() sent a different number of bytes (%d) than expected (%d)", n, length);
 		length = -1;

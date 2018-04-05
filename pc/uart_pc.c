@@ -47,7 +47,7 @@
 #endif
 
 
-static int8_t fd = -1;
+static int fd = -1;
 static struct termios old_settings;
 
 /**
@@ -57,20 +57,20 @@ static struct termios old_settings;
  */
 uint8_t uart_init(const char * port) {
 #if UART_BAUD == 57600
-	int32_t baudr = B57600;
+	int baudr = B57600;
 #elif UART_BAUD == 115200
-	int32_t baudr = B115200;
+	int baudr = B115200;
 #elif UART_BAUD == 230400
-	int32_t baudr = B230400;
+	int baudr = B230400;
 #elif UART_BAUD == 460800
-	int32_t baudr = B460800;
+	int baudr = B460800;
 #elif UART_BAUD == 500000
-	int32_t baudr = B500000;
+	int baudr = B500000;
 #elif UART_BAUD == 1000000
-	int32_t baudr = B1000000;
+	int baudr = B1000000;
 #else
 #error "Baudrate nicht unterstuetzt!"
-	int8_t baudr = 0;
+	int baudr = 0;
 #endif // UART_BAUD
 
 	return uart_init_baud(port, baudr);
@@ -82,7 +82,7 @@ uint8_t uart_init(const char * port) {
  * \param baudr gewuenschte Baudrate des UARTs
  * \return Fehlercode oder 0, wenn alles OK
  */
-uint8_t uart_init_baud(const char * port, int32_t baudr) {
+uint8_t uart_init_baud(const char * port, int baudr) {
 	LOG_DEBUG("uart_init_baud(): Opening port %s ...", port);
 
 	fd = open(port, O_RDWR | O_NOCTTY /*| O_NDELAY*/);
@@ -96,7 +96,7 @@ uint8_t uart_init_baud(const char * port, int32_t baudr) {
 		return 2;
 	}
 
-	int8_t r = tcgetattr(fd, &old_settings);
+	int r = tcgetattr(fd, &old_settings);
 	if (r != 0) {
 		LOG_ERROR("Unable to read settings of port \"%s\"", port);
 		uart_close();
@@ -122,14 +122,14 @@ uint8_t uart_init_baud(const char * port, int32_t baudr) {
 		return 4;
 	}
 
-	int8_t status;
+	int status;
 	if (ioctl(fd, TIOCMGET, &status) == -1) {
 		LOG_ERROR("Unable to get status of port \"%s\"", port);
 		uart_close();
 		return 5;
 	}
 
-	int8_t bytes_available;
+	int bytes_available;
 	if (ioctl(fd, FIONREAD, &bytes_available) == -1) {
 		LOG_ERROR("Unable to get available bytes of port \"%s\"", port);
 		uart_close();
@@ -137,7 +137,7 @@ uint8_t uart_init_baud(const char * port, int32_t baudr) {
 	}
 
 	LOG_DEBUG("uart_init_baud(): Reading available %d bytes from port %s ...", bytes_available, port);
-	int8_t i, tmp;
+	int i, tmp;
 	for (i = 0; i < bytes_available; ++i) {
 		if (uart_read(&tmp, 1) != 1) {
 			LOG_ERROR("Unable to read available bytes of port \"%s\"", port);
@@ -160,7 +160,7 @@ uint8_t uart_close(void) {
 		return 1;
 	}
 
-	int8_t r = tcsetattr(fd, TCSANOW, &old_settings);
+	int r = tcsetattr(fd, TCSANOW, &old_settings);
 	if (r != 0) {
 		LOG_ERROR("Unable to set settings to serial port");
 		return 2;
@@ -211,12 +211,12 @@ int16_t uart_write(const void * data, int16_t length) {
  * \return	Anzahl der verfuegbaren Bytes oder -1 bei Fehler
  */
 int16_t uart_data_available(void) {
-	int16_t bytes_available;
+	int bytes_available;
 	if (ioctl(fd, FIONREAD, &bytes_available) == -1) {
 		LOG_ERROR("uart_data_available(): ioctl() failed");
 		return -1;
 	}
-	return bytes_available;
+	return (int16_t) bytes_available;
 }
 
 #endif // PC

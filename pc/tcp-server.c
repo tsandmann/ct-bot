@@ -65,7 +65,7 @@ typedef int socklen_t;
 #include <string.h>     // for memset()
 #include <unistd.h>     // for close()
 
-static int16_t server;                    /**< Server-Socket */
+static int server;                    /**< Server-Socket */
 
 static struct sockaddr_in serverAddr; /**< Lokale Adresse  */
 static struct sockaddr_in clientAddr; /**< Client-Adresse  */
@@ -78,7 +78,7 @@ void tcp_server_init(void) {
 #ifdef WIN32
     WSADATA wsaData;
     WORD wVersionRequested;
-    uint8_t err;
+    int err;
 
     wVersionRequested = MAKEWORD(2, 0);	// 2.0 and above version of WinSock
     err = WSAStartup(wVersionRequested, &wsaData);
@@ -98,7 +98,7 @@ void tcp_server_init(void) {
 		exit(1);
 	}
 
-	int8_t i = 1;
+	int i = 1;
 	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *) &i, sizeof(i));
 
 	memset(&serverAddr, 0, sizeof(serverAddr)); // Clean up
@@ -123,7 +123,7 @@ void tcp_server_init(void) {
  * Hauptschleife des TCP-Servers
  * \param runs	Anzahl der Durchlaeufe
  */
-void tcp_server_run(uint16_t runs) {
+void tcp_server_run(int runs) {
 	char buffer[MAX_PAYLOAD + sizeof(command_t)];
 	struct timeval start, stop;
 	printf("TCP-Server alive\n");
@@ -143,7 +143,7 @@ void tcp_server_run(uint16_t runs) {
 	printf("Connected to %s on Port: %u\n", inet_ntoa(clientAddr.sin_addr), PORT);
 
 	int16_t simultime = 0;
-	int8_t i;
+	int i;
 	for (i=0; i<runs; i++) {
 		simultime += 10;
 		//printf("i=%d\n", i);
@@ -163,7 +163,7 @@ void tcp_server_run(uint16_t runs) {
 		flushSendBuffer();
 
 		GETTIMEOFDAY(&stop, NULL);
-		int32_t t2 = (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec
+		int t2 = (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec
 				- start.tv_usec;
 		t2_sum += t2;
 		printf("X-Token (%u) out after %u usec\n", simultime, t2);
@@ -191,7 +191,7 @@ void tcp_server_run(uint16_t runs) {
 		}
 		GETTIMEOFDAY(&stop, NULL);
 
-		int32_t t = (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
+		int t = (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
 		t_sum += t;
 		printf("X-Token (%u) back after %u usec\n", received_command.data_l, t);
 
@@ -202,8 +202,8 @@ void tcp_server_run(uint16_t runs) {
 	}
 
 	/* Statistik */
-	uint32_t mean_send = (float)t2_sum / (float)i;
-	uint32_t mean_xfer = (float)t_sum / (2.0f * (float)i);
+	unsigned int mean_send = (double)t2_sum / (double)i;
+	unsigned int mean_xfer = (double)t_sum / (2.0 * i);
 	printf("\nAverage sendtime: %u usec\nAverage transfertime (1-way): %u usec\n", mean_send, mean_xfer);
 
 	printf("\nTCP-Server hat seine %d runs durch und beendet sich.\nSo long and thanks for all the fish!\n", runs);
@@ -228,7 +228,7 @@ void tcp_test_client_init(void) {
  * Hauptschleife des TCP-Test-Clients
  * \param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
  */
-void tcp_test_client_run(uint16_t runs) {
+void tcp_test_client_run(int runs) {
 	char buffer[sizeof(command_t)];
 
 	if (runs > 0) {
@@ -237,13 +237,13 @@ void tcp_test_client_run(uint16_t runs) {
 		printf("Answering all frames\n");
 	}
 
-	uint8_t i;
+	int i;
 	for(i=0; runs==0 || i<runs; i++) {
 		//printf("i=%d\n", i);
-		uint8_t j;
+		int j;
 		/* 11 Commands lesen und zurueckschicken */
 		for (j=0; j<11; j++) {
-			uint16_t len = tcp_read(buffer, sizeof(command_t));
+			int len = tcp_read(buffer, sizeof(command_t));
 			//printf("len=%d\n", len);
 			tcp_write(buffer, len);
 		}

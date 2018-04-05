@@ -36,17 +36,16 @@
 /* Prototypes, die in den MinGW-Includes fehlen -> keine Warnings */
 #include <stddef.h>
 #include <stdarg.h>
-#include <stdint.h>
 #ifndef _FILE_DEFINED
 #define _FILE_DEFINED
 typedef struct _iobuf {
 	char * _ptr;
-	int16_t _cnt;
+	int _cnt;
 	char * _base;
-	int16_t _flag;
-	int16_t _file;
-	int16_t _charbuf;
-	int16_t _bufsiz;
+	int _flag;
+	int _file;
+	int _charbuf;
+	int _bufsiz;
 	char * _tmpfname;
 } FILE;
 #endif // ! _FILE_DEFINED

@@ -184,10 +184,10 @@ bool FatFile::parsePathName(const char* path, fname_t* fname, const char** ptr) 
 	uint8_t uc = 0;
 	uint8_t i = 0;
 	uint8_t in = 7;
-	int16_t end;
-	int16_t len = 0;
-	int16_t si;
-	int16_t dot;
+	int end;
+	int len = 0;
+	int si;
+	int dot;
 
 	// Skip leading spaces.
 	while (*path == ' ') {
