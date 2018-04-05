@@ -1926,8 +1926,8 @@ void map_to_pgm(const char* filename) {
 static int16_t map_test_get_ratio(void) {
 	delete();
 	printf("map deleted\n");
-	int8_t all_ok = 1;
-	uint8_t result = map_get_ratio(-100, -100, 100, 100, 100, 0, 0);
+	int16_t all_ok = 1;
+	uint16_t result = map_get_ratio(-100, -100, 100, 100, 100, 0, 0);
 	if (result != 255) {
 		all_ok = 0;
 	}
@@ -1937,8 +1937,8 @@ static int16_t map_test_get_ratio(void) {
 		all_ok = 0;
 	}
 	printf("map_get_ratio(-100, -100, 100, 100, 100, 100, 100) = %u\n", result);
-	int8_t i, j, k;
-	int16_t value = -120;
+	int16_t i, j, k;
+	int8_t value = -120;
 	for (k=0; k<13; k++) {
 		for (i=-800; i<800; i++) {
 			for (j=-800; j<800; j++) {

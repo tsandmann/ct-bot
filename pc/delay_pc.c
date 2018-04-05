@@ -49,7 +49,7 @@
 void delay(uint16_t ms) {
 	int16_t wait = ms;
 	int16_t steps = wait/999; // max sleep-time = 10^6-1 us
-	int8_t i;
+	int16_t i;
 	/* in 999 ms Schritten warten */
 	for (i=0; i<steps; i++) {
 		SLEEP(999);

@@ -118,7 +118,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'u': {
 #ifdef ARM_LINUX_BOARD
-			int64_t n = atoll(optarg);
+			long long int n = atoll(optarg);	// ** int ** da aus <cstdlib>
 			uart_test((uint32_t) n);
 #endif
 			break;
@@ -141,7 +141,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'a': {
 			/* Bot-Adresse wurde uebergeben */
-			int64_t addr = atoi(optarg);
+			int addr = atoi(optarg);	// ** int ** da aus <cstdlib>
 			if ((addr >= CMD_SIM_ADDR) && (addr != CMD_BROADCAST)) {
 				puts("Unzulaessige Bot-Adresse!");
 				exit(1);

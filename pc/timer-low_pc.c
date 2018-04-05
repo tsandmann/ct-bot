@@ -43,8 +43,8 @@ void timer_2_init(void) {
 void system_time_isr(void) {
 //	LOG_DEBUG("simultime=%d", simultime);
 	/* TickCounter [176 us] erhoehen */
-	static int16_t last_simultime = -11; // kommt vom Sim zuerst als -1, warum auch immer!?!
-	int16_t tmp = simultime - last_simultime;
+	static int last_simultime = -11; // kommt vom Sim zuerst als -1, warum auch immer!?!	// ** int **
+	int tmp = simultime - last_simultime;	// ** int **
 	if (tmp < 0) tmp += 10000; // der Sim setzt simultime alle 10s zurueck auf 0
 #ifdef ARM_LINUX_BOARD
 	tickCount = tickCount + (uint_fast32_t) MS_TO_TICKS(tmp);

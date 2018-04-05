@@ -453,7 +453,7 @@ void pos_store_test(void) {
 		return;
 	}
 	pos_store_dump(store);
-	int16_t i;
+	int32_t i;
 	for (i=0; i<=store->mask+1; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i, i + 50});
 		printf("push(%d, %d)=%u\n", i, i + 50, result);
