@@ -410,7 +410,7 @@ CHANGELOG fuer c't-Bot
 
 2008-10-12 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Positionsstack zu allgemeinem Positionsspeicher (Stack & FIFO) umgebaut (heisst jetzt pos_store) 
 
-2008-09-30 Frank Menzel [Menzelfr@gmx.net]: behaviour_pathplaning hinzugefuegt mit eigenem Screen
+2008-09-30 Frank Menzel [Menzelfr@gmx.net]: behaviour_pathplanning hinzugefuegt mit eigenem Screen
 
 2008-09-16 Timo Sandmann [mail@timosandmann.de]: Verbesserungen im MMC-Code (groesserer Timeout bei HW-SPI, Debug-Ausgaben bei MiniFAT)
 

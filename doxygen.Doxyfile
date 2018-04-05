@@ -2109,7 +2109,7 @@ PREDEFINED             = DOXYGEN \
                          BEHAVIOUR_FOLLOW_LINE_AVAILABLE \
                          BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE \
                          BEHAVIOUR_SERVO_AVAILABLE \
-                         BEHAVIOUR_PATHPLANING_AVAILABLE \
+                         BEHAVIOUR_PATHPLANNING_AVAILABLE \
                          BEHAVIOUR_DRIVE_STACK_AVAILABLE \
                          BEHAVIOUR_OLYMPIC_AVAILABLE \
                          BEHAVIOUR_CATCH_PILLAR_AVAILABLE \
@@ -2143,7 +2143,7 @@ PREDEFINED             = DOXYGEN \
                          DISPLAY_MAP_AVAILABLE \
                          DISPLAY_TRANSPORT_PILLAR \
                          DISPLAY_DRIVE_STACK_AVAILABLE \
-                         DISPLAY_PATHPLANING_AVAILABLE \
+                         DISPLAY_PATHPLANNING_AVAILABLE \
                          DISPLAY_LINE_SHORTEST_WAY_AVAILABLE \
                          DISPLAY_DRIVE_CHESS_AVAILABLE \
                          DISPLAY_UBASIC_AVAILABLE \

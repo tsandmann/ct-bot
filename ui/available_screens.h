@@ -45,7 +45,7 @@
 #define DISPLAY_MAP_AVAILABLE				/**< Zeigt Map-Display an */
 #define DISPLAY_TRANSPORT_PILLAR        	/**< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
 #define DISPLAY_DRIVE_STACK_AVAILABLE		/**< Steuerung Stack-Verhalten auf diesem Screen */
-#define DISPLAY_PATHPLANING_AVAILABLE		/**< Display zur Pfadplanung */
+#define DISPLAY_PATHPLANNING_AVAILABLE		/**< Display zur Pfadplanung */
 #define DISPLAY_LINE_SHORTEST_WAY_AVAILABLE	/**< Steuerung des Verhaltens auf diesem Screen */
 #define DISPLAY_DRIVE_CHESS_AVAILABLE		/**< Steuerung des Schach-Verhaltens */
 #define DISPLAY_UBASIC_AVAILABLE	    	/**< Steuerung des uBasic-Verhaltens */

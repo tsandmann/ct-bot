@@ -45,7 +45,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define GO_WITH_PATHPLANING  		// auskommentieren, falls ohne Pfadplanung
+#define GO_WITH_PATHPLANNING  		// auskommentieren, falls ohne Pfadplanung
 
 //#define DEBUG_BEHAVIOUR_AREA		// Schalter fuer Debug-Code
 //#define DEBUG_DRIVE_AREA_TIMES	// Schalter fuer Zeitmessungen
@@ -59,8 +59,8 @@
 #define LOG_DEBUG(a, ...) {}
 #endif
 
-#ifndef BEHAVIOUR_PATHPLANING_AVAILABLE
-#undef GO_WITH_PATHPLANING
+#ifndef BEHAVIOUR_PATHPLANNING_AVAILABLE
+#undef GO_WITH_PATHPLANNING
 #endif
 
 
@@ -1132,7 +1132,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			if (! free2) {
 				LOG_DEBUG("Stackweg nicht frei");
 
-#ifdef GO_WITH_PATHPLANING
+#ifdef GO_WITH_PATHPLANNING
 				bot_stop_observe(); // auf jeden Fall erst mal stoppen
 				// Fuer Pfadplanung nur Strecken anfahren mit gewisser Laenge
 				if (get_dist(nextline.point1.x, nextline.point1.y,
@@ -1173,7 +1173,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 					LOG_DEBUG("Weg mit Folgeweg getauscht");
 					break;
 				}
-#endif // GO_WITH_PATHPLANING
+#endif // GO_WITH_PATHPLANNING
 			}
 		}
 
