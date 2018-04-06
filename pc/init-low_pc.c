@@ -42,9 +42,9 @@
 #ifndef __WIN32__
 #include <signal.h>
 
-void sig_handler(int signum);
+void sig_handler(int signum);	// ** int ** da SIGINT aus <csignal>
 
-void sig_handler(int signum) {
+void sig_handler(int signum) {	// ** int ** da SIGINT aus <csignal>
 	if (signum == SIGINT) {
 		puts("\nCTRL+C pressed, initiating Shutdown...");
 		ctbot_shutdown();

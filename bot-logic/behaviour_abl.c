@@ -805,7 +805,7 @@ void bot_abl_check(Behaviour_t * caller, uint16_t line) {
 	instruction_t ins;
 	uint16_t n = 0;
 	if (line == 0) {
-		--line; // set to maxint for all lines
+		--line; // set to max_ins for all lines
 	}
 	do {
 		ins = i_fetch();
