@@ -18,6 +18,6 @@ before_script:
 script:
   - if [[ "$MINGW" == "false" ]]; then ./tests/run_tests_pc.sh; fi
   - if [[ "$MINGW" == "false" ]]; then ./tests/run_tests_mcu.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-arm.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-arm.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-armhf.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-armhf.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then ./tests/run_tests_mingw.sh; fi

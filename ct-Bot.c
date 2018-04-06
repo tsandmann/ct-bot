@@ -36,7 +36,7 @@
  * \param *argv Array aller Kommandozeilenparameter
  * \return Exit-Code
  */
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[]) {	// explizit ** int **
 	/* alles initialisieren */
 	ctbot_init(argc, argv);
 

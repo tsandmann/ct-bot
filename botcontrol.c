@@ -75,7 +75,7 @@ void pre_behaviour(void) {
 #if defined PC && defined DEBUG_TIMES
 	/* Zum Debuggen der Zeiten */
 	GETTIMEOFDAY(&init_start, NULL);
-	int t1 = (init_start.tv_sec - init_stop.tv_sec) * 1000000 + init_start.tv_usec - init_stop.tv_usec;
+	int32_t t1 = (init_start.tv_sec - init_stop.tv_sec) * 1000000 + init_start.tv_usec - init_stop.tv_usec;
 	LOG_DEBUG("Done-Token (%d) in nach %d usec", received_command.data_l, t1);
 #endif // PC && DEBUG_TIMES
 
@@ -156,7 +156,7 @@ void post_behaviour(void) {
 #ifdef DEBUG_TIMES
 	/* Zum Debuggen der Zeiten */
 	GETTIMEOFDAY(&init_stop, NULL);
-	int t2 = (init_stop.tv_sec - init_start.tv_sec) * 1000000 + init_stop.tv_usec - init_start.tv_usec;
+	int32_t t2 = (init_stop.tv_sec - init_start.tv_sec) * 1000000 + init_stop.tv_usec - init_start.tv_usec;
 	LOG_DEBUG("Done-Token (%d) out after %d usec", simultime, t2);
 #endif // DEBUG_TIMES
 #endif // PC

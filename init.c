@@ -55,7 +55,7 @@ mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 /**
  * Initialisierung
  */
-void ctbot_init(int argc, char * argv[]) {
+void ctbot_init(int argc, char * argv[]) {	// explizit ** int **
 	ctbot_init_low_1st(argc, argv);
 
 	timer_2_init();

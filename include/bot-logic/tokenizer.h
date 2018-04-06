@@ -30,6 +30,9 @@
  * Source modified by Uwe Berger (bergeruw@gmx.net); 2010, 2011
  * ------------------------------------------------------
  */
+
+#include <stdint.h>
+
 #ifndef __TOKENIZER_H__
 #define __TOKENIZER_H__
 
@@ -45,25 +48,25 @@ struct keyword_token {
 #else
 	char *keyword;
 #endif
-  int token;
+  int16_t token;
 };
 
 // Typ-Definition Tokenizer-Position
 struct tokenizer_pos_t {
 	PTR_TYPE prog_ptr;
-	int token;
+	int16_t token;
 };
 
 
 void tokenizer_init(PTR_TYPE program);
 void tokenizer_next(void);
-int tokenizer_token(void);
-int tokenizer_num(void);
-int tokenizer_variable_num(void);
+int16_t tokenizer_token(void);
+int16_t tokenizer_num(void);
+int16_t tokenizer_variable_num(void);
 const char * tokenizer_last_string_ptr(void);
-void tokenizer_set_num(int val);
-int tokenizer_finished(void);
-void tokenizer_error_print(int linenum, int error_nr);
+void tokenizer_set_num(int16_t val);
+int16_t tokenizer_finished(void);
+void tokenizer_error_print(int16_t linenum, int16_t error_nr);
 PTR_TYPE get_prog_text_pointer(void);
 struct tokenizer_pos_t tokenizer_get_position(void);
 void tokenizer_set_position(struct tokenizer_pos_t);

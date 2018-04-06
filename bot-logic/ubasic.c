@@ -31,6 +31,8 @@
  * ------------------------------------------------------
  */
 
+#include <stdint.h>
+
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
@@ -74,17 +76,17 @@
 #endif
 
 PTR_TYPE program_ptr;
-int current_linenum;
+int16_t current_linenum;
 
 static struct gosub_stack_t gosub_stack[MAX_GOSUB_STACK_DEPTH];
-static int gosub_stack_ptr;
+static int16_t gosub_stack_ptr;
 
 static struct for_state_t for_stack[MAX_FOR_STACK_DEPTH];
-static int for_stack_ptr;
+static int16_t for_stack_ptr;
 
 #if USE_LINENUM_CACHE
 static struct linenum_cache_t linenum_cache[MAX_LINENUM_CACHE_DEPTH];
-static int linenum_cache_ptr;
+static int16_t linenum_cache_ptr;
 #endif
 
 static struct variables_t variables[MAX_VARNUM];
@@ -101,17 +103,17 @@ struct data_ptr_t data_ptr = {{0,0},{0,0}};
 #endif
 
 // Prototypen
-int ubasic_expr(void);
+int16_t ubasic_expr(void);
 static void line_statement(void);
 static void statement(void);
 void ubasic_free_all_mem(void);
 #if UBASIC_RND && USE_AVR
-static long unsigned int rand31_next(void);
+static long uint16_t rand31_next(void);
 #endif
 #if UBASIC_STRING
 struct varinfo_t ubasic_get_strvarinfo(void);
 unsigned char ubasic_is_strexpr(void);
-static int strrelation(void);
+static int16_t strrelation(void);
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -139,7 +141,7 @@ void ubasic_break(void) {
 }
 
 /*---------------------------------------------------------------------------*/
-void ubasic_accept(int token) {
+void ubasic_accept(int16_t token) {
   if(token != tokenizer_token()) {
     tokenizer_error_print(current_linenum, SYNTAX_ERROR);
     ubasic_break();
@@ -147,15 +149,15 @@ void ubasic_accept(int token) {
   tokenizer_next();
 }
 /*---------------------------------------------------------------------------*/
-static int varfactor(void) {
+static int16_t varfactor(void) {
   ubasic_accept(TOKENIZER_VARIABLE);
   return ubasic_get_variable(ubasic_get_varinfo());
 }
 /*---------------------------------------------------------------------------*/
-static int factor(void) {
-  int r=0;
+static int16_t factor(void) {
+  int16_t r=0;
   #if UBASIC_RND
-  int b;
+  int16_t b;
   #endif
   #if UBASIC_STRING
   char *s;
@@ -191,7 +193,7 @@ static int factor(void) {
     ubasic_accept(TOKENIZER_LEFTPAREN);
    	b = ubasic_expr();
     #if USE_AVR
-		r = (int) (rand31_next() % ((unsigned long) b + 1));
+		r = (int16_t) (rand31_next() % ((unsigned long) b + 1));
 	#else
 		r = rand() % (b+1);
 	#endif
@@ -213,7 +215,7 @@ static int factor(void) {
   case TOKENIZER_LEN:
     ubasic_accept(TOKENIZER_LEN);
     ubasic_accept(TOKENIZER_LEFTPAREN);
-    r=(int)strlen(strexpr());
+    r=(int16_t)strlen(strexpr());
     ubasic_accept(TOKENIZER_RIGHTPAREN);
     break;
 
@@ -228,7 +230,7 @@ static int factor(void) {
     ubasic_accept(TOKENIZER_ASC);
     ubasic_accept(TOKENIZER_LEFTPAREN);
     s=strexpr();
-    r=(int)s[0];
+    r=(int16_t)s[0];
     ubasic_accept(TOKENIZER_RIGHTPAREN);
     break;
 
@@ -296,9 +298,9 @@ static int factor(void) {
   return r;
 }
 /*---------------------------------------------------------------------------*/
-static int term(void) {
-  int f1, f2;
-  int op;
+static int16_t term(void) {
+  int16_t f1, f2;
+  int16_t op;
 
   f1 = factor();
   op = tokenizer_token();
@@ -325,9 +327,9 @@ static int term(void) {
   return f1;
 }
 /*---------------------------------------------------------------------------*/
-int ubasic_expr(void) {
-  int t1, t2;
-  int op;
+int16_t ubasic_expr(void) {
+  int16_t t1, t2;
+  int16_t op;
 
   t1 = term();
   op = tokenizer_token();
@@ -381,9 +383,9 @@ int ubasic_expr(void) {
   return t1;
 }
 /*---------------------------------------------------------------------------*/
-static int relation(void) {
-  int r1, r2;
-  int op;
+static int16_t relation(void) {
+  int16_t r1, r2;
+  int16_t op;
 
   r1 = ubasic_expr();
   op = tokenizer_token();
@@ -424,7 +426,7 @@ static int relation(void) {
   return r1;
 }
 /*---------------------------------------------------------------------------*/
-static void jump_linenum(int linenum) {
+static void jump_linenum(int16_t linenum) {
 
 #if USE_LINENUM_CACHE
 	unsigned char i;
@@ -473,7 +475,7 @@ static void goto_statement(void) {
 #if UBASIC_PRINT
 static void print_statement(void) {
 	unsigned char nl;
-	int i, j;
+	int16_t i, j;
 	ubasic_accept(TOKENIZER_PRINT);
 	do {
 		nl=1;
@@ -559,7 +561,7 @@ static void print_statement(void) {
 #endif
 /*---------------------------------------------------------------------------*/
 static void if_statement(void) {
-	int r, r1, lop;
+	int16_t r, r1, lop;
 	unsigned char no_then=0;
 
 	ubasic_accept(TOKENIZER_IF);
@@ -646,7 +648,7 @@ static void let_statement(void) {
 }
 /*---------------------------------------------------------------------------*/
 static void gosub_statement(void){
-	int linenum=0;
+	int16_t linenum=0;
 	ubasic_accept(TOKENIZER_GOSUB);
 
 #if UBASIC_EXT_PROC
@@ -727,7 +729,7 @@ static void next_statement(void) {
 }
 /*---------------------------------------------------------------------------*/
 static void for_statement(void) {
-  int for_variable, to, step;
+  int16_t for_variable, to, step;
   unsigned char downto=0;
   struct varinfo_t var;
 
@@ -782,10 +784,10 @@ static void rem_statement(void) {
 /*---------------------------------------------------------------------------*/
 #if UBASIC_RND
 #if USE_AVR
-long unsigned int seed = 0;
+long uint16_t seed = 0;
 static void srand_statement(void) {
-	unsigned int *p = (unsigned int*) (RAMEND+1);
-	extern unsigned int __heap_start;
+	uint16_t *p = (uint16_t*) (RAMEND+1);
+	extern uint16_t __heap_start;
 	ubasic_accept(TOKENIZER_SRND);
 	while (p >= &__heap_start + 1)
 		seed ^= * (--p);
@@ -795,7 +797,7 @@ static void srand_statement(void) {
 	time_t t;
 	ubasic_accept(TOKENIZER_SRND);
 	time(&t);
-	srand((unsigned int)t);
+	srand((uint16_t)t);
 }
 #endif
 #endif
@@ -803,9 +805,9 @@ static void srand_statement(void) {
 /*---------------------------------------------------------------------------*/
 #if UBASIC_ARRAY
 static void dim_statement(void) {
-	int var, dim, i;
+	int16_t var, dim, i;
 #if UBASIC_STRING
-	int is_strvar=0;
+	int16_t is_strvar=0;
 #endif
 	ubasic_accept(TOKENIZER_DIM);
 	var = tokenizer_variable_num();
@@ -835,7 +837,7 @@ static void dim_statement(void) {
 		// Integerfelder anlegen/initialisieren
 		variables[var].dim=dim;
 		if (!(variables[var].adr == NULL)) free(variables[var].adr);
-		variables[var].adr=malloc((size_t)dim * sizeof(int));
+		variables[var].adr=malloc((size_t)dim * sizeof(int16_t));
 		if (variables[var].adr == NULL	) {
 			tokenizer_error_print(current_linenum, OUT_OF_MEMORY);
 			ubasic_break();
@@ -918,9 +920,9 @@ static void ubasic_search_data(void) {
 
 
 /*---------------------------------------------------------------------------*/
-static int ubasic_next_data(void) {
+static int16_t ubasic_next_data(void) {
 	struct tokenizer_pos_t save_pos;
-	int val=0;
+	int16_t val=0;
 	// aktuelle Tokenizer-Position merken
 	save_pos=tokenizer_get_position();
 	// wenn noch nie DATA, dann suchen
@@ -1042,7 +1044,7 @@ static void restore_statement(void) {
 
 /*---------------------------------------------------------------------------*/
 static void statement(void) {
-  int token;
+  int16_t token;
 
   token = tokenizer_token();
 
@@ -1231,13 +1233,13 @@ void ubasic_run(void) {
 }
 
 /*---------------------------------------------------------------------------*/
-int ubasic_finished(void)
+int16_t ubasic_finished(void)
 {
 	return ended || tokenizer_finished();
 }
 
 /*---------------------------------------------------------------------------*/
-void ubasic_set_variable(struct varinfo_t var, int value) {
+void ubasic_set_variable(struct varinfo_t var, int16_t value) {
 #if UBASIC_ARRAY
 	if (variables[var.varnum].adr)
 		variables[var.varnum].adr[var.idx]=value;
@@ -1329,12 +1331,12 @@ struct varinfo_t ubasic_get_strvarinfo(void) {
 }
 
 /*---------------------------------------------------------------------------*/
-static int strrelation(void)
+static int16_t strrelation(void)
 {
 	char s1[MAX_STRINGLEN+1];
 	char s2[MAX_STRINGLEN+1];
-	int r;
-	int op;
+	int16_t r;
+	int16_t op;
 
 	strcpy(s1, strexpr());
 	op = tokenizer_token();
@@ -1435,7 +1437,7 @@ unsigned char ubasic_is_strexpr() {
 static char* strfactor(void) {
 	char *r, *s;
 	char c;
-	int l, i, o;
+	int16_t l, i, o;
 	struct varinfo_t var;
 	r=0;
 	switch (tokenizer_token()) {
@@ -1468,7 +1470,7 @@ static char* strfactor(void) {
 			s=strexpr();
 			ubasic_accept(TOKENIZER_COMMA);
 			l=ubasic_expr();
-			if (l>(int)strlen(s)) r = s;
+			if (l>(int16_t)strlen(s)) r = s;
 			else {
 				for (i=0; i<l; i++) {
 					str_buf[i] = s[i];
@@ -1485,10 +1487,10 @@ static char* strfactor(void) {
 			s=strexpr();
 			ubasic_accept(TOKENIZER_COMMA);
 			l=ubasic_expr();
-			if (l>(int)strlen(s)) r = s;
+			if (l>(int16_t)strlen(s)) r = s;
 			else {
 				for (i=0; i<l; i++) {
-					str_buf[i] = s[(int)strlen(s)-l+i];
+					str_buf[i] = s[(int16_t)strlen(s)-l+i];
 				}
 				str_buf[i] = 0;
 				r=(char*)&str_buf[0];
@@ -1504,7 +1506,7 @@ static char* strfactor(void) {
 			o=ubasic_expr();
 			ubasic_accept(TOKENIZER_COMMA);
 			l=ubasic_expr();
-			if (l>((int)strlen(s)-o)) r = s;
+			if (l>((int16_t)strlen(s)-o)) r = s;
 			else {
 				for (i=0; i<l; i++) {
 					str_buf[i] = s[o+i];
@@ -1536,7 +1538,7 @@ static char* strfactor(void) {
 			}
 			str_buf[i]=0;
 			// String umdrehen
-			l=(int)strlen(str_buf);
+			l=(int16_t)strlen(str_buf);
 			for (i=0; i<l/2; i++) {
 				c=str_buf[i];
 				str_buf[i]=str_buf[l-i-1];
@@ -1581,16 +1583,16 @@ static char* strfactor(void) {
 char* strexpr(void) {
 	char s1[MAX_STRINGLEN+1];
 	char *s2;
-	int op, str_len;
+	int16_t op, str_len;
 
 	// Argument in lokalen Puffer kopieren
 	strcpy(s1, strfactor());
-	str_len = (int)strlen(s1);
+	str_len = (int16_t)strlen(s1);
 	op = tokenizer_token();
 	while(op == TOKENIZER_PLUS) {
 		tokenizer_next();
 		s2 = strfactor();
-		str_len = str_len + (int)strlen(s2);
+		str_len = str_len + (int16_t)strlen(s2);
 		if (str_len >= MAX_STRINGLEN+1) {
 			// Stringlaenge wird zu gross
 		    tokenizer_error_print(current_linenum, STRING_TO_LARGE);
@@ -1627,7 +1629,7 @@ void ubasic_set_strvariable(struct varinfo_t var, char *str) {
 
 
 /*---------------------------------------------------------------------------*/
-int ubasic_get_variable(struct varinfo_t var) {
+int16_t ubasic_get_variable(struct varinfo_t var) {
 # if UBASIC_ARRAY
 	if (variables[var.varnum].adr)
 		return variables[var.varnum].adr[var.idx];
@@ -1641,9 +1643,9 @@ int ubasic_get_variable(struct varinfo_t var) {
 // Park-Miller "minimal standard" 31Bit pseudo-random generator
 // http://www.firstpr.com.au/dsp/rand31/
 #if UBASIC_RND && USE_AVR
-long unsigned int rand31_next(void)
+long uint16_t rand31_next(void)
 {
-	long unsigned int hi, lo;
+	long uint16_t hi, lo;
 	lo  = 16807 * (seed & 0xffff);
 	hi  = 16807 * (seed >> 16);
 	lo += (hi & 0x7fff) << 16;

@@ -105,7 +105,7 @@ int32_t sdfat_tell(pFatFile p_file) {
 		return 0xffff;
 	}
 
-	int pos = ftell(p_file);
+	int pos = ftell(p_file); // ** int ** da file handle
 	return pos >= 0 ? pos : 0xffff;
 }
 

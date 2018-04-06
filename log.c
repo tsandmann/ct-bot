@@ -139,7 +139,7 @@ static char screen_output[4][LOG_BUFFER_SIZE];	/**< Puffer, damit mehr als eine 
  * \param line Zeilennummer
  * \param log_type Log-Typ
  */
-void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
+void log_begin(const char * filename, uint16_t line, LOG_TYPE log_type) {
 	/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
 	 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
 	 * die Markierung mit '>' erkennt man das letzte Logging.
@@ -208,7 +208,7 @@ static void get_str_from_flash(const char * flash, char * ram, uint8_t n) {
  * \param line Zeilennummer
  * \param log_type Log-Typ
  */
-void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
+void log_flash_begin(const char * filename, uint16_t line, LOG_TYPE log_type) {
 
 	/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
 	 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
