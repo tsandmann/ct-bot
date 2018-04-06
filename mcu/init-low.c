@@ -138,7 +138,7 @@ static void servo_init_stop(void* p_data) {
  * \param argc Anzahl der Kommandozeilenparameter
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
-void ctbot_init_low_1st(int argc, char * argv[]) {
+void ctbot_init_low_1st(int argc, char * argv[]) {	// explizit ** int **
 	/* keine Warnings */
 	(void) argc;
 	(void) argv;

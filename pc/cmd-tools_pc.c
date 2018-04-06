@@ -75,7 +75,7 @@ static void usage(void) {
  * \param argc	Anzahl der Argumente
  * \param *argv	Zeiger auf String-Array der Argumente
  */
-void hand_cmd_args(int argc, char * argv[]) {
+void hand_cmd_args(int argc, char * argv[]) {	// explizit ** int **
 	/* Der Zielhost wird per default durch das Macro IP definiert und
 	 * tcp_hostname mit einer Kopie des Strings initialisiert. */
 	tcp_hostname = malloc(strlen(IP) + 1);
@@ -84,7 +84,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	}
 	strcpy(tcp_hostname, IP);
 
-	int ch;
+	int ch;	// explizit ** int **
 	/* Die Kommandozeilenargumente komplett verarbeiten */
 	while ((ch = getopt(argc, argv, "hsTu:Et:M:m:c:l:e:d:a:i:fk:o:F:")) != -1) {
 		argc -= optind;
