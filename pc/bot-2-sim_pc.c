@@ -102,7 +102,7 @@ void bot_2_sim_listen(void) {
 #ifndef ARM_LINUX_BOARD
 	while (receive_until_frame(CMD_DONE) != 0) {}
 #else
-	if (tcp_client_connected() && tcp_data_available() >= (int) sizeof(command_t)) {
+	if (tcp_client_connected() && tcp_data_available() >= (int) sizeof(command_t)) {	// ** int ** wird vom System uebergeben
 		LOG_DEBUG("Data from Sim available");
 		if (command_read() == 0) {
 			LOG_DEBUG("Sim command read");

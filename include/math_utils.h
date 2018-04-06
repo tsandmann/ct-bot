@@ -299,7 +299,7 @@ static inline uint16_t calc_crc_update(uint16_t crc, uint8_t data) {
 	return _crc_xmodem_update(crc, data);
 #else // PC
     crc = (uint16_t) (crc ^ ((uint16_t) data << 8));
-    int i;
+    int16_t i;
     for (i = 0; i < 8; ++i) {
         if (crc & 0x8000) {
             crc = (uint16_t) ((crc << 1) ^ 0x1021);

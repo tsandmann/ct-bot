@@ -405,10 +405,10 @@ void bot_2_bot_handle_pos_store_data(void) {
  * \param *store Zeiger auf Positionsspeicher
  */
 void pos_store_dump(pos_store_t * store) {
-	int i;
+	int16_t i;
 	for (i=0; i<store->count; i++) {
-		int x = store->data[(store->fp + i) & store->mask].x;
-		int y = store->data[(store->fp + i) & store->mask].y;
+		int16_t x = store->data[(store->fp + i) & store->mask].x;
+		int16_t y = store->data[(store->fp + i) & store->mask].y;
 		printf("%d:\tx=%d\ty=%d\n", i + 1, x, y);
 	}
 	printf("fp=%u\tsp=%u\tcount=%u\tsize=%u\t\n\n", store->fp, store->sp, store->count, store->mask + 1);
@@ -453,7 +453,7 @@ void pos_store_test(void) {
 		return;
 	}
 	pos_store_dump(store);
-	int i;
+	int32_t i;
 	for (i=0; i<=store->mask+1; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i, i + 50});
 		printf("push(%d, %d)=%u\n", i, i + 50, result);

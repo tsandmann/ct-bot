@@ -75,7 +75,7 @@ static void usage(void) {
  * \param argc	Anzahl der Argumente
  * \param *argv	Zeiger auf String-Array der Argumente
  */
-void hand_cmd_args(int argc, char * argv[]) {
+void hand_cmd_args(int argc, char * argv[]) {	// explizit ** int **
 	/* Der Zielhost wird per default durch das Macro IP definiert und
 	 * tcp_hostname mit einer Kopie des Strings initialisiert. */
 	tcp_hostname = malloc(strlen(IP) + 1);
@@ -84,7 +84,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	}
 	strcpy(tcp_hostname, IP);
 
-	int ch;
+	int ch;	// explizit ** int **
 	/* Die Kommandozeilenargumente komplett verarbeiten */
 	while ((ch = getopt(argc, argv, "hsTu:Et:M:m:c:l:e:d:a:i:fk:o:F:")) != -1) {
 		argc -= optind;
@@ -118,7 +118,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'u': {
 #ifdef ARM_LINUX_BOARD
-			long long int n = atoll(optarg);
+			long long int n = atoll(optarg);	// ** int ** da aus <cstdlib>
 			uart_test((uint32_t) n);
 #endif
 			break;
@@ -141,7 +141,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'a': {
 			/* Bot-Adresse wurde uebergeben */
-			int addr = atoi(optarg);
+			int addr = atoi(optarg);	// ** int ** da aus <cstdlib>
 			if ((addr >= CMD_SIM_ADDR) && (addr != CMD_BROADCAST)) {
 				puts("Unzulaessige Bot-Adresse!");
 				exit(1);
@@ -217,7 +217,7 @@ static void read_command_thread(void) {
 			continue;
 		}
 		if (*input == '\n' || strncmp(input, "list", strlen("list")) == 0) {
-			int i = 0;
+			int16_t i = 0;
 			while (remotecall_beh_list[i].func != NULL) {
 				printf("%s(%s)\n", remotecall_beh_list[i].name, remotecall_beh_list[i].param_info);
 				++i;
@@ -235,7 +235,7 @@ static void read_command_thread(void) {
 		}
 		char * param[REMOTE_CALL_MAX_PARAM] = {NULL};
 		remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = {{0}};
-		int i;
+		int16_t i;
 		for (i = 0; i < REMOTE_CALL_MAX_PARAM; ++i) {
 			param[i] = strtok(NULL, ",)");
 			if (param[i] != NULL && *param[i] != '\n') {

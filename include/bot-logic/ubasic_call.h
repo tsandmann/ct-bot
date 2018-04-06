@@ -10,6 +10,9 @@
 * ---------
 *
 ----------------------------------------------------------*/
+
+#include <stdint.h>
+
 #ifndef __UBASIC_CALL_H__
 #define __UBASIC_CALL_H__
 
@@ -35,11 +38,11 @@ typedef struct {
 
       union ftp {
         void (*VoidFuncVoid)	(void);
-        void (*VoidFuncInt)		(int);
-        void (*VoidFunc2Int)	(int, int);
-        void (*VoidFunc4Int)	(int, int, int, int);
-        void (*VoidFunc2IntChar)(int, int, char*);
-        int  (*IntFuncInt)		(int);
+        void (*VoidFuncInt)		(int16_t);
+        void (*VoidFunc2Int)	(int16_t, int16_t);
+        void (*VoidFunc4Int)	(int16_t, int16_t, int16_t, int16_t);
+        void (*VoidFunc2IntChar)(int16_t, int16_t, char*);
+        int16_t  (*IntFuncInt)		(int16_t);
         unsigned char  (*UCharFuncUChar)		(unsigned char);
         void (*VoidFunc2Int16)	(int16_t, int16_t);
         uint8_t  (* BoolFuncBeh) (Behaviour_t *);
@@ -50,6 +53,6 @@ typedef struct {
 
 
 // exportierbare Prototypen
-int call_statement(void);
+int16_t call_statement(void);
 
 #endif /* __UBASIC_CALL_H__ */

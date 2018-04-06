@@ -34,7 +34,7 @@ extern "C" {
 
 extern "C" void __cxa_pure_virtual(void) __attribute__ ((__noreturn__));
 extern "C" void __cxa_deleted_virtual(void) __attribute__ ((__noreturn__));
-extern "C" int atexit(void (*)()) __attribute__((weak));
+extern "C" int atexit(void (*)()) __attribute__((weak));	// ** int ** da aus <cstdlib>
 
 void __cxa_pure_virtual() {
 	LOG_ERROR("pure virtual method called, abort.");
@@ -46,7 +46,7 @@ void __cxa_deleted_virtual() {
 	abort();
 }
 
-int atexit(void (*)()) {
+int atexit(void (*)()) {	// ** int ** da aus <cstdlib>
 	return 0;
 }
 
@@ -68,8 +68,8 @@ void* operator new(size_t, void* ptr) {
 	return ptr;
 }
 
-void operator delete(void* ptr, unsigned int size);
-void operator delete(void* ptr, unsigned int) {
+void operator delete(void* ptr, unsigned int size);	// ** int ** da aus <new>
+void operator delete(void* ptr, unsigned int) {	// ** int ** da aus <new>
 	free(ptr);
 }
 

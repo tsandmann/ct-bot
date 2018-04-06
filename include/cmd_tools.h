@@ -33,7 +33,7 @@
  * \param argc	Anzahl der Argumente
  * \param *argv	Zeiger auf String-Array der Argumente
  */
-void hand_cmd_args(int argc, char * argv[]);
+void hand_cmd_args(int argc, char * argv[]);	// explizit ** int **
 
 /**
  * Initialisiert die Eingabekonsole fuer RemoteCalls
