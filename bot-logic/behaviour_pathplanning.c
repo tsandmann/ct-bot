@@ -19,7 +19,7 @@
 
 
 /**
- * \file 	behaviour_pathplaning.c
+ * \file 	behaviour_pathplanning.c
  * \brief   Wave-Pfadplanungsverhalten
  *
  * Eine niedrigaufloesende Map wird ueber die hochaufloesende gelegt und auf dieser folgende Schritte ausgefuehrt:
@@ -37,7 +37,7 @@
 
 #include "bot-logic/bot-logic.h"
 
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,8 +51,8 @@
 #include "log.h"
 #include "pos_store.h"
 
-//#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
-//#define DEBUG_PATHPLANING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
+//#define DEBUG_PATHPLANNING	// Schalter fuer Debugausgaben
+//#define DEBUG_PATHPLANNING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
 
 #define QUEUE_SIZE 32 /**< Groesse des verwendeten Positionsspeichers */
 
@@ -62,12 +62,12 @@
 #endif
 
 #ifdef MCU
-#undef DEBUG_PATHPLANING
+#undef DEBUG_PATHPLANNING
 #endif
 #ifndef LOG_AVAILABLE
-#undef DEBUG_PATHPLANING
+#undef DEBUG_PATHPLANNING
 #endif
-#ifndef DEBUG_PATHPLANING
+#ifndef DEBUG_PATHPLANNING
 #undef LOG_DEBUG
 #define LOG_DEBUG(...) {}
 #endif
@@ -77,7 +77,7 @@
 
 #ifdef MCU
 #if ! (defined MCU_ATMEGA644X || __AVR_ATmega1284P__)
-#error "behaviour_pathplaning derzeit nur mit ATmega644(P) oder ATmega1284P moeglich!"
+#error "behaviour_pathplanning derzeit nur mit ATmega644(P) oder ATmega1284P moeglich!"
 #endif
 #endif // MCU
 #ifdef PC
@@ -246,27 +246,27 @@ static void set_hazards(void) {
 			int16_t xw = map_to_world_lowres(x) + MAP_CELL_SIZE_LOWRES / 2; // Mittelpunkt der Zelle, also Haelfte addieren
 			int16_t x1 = xw - MAP_CELL_SIZE_LOWRES / 2; // Punkt "unten", darum Haelfte der Zellengroesse abziehen
 			int16_t x2 = xw + MAP_CELL_SIZE_LOWRES / 2; // Punkt "oben", darum Haelfte der Zellegroesse addieren
-#ifdef DEBUG_PATHPLANING_VERBOSE
+#ifdef DEBUG_PATHPLANNING_VERBOSE
 			position_t from, to;
 			from.x = world_to_map(x1);
 			from.y = world_to_map(yw);
 			to.x = world_to_map(x2);
 			to.y = from.y;
-#endif	// DEBUG_PATHPLANING_VERBOSE
+#endif	// DEBUG_PATHPLANNING_VERBOSE
 			uint8_t ratio = map_get_ratio(x1, yw, x2, yw, MAP_CELL_SIZE_LOWRES,
 					map_compare_haz, 127);
 //fuer Vergleich auf bereits befahrene Strecke gilt anderer Schwellwert als fuer Hindernis
 			if (ratio < ((map_compare_haz==0)?RATIO_THRESHOLD:RATIO_THRESHOLD_DRIVEN)) {
 				access_field_lowres((position_t) {x, y}, 1, 1);
-#if defined DEBUG_PATHPLANING_VERBOSE && defined MAP_2_SIM_AVAILABLE
+#if defined DEBUG_PATHPLANNING_VERBOSE && defined MAP_2_SIM_AVAILABLE
 //				LOG_DEBUG("Trage Hindernis in (%d|%d) ein, ratio=%u", x, y, ratio);
 				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 1);
-#endif	// DEBUG_PATHPLANING_VERBOSE
+#endif	// DEBUG_PATHPLANNING_VERBOSE
 			} else {
-#if defined DEBUG_PATHPLANING_VERBOSE && defined MAP_2_SIM_AVAILABLE
+#if defined DEBUG_PATHPLANNING_VERBOSE && defined MAP_2_SIM_AVAILABLE
 //				LOG_DEBUG("KEIN Hindernis in (%d|%d), ratio=%u", x, y, ratio);
 				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 0);
-#endif	// DEBUG_PATHPLANING_VERBOSE
+#endif	// DEBUG_PATHPLANNING_VERBOSE
 			}
 		}
 	}
@@ -314,7 +314,7 @@ static uint8_t get_neighbour(position_t map, int8_t actual_wave,
 	return end_reached;
 } // Ende get_neighbour
 
-#ifdef DEBUG_PATHPLANING
+#ifdef DEBUG_PATHPLANNING
 /**
  * Zeigt einen Ausschnitt der Planungs-Map auf Konsole an; gut zum Pruefen wo Hindernisse gesehen werden und die Welle verlaeuft
  */
@@ -372,7 +372,7 @@ static void show_labmap(void) {
 		printf("\n");
 	}
 }
-#endif // DEBUG_PATHPLANING
+#endif // DEBUG_PATHPLANNING
 
 /**
  * Wave-Verhalten; berechnet die Welle ausgehend vom Zielpunkt bis zur Botposition; dann wird diese zurueckverfolgt und sich der Pfad
@@ -553,13 +553,13 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 				if (pos_store_top(planning_pos_store, &pos_1, 1) == True && pos_store_top(planning_pos_store, &pos_2, 2) == True) {
 					int8_t m_1 = (int8_t) (pos_1.x == pos_2.x ? 100 : (pos_1.y - pos_2.y) / (pos_1.x - pos_2.x));
 					int8_t m = (int8_t) (pos_.x == pos_1.x ? 100 : (pos_.y - pos_1.y) / (pos_.x - pos_1.x));
-#ifdef DEBUG_PATHPLANING_VERBOSE
+#ifdef DEBUG_PATHPLANNING_VERBOSE
 					LOG_DEBUG(" pos_2=(%d|%d)", pos_2.x, pos_2.y);
 					LOG_DEBUG(" pos_1=(%d|%d)", pos_1.x, pos_1.y);
 					LOG_DEBUG(" pos_ =(%d|%d)", pos_.x, pos_.y);
 					LOG_DEBUG("  m_1=%3d\tm=%3d", m_1, m);
 					LOG_DEBUG("  skip_count=%u", skip_count);
-#endif // DEBUG_PATHPLANING_VERBOSE
+#endif // DEBUG_PATHPLANNING_VERBOSE
 					if (m_1 == m) {
 						LOG_DEBUG("Neuer Punkt auf einer Linie mit beiden Letzten");
 						if (skip_count < 3) {
@@ -615,7 +615,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 	case START_BOT_GO_STACK_BEHAVIOUR:
 		LOG_DEBUG("--Pfad gefunden und Abfahren -STACKGO--");
-#ifdef DEBUG_PATHPLANING
+#ifdef DEBUG_PATHPLANNING
 		show_labmap();
 #endif
 		bot_drive_stack_x(data, pos_store_get_index(planning_pos_store), 1);
@@ -687,12 +687,12 @@ void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y, int8_t 
  	bot_do_calc_wave(caller, map_compare);
 }
 
-#ifdef DISPLAY_PATHPLANING_AVAILABLE
+#ifdef DISPLAY_PATHPLANNING_AVAILABLE
 /**
  * Key-Handler fuer Display
  */
-static void pathplaning_disp_key_handler(void) {
-	/* Keyhandling fuer Pathplaning-Verhalten */
+static void pathplanning_disp_key_handler(void) {
+	/* Keyhandling fuer Pathplanning-Verhalten */
 	switch (RC5_Code) {
 
 	case RC5_CODE_4:
@@ -706,7 +706,7 @@ static void pathplaning_disp_key_handler(void) {
 		bot_do_calc_wave(NULL, 0);  // Aufruf mit Map-Vergleichswert 0; Werte darunter gelten als Hindernisse
 		break;
 
-#ifdef DEBUG_PATHPLANING
+#ifdef DEBUG_PATHPLANNING
 	case RC5_CODE_6:
 		RC5_Code = 0;
 		show_labmap();
@@ -728,25 +728,25 @@ static void pathplaning_disp_key_handler(void) {
 /**
  * Display der Pfadplanung-Routinen
  */
-void pathplaning_display(void) {
+void pathplanning_display(void) {
 	display_cursor(1, 1);
-	display_puts("-Pathplaning-");
+	display_puts("-Pathplanning-");
 	display_cursor(2, 1);
 	display_puts("4:PlanOnDrivenArea"); // nur auf befahrenem Gebiet planen
 	display_cursor(3, 1);
-#ifdef DEBUG_PATHPLANING
-	display_puts("5/7:GoPlaning/Haz");
+#ifdef DEBUG_PATHPLANNING
+	display_puts("5/7:GoPlanning/Haz");
 #else
-	display_puts("5:GoPlaning");
+	display_puts("5:GoPlanning");
 #endif
 	display_cursor(4, 1);
-#ifdef DEBUG_PATHPLANING
+#ifdef DEBUG_PATHPLANNING
 	display_puts("6/8:ShowMap/SetDest");
 #else
 	display_puts("8:SetDest");
 #endif
 
-	pathplaning_disp_key_handler();
+	pathplanning_disp_key_handler();
 }
-#endif // DISPLAY_PATHPLANING_AVAILABLE
-#endif // BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif // DISPLAY_PATHPLANNING_AVAILABLE
+#endif // BEHAVIOUR_PATHPLANNING_AVAILABLE

@@ -119,8 +119,8 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #undef DISPLAY_DRIVE_STACK_AVAILABLE
 #endif
 
-#ifndef BEHAVIOUR_PATHPLANING_AVAILABLE
-#undef DISPLAY_PATHPLANING_AVAILABLE
+#ifndef BEHAVIOUR_PATHPLANNING_AVAILABLE
+#undef DISPLAY_PATHPLANNING_AVAILABLE
 #endif
 
 #ifndef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
@@ -430,8 +430,8 @@ void gui_init(void) {
 #ifdef DISPLAY_DRIVE_STACK_AVAILABLE
 	register_screen(&drive_stack_display);
 #endif
-#ifdef DISPLAY_PATHPLANING_AVAILABLE
-	register_screen(&pathplaning_display);
+#ifdef DISPLAY_PATHPLANNING_AVAILABLE
+	register_screen(&pathplanning_display);
 #endif
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 	register_screen(&bot_line_shortest_way_display);

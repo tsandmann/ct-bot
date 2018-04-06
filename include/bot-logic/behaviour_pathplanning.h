@@ -18,7 +18,7 @@
  */
 
 /*!
- * \file 	behaviour_pathplaning.h
+ * \file 	behaviour_pathplanning.h
  * \brief   Wave-Pfadplanungsverhalten
  *
  * Eine niedrigaufloesende Map wird ueber die hochaufloesende gelegt und auf dieser folgende Schritte ausgefuehrt:
@@ -34,14 +34,14 @@
  * \date 	23.09.2008
  */
 
-#ifndef BEHAVIOUR_PATHPLANING_H_
-#define BEHAVIOUR_PATHPLANING_H_
+#ifndef BEHAVIOUR_PATHPLANNING_H_
+#define BEHAVIOUR_PATHPLANNING_H_
 
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 /*!
  * Display der Pfadplanung-Routinen
  */
-void pathplaning_display(void);
+void pathplanning_display(void);
 
 /*!
  * Rufe das Wave-Verhalten auf mit Uebergabe des zu erreichenden Zielpunktes
@@ -67,5 +67,5 @@ void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare);
 void bot_calc_wave_behaviour(Behaviour_t *data);
 
 
-#endif // BEHAVIOUR_PATHPLANING_AVAILABLE
-#endif // BEHAVIOUR_PATHPLANING_H_
+#endif // BEHAVIOUR_PATHPLANNING_AVAILABLE
+#endif // BEHAVIOUR_PATHPLANNING_H_
