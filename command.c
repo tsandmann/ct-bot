@@ -863,10 +863,8 @@ int8_t command_evaluate(void) {
 						const uint16_t block = (uint16_t) done / SD_BLOCK_SIZE;
 #if defined __AVR_ATmega1284P__ || defined PC
 						if (block > 6) {
-#elif defined MCU_ATMEGA644X
+#else // MCU_ATMEGA644X
 						if (block > 2) {
-#else // ATmega32
-						if (block > 0) {
 #endif // MCU-Typ
 							break;
 						}

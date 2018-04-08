@@ -100,14 +100,6 @@ void init_before_main(void) {
 	/* Statusregister sichern */
     mcucsr = MCUSR;
     MCUSR = 0;
-#elif defined __AVR_ATmega32__
-	MCUCSR = (uint8_t) (MCUCSR & ~_BV(WDRF));
-	WDTCR |= _BV(WDTOE) | _BV(WDE);
-	WDTCR = 0;
-
-	/* Statusregister sichern */
-	mcucsr = MCUCSR;
-	MCUCSR = 0;
 #else
 #error "Nicht unterstuetzter MCU-Typ"
 #endif // MCU-Typ
