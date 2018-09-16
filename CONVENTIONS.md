@@ -28,19 +28,9 @@ Die Wertebereiche liegen im Einzelnen bei:
   * int32_t zwischen -2.147.483.648 und 2.147.483.647
   * uint32_t zwischen 0 und 4.294.967.295
 
+* Ausgenommen davon sind Codeabschnitte, die ausschließlich für PC **oder** MCU verwendet werden. Ebenso ist selbstverständliche für Aufrufe von Standardbiliotheken der *int* Datentyp zu verwenden, wie deren Funktionen entsprechend spezifziert sind. Außerdem verwendet derzeit auch die externe Bibliothek "lightweight backpropagation neural network" den Datenyp *int*.
+
 * Den Datentyp char solltest du ebenfalls nur verwenden, wenn es sich wirklich um ein Zeichen handelt. Ansonsten verwende bitte ebenfalls uint8_t oder int8_t.
-
-* von den beiden vorherigen Punkten sind, neben einzelnen Aufrufen von *int* im Code die gesondert kommentiert sind, die folgenden Dateien ausgenommen: 
-
-  * ct-bot.c & ct-bot.h
-  * global.h
-  * tcp_pc.c & tcp.h	(Kommunikation mit OS)
-  * tcp-server_pc.c & tcp-server.h	(Kommunikation mit OS)
-  * uart.c, uart_pc.c & uart.h	(Kommunikation mit OS)
-  * uart-test_pc.c	(Kommunikation mit OS)
-  * network.c & lwneuralnet.h	(da externe Library)
-  * alle Dateien im Verzeichnis /mcu/SdFat	(da externe Library)
-  
 
 * Bei Programmieren von Verhaltensweisen für das c't-Bot-Framework gilt folgende Konvention:
   * Verhaltensweisen (Behaviours), die vom Framework bearbeitet werden, heißen bot_*xxx*_behaviour.
