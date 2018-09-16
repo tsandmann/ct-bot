@@ -419,7 +419,7 @@ void sensor_update(void) {
 		x_pos = (int16_t) (G_POS * x_mou + (1.f - G_POS) * x_enc);
 		y_pos = (int16_t) (G_POS * y_mou + (1.f - G_POS) * y_enc);
 		/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
-		if ((float) fabsf(heading_mou - heading_enc) > 180.f) {
+		if (fabsf(heading_mou - heading_enc) > 180.f) {
 			/* wir nutzen zum Rechnen zwei Drehrichtungen */
 			heading = heading_mou <= 180.f ? heading_mou * G_POS : (heading_mou - 360.f) * G_POS;
 			heading += heading_enc <= 180.f ? heading_enc * (1.f - G_POS) : (heading_enc - 360.f) * (1.f - G_POS);
