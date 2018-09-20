@@ -21,3 +21,6 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-armhf.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" && "$MINGW" == "false" ]]; then ./tests/run_tests_rpi3-armhf.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then ./tests/run_tests_mingw.sh; fi
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
