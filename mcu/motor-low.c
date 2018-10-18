@@ -283,7 +283,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 			TIMSK3 |= (uint8_t) (_BV(TOIE3) | _BV(OCIE3B)); // Overflow Interrupt Enable, Output Compare B Match Interrupt Enable
 		}
 	}
-#else // ! __AVR_ATmega1284P__ but __AVR_ATmega644X__
+#else // ! __AVR_ATmega1284P__
 	if (servo == SERVO1) {
 		if (pos == SERVO_OFF) {
 			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM0 aus

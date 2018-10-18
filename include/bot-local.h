@@ -133,7 +133,7 @@
 #else
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbindung zum ATmega */
 #endif // USB_UART_LINUX
-//#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board (entspricht BCM-GPIO 17 auf Pin 11 der RPi-GPIO-Leiste) */
+//#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board (default: BCM-GPIO 17 auf Pin 11 der RPi-GPIO-Leiste) */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
 /* Fernbedienungswahl */

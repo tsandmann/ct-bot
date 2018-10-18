@@ -68,8 +68,8 @@ void* operator new(size_t, void* ptr) {
 	return ptr;
 }
 
-void operator delete(void* ptr, unsigned int size);	// ** int ** da aus <new>
-void operator delete(void* ptr, unsigned int) {	// ** int ** da aus <new>
+void operator delete(void* ptr, unsigned int size);
+void operator delete(void* ptr, unsigned int) {
 	free(ptr);
 }
 

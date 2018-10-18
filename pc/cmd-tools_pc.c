@@ -118,7 +118,7 @@ void hand_cmd_args(int argc, char * argv[]) {	// explizit ** int **
 
 		case 'u': {
 #ifdef ARM_LINUX_BOARD
-			long long int n = atoll(optarg);	// ** int ** da aus <cstdlib>
+			long long int n = atoll(optarg);	// ** long long int ** da aus <cstdlib>
 			uart_test((uint32_t) n);
 #endif
 			break;
