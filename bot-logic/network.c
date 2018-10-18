@@ -1206,7 +1206,7 @@ net_jolt (network_t *net, float factor, float range)
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
       for (nl = 0; nl <= net->layer[l - 1].no_of_neurons; nl++) {
-        if ((float)(fabsf (net->layer[l].neuron[nu].weight[nl])) < range) {
+        if ((fabsf (net->layer[l].neuron[nu].weight[nl])) < range) {
           net->layer[l].neuron[nu].weight[nl] =
             2.0f * range * ((float)rand() / RAND_MAX - 0.5f);
         } else {

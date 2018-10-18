@@ -162,8 +162,8 @@ static float check_borders(int16_t borderl, int16_t borderr) {
  * 3.dann NN abfragen und Faktorwerte holen -> 2.
  */
 void bot_drive_neuralnet_behaviour(Behaviour_t * data) {
-	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) für sensDistL um die Vorzeichen zu eliminieren
-	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) für sensDistR um die Vorzeichen zu eliminieren
+	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) fuer sensDistL (Werte sind immer > 0)
+	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) fuer sensDistR (Werte sind immer > 0)
 	switch (nn_drive_state) {
 	case BOT_CHECK_SECTORS:
 		// Umschalten zum eigentlichen Verhalten; damit bei Aktivierung ueber Verhaltensscreen
@@ -346,8 +346,8 @@ static float check_distances(uint16_t sensl, uint16_t sensr) {
  * \param *data	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_check_sector_behaviour(Behaviour_t * data) {
-	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) für sensDistL um die Vorzeichen zu eliminieren
-	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) für sensDistR um die Vorzeichen zu eliminieren
+	uint16_t sensDistL_u = (uint16_t)sensDistL; // explizite Umwandlung (Cast) fuer sensDistL (Werte sind immer > 0)
+	uint16_t sensDistR_u = (uint16_t)sensDistR; // explizite Umwandlung (Cast) fuer sensDistR (Werte sind immer > 0)
 	//float border=0;
 	switch (check_sector_state) {
 	case 0:
