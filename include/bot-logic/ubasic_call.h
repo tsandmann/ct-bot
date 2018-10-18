@@ -38,11 +38,11 @@ typedef struct {
 
       union ftp {
         void (*VoidFuncVoid)	(void);
-        void (*VoidFuncInt)		(int16_t);
-        void (*VoidFunc2Int)	(int16_t, int16_t);
-        void (*VoidFunc4Int)	(int16_t, int16_t, int16_t, int16_t);
-        void (*VoidFunc2IntChar)(int16_t, int16_t, char*);
-        int16_t  (*IntFuncInt)		(int16_t);
+        void (*VoidFuncInt)		(int);
+        void (*VoidFunc2Int)	(int, int);
+        void (*VoidFunc4Int)	(int, int, int, int);
+        void (*VoidFunc2IntChar)(int, int, char*);
+        int  (*IntFuncInt)		(int);
         unsigned char  (*UCharFuncUChar)		(unsigned char);
         void (*VoidFunc2Int16)	(int16_t, int16_t);
         uint8_t  (* BoolFuncBeh) (Behaviour_t *);

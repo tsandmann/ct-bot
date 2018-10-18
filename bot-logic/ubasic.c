@@ -108,7 +108,7 @@ static void line_statement(void);
 static void statement(void);
 void ubasic_free_all_mem(void);
 #if UBASIC_RND && USE_AVR
-static long uint16_t rand31_next(void);
+static uint32_t rand31_next(void);
 #endif
 #if UBASIC_STRING
 struct varinfo_t ubasic_get_strvarinfo(void);
@@ -784,10 +784,10 @@ static void rem_statement(void) {
 /*---------------------------------------------------------------------------*/
 #if UBASIC_RND
 #if USE_AVR
-long uint16_t seed = 0;
+uint32_t seed = 0;
 static void srand_statement(void) {
 	uint16_t *p = (uint16_t*) (RAMEND+1);
-	extern uint16_t __heap_start;
+	extern unsigned char __heap_start;
 	ubasic_accept(TOKENIZER_SRND);
 	while (p >= &__heap_start + 1)
 		seed ^= * (--p);
@@ -1643,7 +1643,7 @@ int16_t ubasic_get_variable(struct varinfo_t var) {
 // Park-Miller "minimal standard" 31Bit pseudo-random generator
 // http://www.firstpr.com.au/dsp/rand31/
 #if UBASIC_RND && USE_AVR
-long uint16_t rand31_next(void)
+uint32_t rand31_next(void)
 {
 	long uint16_t hi, lo;
 	lo  = 16807 * (seed & 0xffff);
