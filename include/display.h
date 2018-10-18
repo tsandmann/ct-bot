@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 #define DISPLAY_LENGTH 20 /**< Wieviele Zeichen passen in eine Zeile */
-#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 2) /**< Puffergroesse fuer eine Zeile [Byte] */
+#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 4) /**< Puffergroesse fuer eine Zeile [Byte] */
 
 #define DISPLAY_SCREEN_TOGGLE 42 /**< Screen-Nummer, die zum Wechseln verwendet wird */
 extern uint8_t display_screen;   /**< Welcher Screen soll gezeigt werden? */

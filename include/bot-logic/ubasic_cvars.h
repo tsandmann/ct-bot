@@ -8,6 +8,9 @@
 * ---------
 *
 ----------------------------------------------------------*/
+
+#include <stdint.h>
+
 #ifndef __UBASIC_CVARS_H__
 #define __UBASIC_CVARS_H__
 
@@ -25,6 +28,6 @@ typedef struct {
 
 // exportierbare Prototypen
 void vpoke_statement(void);		//setzen
-int vpeek_expression(void);		//lesen
+int16_t vpeek_expression(void);		//lesen
 
 #endif /* __UBASIC_CVARS_H__ */

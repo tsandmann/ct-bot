@@ -101,7 +101,7 @@
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE				/**< Linienfolger */
 #define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 		/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
-#define BEHAVIOUR_PATHPLANING_AVAILABLE 				/**< Pfadplanungsverhalten */
+#define BEHAVIOUR_PATHPLANNING_AVAILABLE 				/**< Pfadplanungsverhalten */
 #define BEHAVIOUR_OLYMPIC_AVAILABLE					/**< Olympiadenverhalten */
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
 #define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */

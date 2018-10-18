@@ -97,7 +97,7 @@
 #define OS_AVAILABLE							/**< Aktiviert BotOS fuer Threads und Scheduling */
 //#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
-//#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
+//#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Raspberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
 
 
@@ -125,19 +125,12 @@
 #undef KEYPAD_AVAILABLE
 #endif
 
-#ifdef PC
-#undef EXPANSION_BOARD_MOD_AVAILABLE
-#endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE // Anpassungen fuer modifiziertes Erweiterungsboard
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
-#undef ENABLE_RX0_PULLUP // Verwendung von Pull-down fuer RX0, also Kurzschluss verhindern
-#undef MOUSE_AVAILABLE // deaktiviert Maus-Sensor wegen Nutzung der ATMega SPI-Schnittstelle fuer den SD-Schacht
-#define SPI_AVAILABLE // Hardware-SPI-Modus des Controllers für die Anbindung des SD-Schachts.
-#endif // EXPANSION_BOARD_AVAILABLE
-
 #ifdef EXPANSION_BOARD_AVAILABLE
 #undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
+#endif
+
+#ifdef AUTO_DISPLAYLIGHT
+#undef EXPANSION_BOARD_AVAILABLE // Erweiterungsboard verwendet ENA_MOUSE_SENSOR fuer den Betrieb des Maussensors
 #endif
 
 #ifndef MOUSE_AVAILABLE

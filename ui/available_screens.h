@@ -36,7 +36,7 @@
 #define DISPLAY_ODOMETRIC_INFO				/**< zeigt Positions- und Geschwindigkeitsdaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/**< Gibt Debug-Infos der Motorregelung aus */
 //#define DISPLAY_MISC_AVAILABLE			/**< aehm ja, der Rest irgendwie... */
-#define DISPLAY_MMC_INFO                                        /**< Zeigt die Daten der MMC-Karte an; funktioniert nicht, wenn ct-Bot.h/MAP_AVAILABLE aktiviert ist */
+#define DISPLAY_MMC_INFO					/**< Zeigt die Daten der MMC-Karte an; funktioniert nicht, wenn ct-Bot.h/MAP_AVAILABLE aktiviert ist */
 //#define DISPLAY_RESET_INFO_AVAILABLE		/**< Zeigt Informationen ueber Resets an */
 #define DISPLAY_NEURALNET_AVAILABLE		    /**< Screen des neuronalen Netzes */
 #define DISPLAY_DRIVE_NEURALNET_AVAILABLE	/**< Screen des Fahrverhaltens des neuronalen Netzes */
@@ -45,7 +45,7 @@
 #define DISPLAY_MAP_AVAILABLE				/**< Zeigt Map-Display an */
 #define DISPLAY_TRANSPORT_PILLAR        	/**< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
 #define DISPLAY_DRIVE_STACK_AVAILABLE		/**< Steuerung Stack-Verhalten auf diesem Screen */
-#define DISPLAY_PATHPLANING_AVAILABLE		/**< Display zur Pfadplanung */
+#define DISPLAY_PATHPLANNING_AVAILABLE		/**< Display zur Pfadplanung */
 #define DISPLAY_LINE_SHORTEST_WAY_AVAILABLE	/**< Steuerung des Verhaltens auf diesem Screen */
 #define DISPLAY_DRIVE_CHESS_AVAILABLE		/**< Steuerung des Schach-Verhaltens */
 #define DISPLAY_UBASIC_AVAILABLE	    	/**< Steuerung des uBasic-Verhaltens */

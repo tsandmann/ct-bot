@@ -206,7 +206,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_goto, 2, " int16 left, int16 right", 2, 2),
 #endif
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_calc_wave, 3, "int16 dest_x, int16 dest_y, int8 compare", 2, 2, 1),
 #endif
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE

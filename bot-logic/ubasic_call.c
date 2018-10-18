@@ -11,6 +11,8 @@
 *
 ----------------------------------------------------------*/
 
+#include <stdint.h>
+
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
@@ -68,7 +70,7 @@ callfunct_t callfunct[] = {
 };
 
 
-int call_statement(void) {
+int16_t call_statement(void) {
 
 	unsigned char f_typ_temp;
 	uint8_t idx=0;

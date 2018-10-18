@@ -38,8 +38,8 @@ typedef struct {
 } distSens_t;
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
-extern int16_t sensDistL;			/**< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
-extern int16_t sensDistR;			/**< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
+extern int16_t sensDistL;	/**< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
+extern int16_t sensDistR;	/**< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
 extern uint8_t sensDistLToggle;	/**< Toggle-Bit des linken IR-Sensors */
 extern uint8_t sensDistRToggle;	/**< Toggle-Bit des rechten IR-Sensors */
 /** Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */

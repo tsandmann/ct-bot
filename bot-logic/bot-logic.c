@@ -198,7 +198,7 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 

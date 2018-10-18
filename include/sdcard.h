@@ -28,6 +28,7 @@
  * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat).
  */
 
+#include <stdint.h>
 
 #ifndef SPICARD_H_
 #define SPICARD_H_
@@ -71,11 +72,7 @@ using SpiType = SpiMaster;
 using SpiType = SpiMasterSoft;
 #endif
 
-#ifndef EXPANSION_BOARD_MOD_AVAILABLE
 using CsType = SelectEna;
-#else
-using CsType = SelectPB4;
-#endif
 } // namespace SdCardTypes
 
 /**
@@ -127,7 +124,7 @@ public:
 	/**
 	 * \return code for the last error. See SdSpiCard.h for a list of error codes.
 	 */
-	int get_error_code() const {
+	uint8_t get_error_code() const {
 		return m_errorCode;
 	}
 
@@ -140,7 +137,7 @@ public:
 	}
 
 	/** \return error data for last error. */
-	int get_error_data() const {
+	uint8_t get_error_data() const {
 		return m_status;
 	}
 

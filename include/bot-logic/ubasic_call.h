@@ -10,6 +10,9 @@
 * ---------
 *
 ----------------------------------------------------------*/
+
+#include <stdint.h>
+
 #ifndef __UBASIC_CALL_H__
 #define __UBASIC_CALL_H__
 
@@ -50,6 +53,6 @@ typedef struct {
 
 
 // exportierbare Prototypen
-int call_statement(void);
+int16_t call_statement(void);
 
 #endif /* __UBASIC_CALL_H__ */

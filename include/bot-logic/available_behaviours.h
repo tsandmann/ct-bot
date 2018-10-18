@@ -20,6 +20,15 @@
 /**
  * \file 	available_behaviours.h
  * \brief 	globale Schalter fuer die einzelnen Verhalten
+ *
+ * \note	Die Aktivierung einer groesseren Anzahl an Verhalten (und/oder anderen Features wie u.a. Display-Ausgaben) kann dazu
+ * 			fuehren, dass der Programmspeicher des Microcontrollers nicht mehr ausreicht. Dies fuehrt dann z.B. zu folgender
+ * 			Fehlermeldung:
+ *
+ * 			ct-Bot.elf section `.data' will not fit in region `text'
+ * 			region `text' overflowed by 266 bytes -- collect2: error: ld returned 1 exit status -- make: *** [ct-Bot.elf] Error 1
+ *
+ * 			In solchen Faellen ist es ratsam nur benoetigte Verhalten und Display-Ausgaben zu aktivieren.
  */
 
 #ifndef AVAILABLE_BEHAVIOURS_H_
@@ -50,7 +59,7 @@
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
-//#define BEHAVIOUR_PATHPLANING_AVAILABLE 			/**< Pfadplanungsverhalten */
+//#define BEHAVIOUR_PATHPLANNING_AVAILABLE 			/**< Pfadplanungsverhalten */
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE				/**< Olympiadenverhalten */
 //#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
 //#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */
@@ -92,7 +101,7 @@
 #ifndef MAP_AVAILABLE
 #undef BEHAVIOUR_SCAN_AVAILABLE
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#undef BEHAVIOUR_PATHPLANNING_AVAILABLE
 #endif // MAP_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE
@@ -120,10 +129,10 @@
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #endif // !POS_STORE_AVAILABLE
 
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 #warning "Pfadplanungs-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
-#undef BEHAVIOUR_PATHPLANING_AVAILABLE
-#endif // BEHAVIOUR_PATHPLANING_AVAILABLE
+#undef BEHAVIOUR_PATHPLANNING_AVAILABLE
+#endif // BEHAVIOUR_PATHPLANNING_AVAILABLE
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #warning "bot_line_shortest_way-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
@@ -141,7 +150,7 @@
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 #endif // BEHAVIOUR_DRIVE_AREA_AVAILABLE
 
-#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+#ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
 #define BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
@@ -279,7 +288,7 @@
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#undef BEHAVIOUR_PATHPLANNING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
 #include "behaviour_prototype.h"
@@ -317,7 +326,7 @@
 #include "behaviour_drive_stack.h"
 #include "behaviour_drive_area.h"
 #include "behaviour_drive_chess.h"
-#include "behaviour_pathplaning.h"
+#include <behaviour_pathplanning.h>
 #include "behaviour_line_shortest_way.h"
 #include "behaviour_scan_beacons.h"
 #include "behaviour_test_encoder.h"

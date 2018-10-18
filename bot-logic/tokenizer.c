@@ -32,6 +32,8 @@
  * ------------------------------------------------------
  */
 
+#include <stdint.h>
+
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 #include "sdfat_fs.h"
@@ -62,10 +64,10 @@
 
 static PTR_TYPE line_begin_ptr;
 static char last_string[MAX_STRINGLEN+1];
-static int  last_value;
-static int  last_var_num;
+static int16_t  last_value;
+static int16_t  last_var_num;
 
-static int current_token = TOKENIZER_ERROR;
+static int16_t current_token = TOKENIZER_ERROR;
 
 extern PTR_TYPE program_ptr;
 
@@ -183,9 +185,9 @@ static const struct keyword_token keywords[] = {
 #endif
 
 // Prototypen
-static int get_next_token(void);
+static int16_t get_next_token(void);
 #if !TOKENIZER_STANDARD
-int iFastParserGetKeyWord (void);
+int16_t iFastParserGetKeyWord (void);
 #endif
 
 
@@ -229,7 +231,7 @@ void jump_to_next_linenum(void) {
 
 /*---------------------------------------------------------------------------*/
 #if TOKENIZER_STANDARD
-static int singlechar(void) {
+static int16_t singlechar(void) {
 	if(GET_CONTENT_PROG_PTR == '\n') {
 		return TOKENIZER_CR;
 	} else if(GET_CONTENT_PROG_PTR == ',') {
@@ -274,7 +276,7 @@ static int singlechar(void) {
 
 #if UBASIC_HEX_BIN
 /*---------------------------------------------------------------------------*/
-static int hex2int(char c) {
+static int16_t hex2int(char c) {
 	if (c<='9') return (c-'0'); else return (c-'A'+10);
 }
 /*---------------------------------------------------------------------------*/
@@ -284,12 +286,12 @@ static char isbdigit(char c) {
 #endif
 
 /*---------------------------------------------------------------------------*/
-static int get_next_token(void) {
+static int16_t get_next_token(void) {
 #if !USE_PROGMEM && TOKENIZER_STANDARD
 	struct keyword_token const *kt;
 #endif
 	uint8_t i;
-	int temp_token;
+	int16_t temp_token;
 #if TOKENIZER_STANDARD
 	char k_temp[MAX_KEYWORD_LEN+1];
 #endif
@@ -431,7 +433,7 @@ void tokenizer_init(PTR_TYPE program) {
 	current_token = get_next_token();
 }
 /*---------------------------------------------------------------------------*/
-int tokenizer_token(void) {
+int16_t tokenizer_token(void) {
 	return current_token;
 }
 /*---------------------------------------------------------------------------*/
@@ -443,11 +445,11 @@ void tokenizer_next(void) {
 	return;
 }
 /*---------------------------------------------------------------------------*/
-void tokenizer_set_num(int val) {
+void tokenizer_set_num(int16_t val) {
 	last_value=val;
 }
 /*---------------------------------------------------------------------------*/
-int tokenizer_num(void) {
+int16_t tokenizer_num(void) {
 	return last_value;
 }
 /*---------------------------------------------------------------------------*/
@@ -455,11 +457,11 @@ char const *tokenizer_last_string_ptr(void) {
 	return (const char*)&last_string[0];
 }
 /*---------------------------------------------------------------------------*/
-void tokenizer_error_print(int linenum, int error_nr) {
+void tokenizer_error_print(int16_t linenum, int16_t error_nr) {
 	(void) linenum;
 	(void) error_nr;
 	PTR_TYPE current_prog_ptr;
-	unsigned int source_linenum;
+	uint16_t source_linenum;
 	// alten Textpointer retten
 	current_prog_ptr=PROG_PTR;
 	// Quelltextzeilennummer suchen
@@ -479,11 +481,11 @@ void tokenizer_error_print(int linenum, int error_nr) {
 	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
 }
 /*---------------------------------------------------------------------------*/
-int tokenizer_finished(void) {
+int16_t tokenizer_finished(void) {
 	return END_OF_PROG_TEXT || current_token == TOKENIZER_ENDOFINPUT;
 }
 /*---------------------------------------------------------------------------*/
-int tokenizer_variable_num(void) {
+int16_t tokenizer_variable_num(void) {
 	return last_var_num;
 }
 
@@ -508,7 +510,7 @@ void tokenizer_set_position(struct tokenizer_pos_t pos) {
 
 #include "tokenizer_data.inc"
 
-int iFastParserGetKeyWord (void)  {
+int16_t iFastParserGetKeyWord (void)  {
   char            ucCh;                 // Zeichen im Basic-Quell-Text
   unsigned char   ucRC,                 // "Referenz"-Zeichen (zu vergleichendes Zeichen im Baum)
                   ucS,                  // Niedrigstes erstes ASCII-Zeichen im Baum

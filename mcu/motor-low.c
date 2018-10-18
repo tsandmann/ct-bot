@@ -59,8 +59,8 @@
 #define PWM_TOP (uint16_t)((float) F_CPU / 2.f / PWM_FREQUENCY)
 
 
-/* PWM fuer Servos (ATmega32 / ATmega644(p)) */
-#define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 -> ATmega32/644(p) 16 MHz: 30.64 Hz; ATmega644(p) 20 MHz: 38.30 Hz */
+/* PWM fuer Servos (ATmega644(p)) */
+#define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 -> ATmega644(p) 16 MHz: 30.64 Hz; ATmega644(p) 20 MHz: 38.30 Hz */
 
 
 int16_t motor_left;  /**< zuletzt gestellter Wert linker Motor */
@@ -93,10 +93,14 @@ static void pwm_1_init(void) {
 void motor_update(uint8_t dev) {
 	if (dev == 0) {
 		/* linker Motor */
+#ifndef MOT_SWAP_L
 		if (direction.left == DIRECTION_FORWARD) {
-			BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
+#else
+		if (direction.left == DIRECTION_BACKWARD) {
+#endif
+			BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
 		} else {
-			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN); // rueckwaerts
+			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN);
 		}
 
 		uint8_t sreg = SREG;
@@ -107,10 +111,14 @@ void motor_update(uint8_t dev) {
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
+#ifndef MOT_SWAP_R
 		if (direction.right == DIRECTION_BACKWARD) {
-			BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
+#else
+		if (direction.right == DIRECTION_FORWARD) {
+#endif
+			BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 		} else {
-			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN); // vorwaerts
+			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN);
 		}
 
 		uint8_t sreg = SREG;
@@ -278,19 +286,10 @@ void servo_low(uint8_t servo, uint8_t pos) {
 #else // ! __AVR_ATmega1284P__
 	if (servo == SERVO1) {
 		if (pos == SERVO_OFF) {
-#ifdef MCU_ATMEGA644X
 			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM0 aus
-#else
-			TCCR0 = (uint8_t) (TCCR0 & ~PWM_CLK_0); // PWM0 aus
-#endif // MCU_ATMEGA644X
 		} else {
-#ifdef MCU_ATMEGA644X
 			TCCR0B |= PWM_CLK_0; // PWM0 an; ATmega644(p) 16 MHz: 30.64 Hz -> T = 32.640 ms; 20 MHz: 38.15 Hz -> T = 26.112 ms
 			OCR0A = (uint8_t) servo_calc_ocr(pos);
-#else
-			TCCR0 |= PWM_CLK_0; // PWM0 an; ATmega32 16 MHz: 30.64 Hz -> T = 32.640 ms
-			OCR0 = (uint8_t) servo_calc_ocr(pos);
-#endif // MCU_ATMEGA644X
 		}
 	}
 #endif // __AVR_ATmega1284P__

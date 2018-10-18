@@ -100,14 +100,6 @@ void init_before_main(void) {
 	/* Statusregister sichern */
     mcucsr = MCUSR;
     MCUSR = 0;
-#elif defined __AVR_ATmega32__
-	MCUCSR = (uint8_t) (MCUCSR & ~_BV(WDRF));
-	WDTCR |= _BV(WDTOE) | _BV(WDE);
-	WDTCR = 0;
-
-	/* Statusregister sichern */
-	mcucsr = MCUCSR;
-	MCUCSR = 0;
 #else
 #error "Nicht unterstuetzter MCU-Typ"
 #endif // MCU-Typ
@@ -138,7 +130,7 @@ static void servo_init_stop(void* p_data) {
  * \param argc Anzahl der Kommandozeilenparameter
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
-void ctbot_init_low_1st(int argc, char * argv[]) {
+void ctbot_init_low_1st(int argc, char * argv[]) {	// explizit ** int **
 	/* keine Warnings */
 	(void) argc;
 	(void) argv;
@@ -188,11 +180,6 @@ void ctbot_init_low_last(void) {
 		LED_on(LED_TUERKIS);
 	}
 #endif // OS_AVAILABLE
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-   ENA_on(ENA_VOLTAGE_3V3); // Die 3,3V Versorgung ist standardmaessig eingeschaltet.
-   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist standardmaessig eingeschaltet.
-#endif
 }
 
 /**
@@ -201,11 +188,6 @@ void ctbot_init_low_last(void) {
 void ctbot_shutdown_low() {
 #if defined SDFAT_AVAILABLE && defined SPEED_LOG_AVAILABLE
 	sdfat_close(speedlog_file);
-#endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-	ENA_off(ENA_VOLTAGE_3V3); // 3,3V Versorgung aus
-	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
 #endif
 
 #ifdef UART_AVAILABLE

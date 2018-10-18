@@ -863,10 +863,8 @@ int8_t command_evaluate(void) {
 						const uint16_t block = (uint16_t) done / SD_BLOCK_SIZE;
 #if defined __AVR_ATmega1284P__ || defined PC
 						if (block > 6) {
-#elif defined MCU_ATMEGA644X
+#else // MCU_ATMEGA644X
 						if (block > 2) {
-#else // ATmega32
-						if (block > 0) {
 #endif // MCU-Typ
 							break;
 						}
@@ -1269,7 +1267,7 @@ void uart_calc_crc(command_t * cmd) {
 	cmd->to = crc & 0xff;
 #if defined PC && 0
 	/* CRC Test */
-	int r = rand();
+	int r = rand();	// ** int ** da aus <cstdlib>
 	if (r > RAND_MAX * 0.999) {
 		cmd->to++;
 	}

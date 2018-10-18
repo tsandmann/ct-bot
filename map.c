@@ -1923,10 +1923,10 @@ void map_to_pgm(const char* filename) {
  * Testet die Funktion map_get_ratio()
  * \return 0 falls alles OK, 1 falls Fehler
  */
-static int map_test_get_ratio(void) {
+static int16_t map_test_get_ratio(void) {
 	delete();
 	printf("map deleted\n");
-	int all_ok = 1;
+	int16_t all_ok = 1;
 	uint8_t result = map_get_ratio(-100, -100, 100, 100, 100, 0, 0);
 	if (result != 255) {
 		all_ok = 0;
@@ -1937,7 +1937,7 @@ static int map_test_get_ratio(void) {
 		all_ok = 0;
 	}
 	printf("map_get_ratio(-100, -100, 100, 100, 100, 100, 100) = %u\n", result);
-	int i, j, k;
+	int16_t i, j, k;
 	int8_t value = -120;
 	for (k=0; k<13; k++) {
 		for (i=-800; i<800; i++) {
@@ -1964,10 +1964,10 @@ static int map_test_get_ratio(void) {
 			printf("map_get_ratio(-200, -100, 100, 200, 100, %d, %d) = %u\n", value, value, result);
 		}
 		int16_t width = 0;
-		int ok = 1;
+		int8_t ok = 1;
 		for (i=-150; i<=150; i+=50) {
 			for (j=-150; j<=150; j+=50) {
-				int last_result = map_get_ratio(i, j, 155, 155, 0, value, value);
+				uint8_t last_result = map_get_ratio(i, j, 155, 155, 0, value, value);
 				if (last_result != 255) {
 					printf("\tmap_get_ratio(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, last_result);
 					printf("test(%4d,%4d)\tFAILED\n", i, j);
@@ -1975,7 +1975,7 @@ static int map_test_get_ratio(void) {
 				}
 				for (width=0; width<=6400; width+=8) {
 					result = map_get_ratio(i, j, 155, 155, width, value, value);
-					int diff = abs((int)result - last_result);
+					int16_t diff = abs((int16_t)result - (int16_t)last_result);
 					if (diff > 2) {
 						ok = 0;
 						printf("\tmap_get_ratio(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, result);

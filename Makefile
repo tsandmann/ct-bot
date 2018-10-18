@@ -93,7 +93,7 @@ define SRCLOGIC
 	bot-logic/behaviour_goto_obstacle.c bot-logic/behaviour_goto_pos.c bot-logic/behaviour_gotoxy.c \
 	bot-logic/behaviour_hang_on.c bot-logic/behaviour_hw_test.c bot-logic/behaviour_line_shortest_way.c \
 	bot-logic/behaviour_measure_distance.c bot-logic/behaviour_neuralnet.c bot-logic/behaviour_olympic.c \
-	bot-logic/behaviour_pathplaning.c bot-logic/behaviour_prototype.c bot-logic/behaviour_remotecall.c \
+	bot-logic/behaviour_pathplanning.c bot-logic/behaviour_prototype.c bot-logic/behaviour_remotecall.c \
 	bot-logic/behaviour_scan.c bot-logic/behaviour_scan_beacons.c bot-logic/behaviour_servo.c \
 	bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_test_encoder.c \
 	bot-logic/behaviour_transport_pillar.c bot-logic/behaviour_turn.c bot-logic/behaviour_turn_test.c \

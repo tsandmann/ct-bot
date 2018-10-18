@@ -1,5 +1,15 @@
 CHANGELOG fuer c't-Bot
 ======================
+2018-10-18: Release 26 (v1.26)
+			- Warnings korrigiert
+			- Kommentare verbessert
+			- kleinere Bugfixes (ARM_LINUX_DISPLAY, avr-gcc 4.8.1, Servo mit MMC und soft-SPI, mingw-build, isInCallHierarchy())
+			- Unterstuetzung fuer RaspberryPi-Anbindung mit USB-2-Bot Adapter
+			- Coding Conventions verbessert
+			- Unterstützung für Motor Treiber DRV8835
+			- Rechtschreibfehler und Code-Formatierungen verbessert
+			- Unterstützung für ATmega32 entfernt
+
 2017-10-01: Release 25 (v1.25)
 
 2017-03-12: Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf SD-Karten. Wird von Map, Log, uBasic, ABL, Speedlog verwendet. Unterstuetzung fuer SDHC-Karten. 
@@ -410,7 +420,7 @@ CHANGELOG fuer c't-Bot
 
 2008-10-12 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Positionsstack zu allgemeinem Positionsspeicher (Stack & FIFO) umgebaut (heisst jetzt pos_store) 
 
-2008-09-30 Frank Menzel [Menzelfr@gmx.net]: behaviour_pathplaning hinzugefuegt mit eigenem Screen
+2008-09-30 Frank Menzel [Menzelfr@gmx.net]: behaviour_pathplanning hinzugefuegt mit eigenem Screen
 
 2008-09-16 Timo Sandmann [mail@timosandmann.de]: Verbesserungen im MMC-Code (groesserer Timeout bei HW-SPI, Debug-Ausgaben bei MiniFAT)
 

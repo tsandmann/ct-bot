@@ -70,7 +70,7 @@ extern mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 /** Kopie des MCU(C)SR Registers */
 extern uint8_t mcucsr __attribute__((section(".noinit")));
 
-int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Interrupts disabled
+int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Interrupts disabled	// explizit ** int **
 
 extern uint8_t soft_resets __attribute__((section(".noinit"))); /**< Reset-Counter im RAM */
 #endif // MCU
@@ -80,14 +80,14 @@ extern uint8_t soft_resets __attribute__((section(".noinit"))); /**< Reset-Count
  * \param argc Anzahl der Kommandozeilenparameter
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
-void ctbot_init(int argc, char * argv[]);
+void ctbot_init(int argc, char * argv[]);	// explizit ** int **
 
 /**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
  * \param argc Anzahl der Kommandozeilenparameter
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
-void ctbot_init_low_1st(int argc, char * argv[]);
+void ctbot_init_low_1st(int argc, char * argv[]);	// explizit ** int **
 
 /**
  * Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung

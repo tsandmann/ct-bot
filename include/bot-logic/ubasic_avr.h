@@ -8,12 +8,15 @@
 * ---------
 *
 ----------------------------------------------------------*/
+
+#include <stdint.h>
+
 #ifndef __UBASIC_AVR_H__
 #define __UBASIC_AVR_H__
 
-int epeek_expression(void);
-int adc_expression(void);
-int pin_in_expression(void);
+int16_t epeek_expression(void);
+int16_t adc_expression(void);
+int16_t pin_in_expression(void);
 void dir_statement(void);
 void epoke_statement(void);
 void out_statement(void);
