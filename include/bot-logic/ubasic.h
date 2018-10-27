@@ -69,7 +69,7 @@
 // Typ-Definition gosub-Stack
 struct gosub_stack_t {
 #if UBASIC_EXT_PROC
-	char p_name[MAX_PROG_NAME_LEN];
+	char p_name[MAX_PROG_NAME_LEN + 1];
 #endif
 	PTR_TYPE p_ptr;
 };
@@ -87,7 +87,7 @@ struct for_state_t {
 #if USE_LINENUM_CACHE
 struct linenum_cache_t {
 #if UBASIC_EXT_PROC
-	char p_name[MAX_PROG_NAME_LEN];
+	char p_name[MAX_PROG_NAME_LEN + 1];
 #endif
 	int16_t linenum;
 	PTR_TYPE next_line_ptr;

@@ -67,7 +67,7 @@ static uint32_t wait_until = 0; /**< Systemzeit, bis zu der gewartet werden soll
 Behaviour_t* ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
 char ubasic_content = 0; /**< aktuelles Zeichen des Basic-Programms */
 uint16_t ubasic_ptr = 0; /**< aktuelle Position im Basic-Programm */
-char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
+char current_proc[MAX_PROG_NAME_LEN + 1]; /**< aktueller Programmname */
 static uint8_t result_behav; /**< Puffer fuer Verhaltens-Ergebnis */
 
 /**

@@ -68,7 +68,7 @@
 #endif
 
 #if UBASIC_EXT_PROC
-	extern char current_proc[MAX_PROG_NAME_LEN];
+	extern char current_proc[MAX_PROG_NAME_LEN + 1];
 #endif
 
 #if !BREAK_NOT_EXIT
@@ -652,7 +652,7 @@ static void gosub_statement(void){
 	ubasic_accept(TOKENIZER_GOSUB);
 
 #if UBASIC_EXT_PROC
-	char p_name[MAX_PROG_NAME_LEN]="";
+	char p_name[MAX_PROG_NAME_LEN + 1]="";
 	if (tokenizer_token() == TOKENIZER_STRING) {
 		strncpy(p_name, tokenizer_last_string_ptr(), MAX_PROG_NAME_LEN);
 		jump_to_next_linenum();
