@@ -75,6 +75,11 @@
 	#include <stdlib.h> /* exit() */
 #endif
 
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
+
 PTR_TYPE program_ptr;
 int16_t current_linenum;
 
@@ -1655,5 +1660,9 @@ uint32_t rand31_next(void)
 }
 #endif
 /*---------------------------------------------------------------------------*/
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
