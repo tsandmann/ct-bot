@@ -54,6 +54,7 @@ SAVE_TEMPS ?=
 WERROR ?=
 WCONVERSION ?=
 BUILD_TARGET ?=
+GCC_VERSION ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -236,14 +237,24 @@ else
 
 ifdef BUILD_TARGET
 	AR = $(BUILD_TARGET)-ar
+ifdef GCC_VERSION
+	CC = $(BUILD_TARGET)-gcc-$(GCC_VERSION)
+	CXX = $(BUILD_TARGET)-g++-$(GCC_VERSION)
+else
 	CC = $(BUILD_TARGET)-gcc
 	CXX = $(BUILD_TARGET)-g++
+endif
 	RANLIB = $(BUILD_TARGET)-ranlib
 	SIZE = $(BUILD_TARGET)-size
 else
 	AR = ar
+ifdef GCC_VERSION
+	CC = gcc-$(GCC_VERSION)
+	CXX = g++-$(GCC_VERSION)
+else
 	CC = gcc
 	CXX = g++
+endif
 	RANLIB = ranlib
 	SIZE = size
 endif
@@ -257,6 +268,7 @@ endif
 endif
 
 
+GCCVERSIONGTEQ8 := $(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 8)
 
 # Define programs and commands.
 SHELL = sh
@@ -304,6 +316,9 @@ CFLAGS += -save-temps -fverbose-asm -dA
 endif
 ifeq ($(WERROR),1)
 CFLAGS += -Werror
+ifeq ($(GCCVERSIONGTEQ8),1)
+CFLAGS += -Wno-error=format-truncation
+endif
 endif
 
 CXXFLAGS += -g
@@ -322,6 +337,9 @@ CXXFLAGS += -save-temps -fverbose-asm -dA
 endif
 ifeq ($(WERROR),1)
 CXXFLAGS += -Werror
+ifeq ($(GCCVERSIONGTEQ8),1)
+CXXFLASG += -Wno-error=format-truncation
+endif
 endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
