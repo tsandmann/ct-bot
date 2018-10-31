@@ -1,7 +1,7 @@
 language: cpp
 dist: trusty
 sudo: true
-osx_image: xcode9.2
+osx_image: xcode10
 
 os:
   - linux
