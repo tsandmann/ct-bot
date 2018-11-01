@@ -44,11 +44,6 @@ typedef union {
 #else
 		uint8_t map_buffer[0]; /**< Map-Puffer inaktiv */
 #endif // MAP_AVAILABLE
-#ifdef MAP_2_SIM_AVAILABLE
-		uint8_t map_2_sim_buffer[512]; /**< Map-2-Sim-Puffer */
-#else
-		uint8_t map_2_sim_buffer[0]; /**< Map-2-Sim-Puffer inaktiv */
-#endif // MAP_2_SIM_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 		uint8_t ubasic_buffer[SD_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
 #else

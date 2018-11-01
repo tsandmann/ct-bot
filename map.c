@@ -202,8 +202,7 @@ static struct {
 static Tcb_t* map_2_sim_worker; /**< Worker-Thread fuer die Map-2-Sim-Anzeige */
 uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /**< Stack des Map-2-Sim-Threads */
 static pFatFile map_2_sim_file_desc; /**< File-Deskriptor fuer Map-2-Sim */
-/** \todo use local buffer */
-#define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /**< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
+static uint8_t map_2_sim_buffer[512]; /**< Puffer fuer zur Map-2-Sim-Kommunikation */
 static os_signal_t map_2_sim_signal = OS_SIGNAL_INITIALIZER; /**< Signal, um gleichzeitiges Senden von Map-Daten zu verhindern */
 #endif // MAP_2_SIM_AVAILABLE
 
