@@ -77,7 +77,6 @@ int8_t register_emergency_proc(void (* fkt)(void));
 
 /**
  * Initialisiert alle Verhalten
- * \todo Doku (Kommantare innerhalb der Funktion) ueberarbeiten!
  */
 void bot_behave_init(void) {
 
@@ -177,7 +176,7 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
-	// Training des neuronalen Netzes sofort Losstarten bei Vorhandensein, da initiale Lernpattern vorhanden sind
+	// Training des neuronalen Netzes sofort starten bei Vorhandensein, da initiale Lernpattern vorhanden sind
 	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_neuralnet_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
