@@ -133,7 +133,7 @@ int16_t uart_write(const void * data, int16_t length) {
 	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {}
 
 	/* Daten in Ausgangs-FIFO kopieren */
-	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length)) {
+	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length, False)) {
 		return 0;
 	}
 

@@ -100,7 +100,7 @@ void trace_add_sensors(void) {
 			(double) heading, (double) x_enc, (double) y_enc, x_pos, y_pos);
 	}
 
-	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
+	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index), False);
 	buf_index++;
 	buf_index %= sizeof(trace_entries);
 }
@@ -125,7 +125,7 @@ void trace_add_actuators(void) {
 		snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\n");
 	}
 
-	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
+	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index), False);
 	buf_index++;
 	buf_index %= sizeof(trace_entries);
 }
@@ -150,7 +150,7 @@ void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_cal
 	trace_buffer[buf_index][n - 2] = ')';
 	trace_buffer[buf_index][n - 1] = '\n';
 
-	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
+	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index), False);
 	buf_index++;
 	buf_index %= sizeof(trace_entries);
 }

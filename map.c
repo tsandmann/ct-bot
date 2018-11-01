@@ -581,7 +581,7 @@ static map_section_t* get_section(int16_t x, int16_t y) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 		map_2_sim_data.error = pos_error_radius / (1000 / MAP_RESOLUTION) + (BOT_DIAMETER / 2 / (1000 / MAP_RESOLUTION));
 #endif
-		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block));
+		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block), True);
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef DEBUG_MAP_TIMES
