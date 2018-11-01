@@ -1777,10 +1777,7 @@ static void draw_test_scheme(void) {
 	LOG_DEBUG("fertig.");
 	os_signal_unlock(&lock_signal);
 }
-#endif // PC
 
-// FIXME: ist shrink() erforderlich?
-#if 0
 /**
  * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
  * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
@@ -1789,7 +1786,7 @@ static void draw_test_scheme(void) {
  * \param min_y Zeiger auf einen uint16_t, der den minimalen Y-Wert puffert
  * \param max_y Zeiger auf einen uint16_t, der den maximalen Y-Wert puffert
  */
-static void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * max_y) {
+void shrink(int16_t* min_x, int16_t* max_x, int16_t* min_y, int16_t* max_y) {
 	int16_t x, y;
 
 	// lokale Variablen mit den defaults befuellen
@@ -1847,9 +1844,7 @@ static void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * 
 	}
 	os_signal_unlock(&lock_signal);
 }
-#endif // 0
 
-#ifdef PC
 /**
  * Schreibt eine Karte in eine PGM-Datei
  * \param *filename Zieldatei
