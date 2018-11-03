@@ -5,7 +5,7 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ "`uname`" == "Darwin" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-mac.tbz2 'https://www.dropbox.com/s/7375ckr4wgiqp86/armv8l-toolchain-mac.tbz2'; tar xjf armv8l-toolchain-mac.tbz2; }
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-mac.tbz2 'https://www.dropbox.com/s/lx4pk4tlqprkat5/armv8l-toolchain-mac_8.2.tbz2'; tar xjf armv8l-toolchain-mac.tbz2; }
 	fi
 
 	export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
@@ -13,7 +13,7 @@ fi
 
 if [[ "`uname`" == "Linux" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-linux.tbz2 'https://www.dropbox.com/s/y6429vlagozve0r/armv8l-toolchain-linux.tbz2'; tar xjf armv8l-toolchain-linux.tbz2; }
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { cd $MYDIR/; curl -L -o armv8l-toolchain-linux.tbz2 'https://www.dropbox.com/s/t90rpqltfqhbite/armv8l-toolchain-linux_8.2_trusty.tbz2'; tar xjf armv8l-toolchain-linux.tbz2; }
 	fi
 	export LD_LIBRARY_PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin
 	export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
