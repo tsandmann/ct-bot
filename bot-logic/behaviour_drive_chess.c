@@ -35,13 +35,66 @@
  * http://bralug.de/wiki/BLIT2008-Board_spielt_Schach
  * Detailliertes zu dem Micro-Max Schach ist hier zu finden:
  * http://home.hccnet.nl/h.g.muller/max-src2.html
- * 
+ *
  * Brainstorming fuer moegliche Erweiterungen:
  * Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler.
  * Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
  * bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben
  * (oder zuerst auch einfache Objekte), wobei der Bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition
  * ablaedt (bot_unload_pillar)...
+ *
+ *
+ * Detailliertere Anleitung (von anonybot):
+ * Nach Laden des Bots in den Sim wird, nachdem dieser wie ueblich mit "Play" per Sim-Button angeschaltet wurde, ueber
+ * die virtuelle Fernbedienung (FB) mit "Bl+" in die Schach-Anzeige gewechselt (das Verhalten kann nicht per
+ * Remote-Call gestartet werden).
+ * Mit FB-Ch+/- kann das Level/der Schwierigkeitsgrad des Bots eingestellt werden (default: 2).
+ *
+ * Die Schach-Anzeige zeigt zu Beginn:
+ * Chess Level 2
+ * Zug : 00 00
+ * CL BLUE/Lv CH+-
+ * Go PLAY/New STOP
+ *
+ * Ein Druck auf Taste > der virtuellen FB startet die Schach-Partie, der Bildschirm wechselt auf:
+ * Chess Level 2
+ * Zug : ZU G?
+ * CL BLUE/Lv CH+-
+ * Go PLAY/New STOP
+ *
+ * und wartet auf eine Eingabe des menschlichen Spielers, der mit "weiss" und entsprechend am unteren Rand beginnen
+ * soll. Angenommen, ein "Bauer" soll nun von d2 nach d4 gezogen werden, so dies durch Druck der FB-Nummerntastenfolge
+ * 4, 2, 4, 4 angegeben, wobei "d2" entsprechend die Kombination aus Nummerntaste "4" fuer "d", da vierter Buchstabe
+ * im Alphabet, und Nummerntaste "2" fuer "2" ist.
+ *
+ * Die Schach-Anzeige zeigt nun:
+ * Chess Level 2
+ * Zug : d2 d4
+ * CL BLUE/Lv CH+-
+ * Go PLAY/New STOP
+ *
+ * Der geplante Zug wird mit der FB-Taste ">" bestaetigt, worauf daraufhin unmittelbar der Zug des Bot-Spielers
+ * angezeigt wird und der Bot seinen Zug prompt abfaehrt, in diesem Fall:
+ * Chess Level 2
+ * Zug : b8 c6
+ * CL BLUE/Lv CH+-
+ * Go PLAY/New STOP
+ *
+ * Angenommen, man moechte nun den Bauern auf e3 durch einen Bauern auf d3 decken, tut man dies durch Eingabe der
+ * FB-Nummerntasten 5, 2, 5, 3 und bestaetigt dies mit >, worauf der Bot wieder prompt mit einem Zug antwortet usw.
+ * Hat man sich bei der Eingabe der Koordinaten "vertippt", fuellt man diese auf 4 Werte auf und kann diese beliebig
+ * oft neu eingeben, so lange sie nicht mit > bestaetigt werden.
+ *
+ * Moechte man seine Zuege nicht selbst planen, sondern vom Sim vorschlagen lassen, kann man dies, indem man auf die
+ * Anzeige:
+ * Chess Level 2
+ * Zug : ZU G?
+ * CL BLUE/Lv CH+-
+ * Go PLAY/New STOP
+ *
+ * nicht mit der Eingabe eines Zuges antwortet, sondern sofort mit > bestaetigt, woraufhin der Sim im Display den Zug
+ * der weissen Figur anzeigt.
+ *
  *
  * \author 	Frank Menzel (Menzelfr@gmx.de), H.G. Muller (Micro-Max Schach)
  * \date 	15.09.2009
