@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-static const char line_str[] PROGMEM = "[%5u] "; /**< Format-String fuer Zeilennummer */
+static const char line_str[] PROGMEM	= "[%5u] "; /**< Format-String fuer Zeilennummer */
 static const char debug_str[] PROGMEM	= "DEBUG "; /**< Log-Typ DEBUG */
 static const char info_str[] PROGMEM	= "INFO  "; /**< Log-Typ INFO */
 static const char error_str[] PROGMEM	= "ERROR "; /**< Log-Typ ERROR */
@@ -60,6 +60,28 @@ static uint32_t file_pos_off; /**< letztes Offset in Log-Datei (obere 16 Bit) */
 #error "LOG_MMC mit MINILOG geht nur mit SDFAT_AVAILABLE"
 #endif // SDFAT_AVAILABLE
 #endif // LOG_MMC_AVAILABLE
+
+/**
+ * Formatiert und schreibt eine Log-Message in den Log-Buffer
+ * \param format Format-String wie bei printf()
+ * \param ... Weitere Argumente
+ */
+uint16_t minilog_printf(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+
+	const uint16_t len = strlen(minilog_buffer);
+	char* p_buffer = minilog_buffer + len;
+	const int16_t n = vsnprintf_P(p_buffer, LOG_BUFFER_SIZE - len, format, args);
+	p_buffer += n;
+	if (p_buffer > &minilog_buffer[LOG_BUFFER_SIZE - 1]) {
+		p_buffer = &minilog_buffer[LOG_BUFFER_SIZE - 1];
+	}
+	*p_buffer = 0;
+
+	va_end(args);
+	return n > 0 ? (uint16_t)n : 0;
+}
 
 void minilog_begin(uint16_t line, LOG_TYPE log_type) {
 	if (log_type != LOG_TYPE_RAW) {
