@@ -174,7 +174,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	struct {
 		unsigned subresult:3;
 	} result = {BEHAVIOUR_SUBFAIL};
-	LOG_DEBUG("pos_store_send_to_bot(0x%zx, %u)", (uintptr_t) pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
+	LOG_DEBUG("pos_store_send_to_bot(0x%" PRIxPTR ", %" PRIu8 ")", (uintptr_t) pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0, (remote_call_data_t) 0) == 0) {
 			result.subresult = BEHAVIOUR_SUBSUCCESS;
@@ -209,7 +209,7 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 
 static uint8_t waypos_state = 0; 		/**< Status des drive_stack-Push-Verhaltens */
 static position_t last_pos = { 0, 0 };	/**< letzte gemerkte Position */
-static int16_t last_heading = 0;			/**< letzte gemerkte Botausrichtung */
+static int16_t last_heading = 0;		/**< letzte gemerkte Botausrichtung */
 
 #define DIST_FOR_PUSH 14400         /**< Quadrat des Abstandes [mm^2] zum letzten Punkt, ab dem gepush wird */
 #define DIST_FOR_PUSH_TURN 3600     /**< Quadrat des Abstandes [mm^2] nach erreichen eines Drehwinkels zum letzten Punkt */
