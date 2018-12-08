@@ -188,7 +188,7 @@ pos_store_t * pos_store_from_index(uint8_t index) {
  * \param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_clear(pos_store_t * store) {
-	LOG_DEBUG("Loesche Positionsspeicher 0x%zx", (uintptr_t) store);
+	LOG_DEBUG("Loesche Positionsspeicher 0x%" PRIxPTR, (uintptr_t) store);
 	if (store == NULL) {
 		return;
 	}

@@ -1579,7 +1579,7 @@ int8_t map_save_to_file(const char* file) {
 	}
 
 	const uint32_t size = sdfat_get_filesize(map_file_desc) / MAP_BLOCK_SIZE;
-	LOG_INFO("map_save_to_file(): size=0x%lx blocks", size - alignment_offset - sizeof(map_header_t) / MAP_BLOCK_SIZE);
+	LOG_INFO("map_save_to_file(): size=0x%" PRIx32 " blocks", (uint32_t) (size - alignment_offset - sizeof(map_header_t) / MAP_BLOCK_SIZE));
 	sdfat_rewind(map_file_desc);
 	uint32_t i;
 	for (i = 0; i < size; ++i) {
@@ -1666,14 +1666,14 @@ int8_t map_load_from_file(const char* file) {
 	const uint32_t size = sdfat_get_filesize(src_file) / MAP_BLOCK_SIZE - src_alignment_offset - sizeof(map_header_t) / MAP_BLOCK_SIZE;
 
 	if (sdfat_seek(src_file, src_alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET)) {
-		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%lx) failed", src_alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t));
+		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%" PRIx32 ") failed", (uint32_t) (src_alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t)));
 		sdfat_close(src_file);
 		os_signal_unlock(&lock_signal);
 		return 5;
 	}
 
 	if (sdfat_seek(map_file_desc, alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET)) {
-		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%lx) failed", alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t));
+		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%" PRIx32 ") failed", (uint32_t) (alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t)));
 		sdfat_close(src_file);
 		os_signal_unlock(&lock_signal);
 		return 6;
@@ -2017,20 +2017,20 @@ static int16_t map_test_get_ratio(void) {
  */
 static void info(void) {
 	LOG_INFO("MAP:");
-	LOG_INFO("%zu\t Punkte pro Section (MAP_SECTIONS)", (size_t) MAP_SECTIONS);
+	LOG_INFO("%" PRIu32 "\t Punkte pro Section (MAP_SECTIONS)", (uint32_t) MAP_SECTIONS);
 	LOG_INFO("%u\t Sections (MAP_SECTION_POINTS)", MAP_SECTION_POINTS);
-	LOG_INFO("%zu\t Punkte Kantenlaenge (MAP_SECTION_POINTS*MAP_SECTIONS)", (size_t) (MAP_SECTION_POINTS * MAP_SECTIONS));
+	LOG_INFO("%" PRIu32 "\t Punkte Kantenlaenge (MAP_SECTION_POINTS*MAP_SECTIONS)", (uint32_t) (MAP_SECTION_POINTS * MAP_SECTIONS));
 	uint32_t points_in_map = (uint32_t) MAP_SECTION_POINTS * (uint32_t)MAP_SECTION_POINTS * (uint32_t) MAP_SECTIONS * (uint32_t)MAP_SECTIONS;
-	LOG_INFO("%u%u\t Punkte gesamt", (uint16_t) (points_in_map / 10000), (uint16_t) (points_in_map % 10000) );
+	LOG_INFO("%" PRIu16 "%" PRIu16 "\t Punkte gesamt", (uint16_t) (points_in_map / 10000), (uint16_t) (points_in_map % 10000) );
 	points_in_map /= 1024; // Umrechnen in KByte
-	LOG_INFO("%u%u\t KByte", (uint16_t) (points_in_map / 10000), (uint16_t) (points_in_map % 10000));
+	LOG_INFO("%" PRIu16 "%" PRIu16 "\t KByte", (uint16_t) (points_in_map / 10000), (uint16_t) (points_in_map % 10000));
 	LOG_INFO("%u\t Punkte pro Meter (MAP_RESOLUTION)", MAP_RESOLUTION);
-	LOG_INFO("%u\t Meter Kantenlaenge (MAP_SIZE)", (uint16_t) MAP_SIZE);
+	LOG_INFO("%" PRIu16 "\t Meter Kantenlaenge (MAP_SIZE)", (uint16_t) MAP_SIZE);
 
 	LOG_INFO("Die Karte verwendet Macroblocks");
 	LOG_INFO("%u\t Laenge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)", MACRO_BLOCK_LENGTH);
 	LOG_INFO("%u\t Anzahl der Macroblocks in einer Zeile (MAP_LENGTH_IN_MACRO_BLOCKS)", MAP_LENGTH_IN_MACRO_BLOCKS);
-	LOG_INFO("alignment_offset=0x%x", alignment_offset);
+	LOG_INFO("alignment_offset=0x%" PRIx16, alignment_offset);
 }
 #endif // MAP_INFO_AVAILABLE
 
