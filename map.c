@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include "sensor_correction.h"
 #include "map.h"
 #include "mmc.h"
@@ -1583,11 +1584,11 @@ int8_t map_save_to_file(const char* file) {
 	uint32_t i;
 	for (i = 0; i < size; ++i) {
 		if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-			LOG_ERROR("map_save_to_file(): sdfat_read() failed, i=0x%x", i);
+			LOG_ERROR("map_save_to_file(): sdfat_read() failed, i=0x%" PRIx32, i);
 			return 2;
 		}
 		if (sdfat_write(dest, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-			LOG_ERROR("map_save_to_file(): sdfat_write() failed, i=0x%x", i);
+			LOG_ERROR("map_save_to_file(): sdfat_write() failed, i=0x%" PRIx32, i);
 			return 3;
 		}
 	}
@@ -1681,20 +1682,20 @@ int8_t map_load_from_file(const char* file) {
 	uint32_t i;
 	for (i = 0; i < size; ++i) {
 		if (sdfat_read(src_file, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-			LOG_ERROR("map_load_from_file(): sdfat_read() failed, i=0x%x", i);
+			LOG_ERROR("map_load_from_file(): sdfat_read() failed, i=0x%" PRIx32, i);
 			sdfat_close(src_file);
 			os_signal_unlock(&lock_signal);
 			return 7;
 		}
 		if (sdfat_write(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-			LOG_ERROR("map_load_from_file(): sdfat_write() failed, i=0x%x", i);
+			LOG_ERROR("map_load_from_file(): sdfat_write() failed, i=0x%" PRIx32, i);
 			sdfat_close(src_file);
 			os_signal_unlock(&lock_signal);
 			return 8;
 		}
 	}
 
-	LOG_INFO("map_load_from_file(): filesize=0x%x blocks", size);
+	LOG_INFO("map_load_from_file(): filesize=0x%" PRIx32 " blocks", size);
 	sdfat_close(src_file);
 
 	map_current_block.updated = False;

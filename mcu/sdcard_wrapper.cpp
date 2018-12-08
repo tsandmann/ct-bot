@@ -27,7 +27,8 @@
 #ifdef MCU
 #include "sdcard_wrapper.h"
 #include "ctbot_comp.h"
-#include <stdio.h>
+#include <stdio.h> // avr-g++ has no cstdio
+#include <inttypes.h> // avr-g++ has no cinttypes
 
 
 //#define DEBUG_SDFAT
@@ -439,9 +440,9 @@ uint8_t sd_fat_test() {
 		return false;
 	}
 	uint32_t sizeMB = static_cast<uint32_t>(0.000512f * static_cast<float>(size) + 0.5f);
-	LOG_INFO("Card size: %u MB", sizeMB);
-	LOG_INFO("Volume is FAT%u", sd.vol()->fatType());
-	LOG_INFO("Cluster size (bytes): %u", 512L * sd.vol()->blocksPerCluster());
+	LOG_INFO("Card size: %" PRIu32 " MB", sizeMB);
+	LOG_INFO("Volume is FAT%" PRIu8, sd.vol()->fatType());
+	LOG_INFO("Cluster size (bytes): %" PRIu32, 512L * sd.vol()->blocksPerCluster());
 
 	if ((sizeMB > 1100 && sd.vol()->blocksPerCluster() < 64) || (sizeMB < 2200 && sd.vol()->fatType() == 32)) {
 		LOG_DEBUG("Card should be reformatted for best performance.");
