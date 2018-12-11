@@ -323,7 +323,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 #endif
 
 			// Linienfolger uebernimmt
-			bot_follow_line(data);
+			bot_follow_line(data, 0);
 
 			// Linienfolger deaktivieren, wenn bot im Zielbereich angekommen ist, welcher ja dann manuell
 			// fuer die Zielkoordinaten definiert werden muss

@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * @file 	behaviour_follow_line.h
  * @brief 	Linienverfolger
  * @author 	Torsten Evers (tevers@onlinehome.de) Version 1
@@ -39,16 +39,18 @@
 #define FOLLOW_LINE_VERSION 2
 #endif
 
-/*!
+/**
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t * data);
+void bot_follow_line_behaviour(Behaviour_t* data);
 
-/*!
- * Folgt einer Linie, sobald beide Liniensensoren ausloesen
+/**
+ * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite beider CNY70 haben.
  * @param *caller Verhaltensdatensatz des Aufrufers
+ * @param search Falls 1, wird zunaechst nach einer Linie gesucht. Falls 0, muss der Bot auf der rechten Linienkante stehen (nur Version 2)
  */
-void bot_follow_line(Behaviour_t * caller);
+void bot_follow_line(Behaviour_t* caller, uint8_t search);
 #endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 #endif // BEHAVIOUR_FOLLOW_LINE_H_

@@ -26,7 +26,7 @@
  * \see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 #include <stdlib.h>
@@ -153,7 +153,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_solve_maze, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_follow_line, 0, "", 0),
+	PREPARE_REMOTE_CALL(bot_follow_line, 1, "uint8 search", 1),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_follow_line_enh, 0, "", 0),

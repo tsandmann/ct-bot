@@ -485,7 +485,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 	case CHECK_LINE: // laesst hier den bot eine Linie folgen
 
 		// Linienfolger-Verhalten starten
-		bot_follow_line(data);
+		bot_follow_line(data, 0);
 		LOG_DEBUG("Linienfolger CheckLine l/r %1d %1d, Version %1d", sensLineL, sensLineR, FOLLOW_LINE_VERSION);
 
 		// cancel nur fuer die Linienfolger, die nicht Kreuzungen oder Abgrund erkennen
