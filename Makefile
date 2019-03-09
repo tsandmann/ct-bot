@@ -53,9 +53,17 @@ DEVICE ?= MCU
 SAVE_TEMPS ?=
 WERROR ?=
 WCONVERSION ?=
+ifeq ($(DEVICE),PC)
+ifeq ($(OS),Windows_NT)
+BUILD_TARGET ?= x86_64-w64-mingw32
+else
 BUILD_TARGET ?=
+endif
+else
+BUILD_TARGET ?=
+endif
 
-MSG_DEVICE = Target device is $(DEVICE)
+MSG_DEVICE = Target device is $(DEVICE) $(MCU)
 
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
@@ -235,10 +243,18 @@ else
 	LIBS = $(PTHREAD_LIB) $(MATH_LIB)
 
 ifdef BUILD_TARGET
+ifeq ($(BUILD_TARGET),x86_64-w64-mingw32)
+	AR = $(BUILD_TARGET)-gcc-ar
+else
 	AR = $(BUILD_TARGET)-ar
+endif
 	CC = $(BUILD_TARGET)-gcc
 	CXX = $(BUILD_TARGET)-g++
+ifeq ($(BUILD_TARGET),x86_64-w64-mingw32)
+	RANLIB = $(BUILD_TARGET)-gcc-ranlib
+else
 	RANLIB = $(BUILD_TARGET)-ranlib
+endif
 	SIZE = $(BUILD_TARGET)-size
 else
 	AR = ar
@@ -274,7 +290,7 @@ CXXSTANDARD = -std=gnu++1y
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g
+CFLAGS += -g
 CFLAGS += -O$(OPT)
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
@@ -297,6 +313,9 @@ ifeq ($(BUILD_TARGET),armv8l-linux-gnueabihf)
 CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
 endif
 ifeq ($(BUILD_TARGET),x86_64-w64-mingw32)
+CFLAGS += -DWIN32
+CXXFLAGS += -DWIN32
+ASFLAGS += -DWIN32
 LIBS += -lws2_32
 endif
 ifdef SAVE_TEMPS
@@ -343,8 +362,6 @@ MSG_EEPROM = Creating load file for EEPROM:
 MSG_EXTENDED_LISTING = Creating Extended Listing:
 MSG_SYMBOL_TABLE = Creating Symbol Table:
 MSG_LINKING = Linking:
-MSG_COMPILING = Compiling:
-MSG_ASSEMBLING = Assembling:
 MSG_CLEANING = Cleaning project:
 MSG_CREATING_LIBRARY = Creating library:
 
@@ -490,13 +507,9 @@ $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 
 # Compile: create object files from C source files.
 %.o : %.c
-	@echo
-	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
 %.o : %.cpp
-	@echo
-	@echo $(MSG_COMPILING) $<
 	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@ 
 
 
@@ -510,8 +523,6 @@ $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 
 # Assemble: create object files from assembler source files.
 %.o : %.S
-	@echo
-	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 
