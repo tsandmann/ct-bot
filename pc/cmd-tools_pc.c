@@ -214,6 +214,9 @@ static void read_command_thread(void) {
 	while (42) {
 		putc('>', stdout);
 		if (fgets(input, sizeof(input) - 1, stdin) == NULL) {
+#ifdef WIN32
+			usleep(10000); // Workaround fuer non-blocking stdin unter mingw, falls von Java aus gestartet
+#endif
 			continue;
 		}
 		if (*input == '\n' || strncmp(input, "list", strlen("list")) == 0) {
