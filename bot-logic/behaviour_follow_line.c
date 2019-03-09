@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * @file 	behaviour_follow_line.c
  * @brief 	Linienverfolger
  * @author 	Torsten Evers (tevers@onlinehome.de) Version 1
@@ -30,7 +30,7 @@
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
-#define DEBUG_BEHAVIOUR_FOLLOW_LINE // Schalter fuer Debug-Code
+//#define DEBUG_BEHAVIOUR_FOLLOW_LINE // Schalter fuer Debug-Code
 
 #include "log.h"
 #ifndef LOG_AVAILABLE
