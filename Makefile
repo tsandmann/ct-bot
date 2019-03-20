@@ -59,12 +59,16 @@ BUILD_TARGET ?= x86_64-w64-mingw32
 else
 BUILD_TARGET ?=
 endif
+MSG_DEVICE = "Target device is $(DEVICE)"
+ifneq ($(BUILD_TARGET),)
+MSG_DEVICE += "($(BUILD_TARGET))"
+endif
 else
 BUILD_TARGET ?=
+MSG_DEVICE = "Target device is $(DEVICE) ($(MCU))"
 endif
 GCC_VERSION ?=
 
-MSG_DEVICE = Target device is $(DEVICE) $(MCU)
 
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
