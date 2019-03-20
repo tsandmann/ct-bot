@@ -337,6 +337,8 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.482538934" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1835572230" superClass="gnu.c.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
+                                								
                                 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.809879335" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
                                 							
                             </tool>
@@ -1015,7 +1017,7 @@
             			
             <storageModule moduleId="cdtBuildSystem" version="4.0.0">
                 				
-                <configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
+                <configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
                     					
                     <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988." name="/" resourcePath="">
                         						
