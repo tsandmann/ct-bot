@@ -288,12 +288,26 @@ CFLAGS += -Wshadow -Wformat=2
 CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
+CXXFLAGS += -g
+CXXFLAGS += -O$(OPT)
+CXXFLAGS += -fmessage-length=0
+CXXFLAGS += $(CXXSTANDARD)
+CXXFLAGS += -Wall -Wextra #-Wpedantic -Wconversion
+CXXFLAGS += -Wmissing-declarations
+CXXFLAGS += -Wshadow -Wformat=2 -Wlogical-op -Wold-style-cast -Wuseless-cast
+CXXFLAGS += -MMD
+CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+
+ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+
+# Target-/Option-specific compiler flags
 ifeq ($(DEVICE), MCU)
     ifeq ($(WCONVERSION),1)
         CFLAGS += -Wconversion
     endif
 else
     CFLAGS += -Wdouble-promotion
+    CXXFLAGS += -Wdouble-promotion
 endif
 
 ifeq ($(BUILD_TARGET), armv8l-linux-gnueabihf | arm-linux-gnueabihf)
@@ -309,41 +323,17 @@ endif
 
 ifdef SAVE_TEMPS
     CFLAGS += -save-temps -fverbose-asm -dA
-endif
-
-ifeq ($(WERROR), 1)
-    CFLAGS += -Werror
-    ifeq ($(GCCVERSION_GTEQ_8),1)
-        CFLAGS += -Wno-error=format-truncation
-    endif
-endif
-
-CXXFLAGS += -g
-CXXFLAGS += -O$(OPT)
-CXXFLAGS += -fmessage-length=0
-CXXFLAGS += $(CXXSTANDARD)
-CXXFLAGS += -Wall -Wextra #-Wpedantic -Wconversion
-CXXFLAGS += -Wmissing-declarations
-CXXFLAGS += -Wshadow -Wformat=2 -Wlogical-op -Wold-style-cast -Wuseless-cast
-CXXFLAGS += -MMD
-CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
-
-ifeq ($(DEVICE), PC)
-    CXXFLAGS += -Wdouble-promotion
-endif
-
-ifdef SAVE_TEMPS
     CXXFLAGS += -save-temps -fverbose-asm -dA
 endif
 
 ifeq ($(WERROR), 1)
+    CFLAGS += -Werror
     CXXFLAGS += -Werror
     ifeq ($(GCCVERSION_GTEQ_8),1)
+        CFLAGS += -Wno-error=format-truncation
         CXXFLASG += -Wno-error=format-truncation
     endif
 endif
-
-ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # Flags for the library archiver (ar)
 ARFLAGS = r
