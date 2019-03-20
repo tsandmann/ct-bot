@@ -255,18 +255,18 @@ static void load_program(int8_t dir) {
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
 	if (dir > 0 && addr < 3584 - 512) {
 		addr += 512;
-	} else if (direction < 0 && addr >= 512) {
+	} else if (dir < 0 && addr >= 512) {
 		addr -= 512;
-	} else if (direction != 0) {
+	} else if (dir != 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
 #elif defined MCU_ATMEGA644X
 	/* on ATmega644(P) we have 1536 Bytes EEPROM for ABL */
 	if (dir > 0 && addr < 1536 - 512) {
 		addr += 512;
-	} else if (direction < 0 && addr >= 512) {
+	} else if (dir < 0 && addr >= 512) {
 		addr -= 512;
-	} else if (direction != 0) {
+	} else if (dir != 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
 #else
