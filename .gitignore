@@ -4,7 +4,7 @@
 /botfs.img
 /map.pgm
 /sim.map
-/Documentation/api
+/doc/api
 /.dep/
 /bot-local-override.h
 /tests/avr8-gnu-toolchain-*.tar.gz

@@ -245,7 +245,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -337,7 +337,7 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.482538934" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.1835572230" superClass="gnu.c.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1835572230" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.809879335" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
                                 							
@@ -445,7 +445,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -703,7 +703,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -965,7 +965,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -1223,7 +1223,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -1431,7 +1431,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="tests|Documentation|bot-logic/basic|doc|bot-logic/abl|contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="bot-logic/basic|tests|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
