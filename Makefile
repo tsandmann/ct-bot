@@ -72,7 +72,6 @@ define SRCMCU
     mcu/display.c    mcu/ena.c         mcu/i2c.c           mcu/init-low.c   mcu/ir-rc5.c            mcu/led.c           mcu/mmc.c \
     mcu/motor-low.c  mcu/mouse.c       mcu/os_scheduler.c  mcu/os_thread.c  mcu/sdcard_wrapper.cpp  mcu/sdcard.cpp      mcu/sensor-low.c \
     mcu/shift.c      mcu/sp03.c        mcu/srf10.c         mcu/timer-low.c  mcu/twi.c               mcu/uart.c \
-
     mcu/SdFat/Print.cpp \
     mcu/SdFat/FatLib/FatFile.cpp \
     mcu/SdFat/FatLib/FatFileLFN.cpp \
@@ -108,7 +107,6 @@ define SRCLOGIC
     bot-logic/behaviour_simple.c            bot-logic/behaviour_solve_maze.c            bot-logic/behaviour_test_encoder.c \
     bot-logic/behaviour_transport_pillar.c  bot-logic/behaviour_turn.c                  bot-logic/behaviour_turn_test.c \
     bot-logic/behaviour_ubasic.c \
-
     bot-logic/bot-logic.c  bot-logic/network.c      bot-logic/tokenizer.c \
     bot-logic/ubasic.c     bot-logic/ubasic_call.c  bot-logic/ubasic_cvars.c
 endef
@@ -116,7 +114,6 @@ endef
 SRCMAIN = ct-Bot.c
 
 SRCUI = ui/gui.c ui/misc.c ui/rc5.c
-
 
 SRCLIBRARY = $(SRCHIGHLEVEL) $(SRCUI)
 

@@ -11,6 +11,8 @@
 /tests/avr8-gnu-toolchain-*_x86_64
 /tests/armv8l-*
 /libctbot.a
+/ct-Bot
+/ct-Bot.exe
 /ct-Bot.eep
 /ct-Bot.elf
 /ct-Bot.hex
