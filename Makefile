@@ -65,15 +65,27 @@ GCC_VERSION ?=
 
 
 # List C source files here. (C dependencies are automatically generated.)
+# No wildcards used here to explicitly define the order of the source files and thus maintain same build results for either Eclipse and make build.
+
 define SRCMCU
-    $(wildcard mcu/*.c) \
-    $(wildcard mcu/*.cpp) \
-    $(wildcard mcu/SdFat/*.cpp) \
-    $(wildcard mcu/SdFat/FatLib/*.cpp)
+    mcu/adc.c        mcu/bootloader.c  mcu/bot-2-linux.c   mcu/bot-2-sim.c  mcu/cmps03.c            mcu/cppsupport.cpp  mcu/delay.c \
+    mcu/display.c    mcu/ena.c         mcu/i2c.c           mcu/init-low.c   mcu/ir-rc5.c            mcu/led.c           mcu/mmc.c \
+    mcu/motor-low.c  mcu/mouse.c       mcu/os_scheduler.c  mcu/os_thread.c  mcu/sdcard_wrapper.cpp  mcu/sdcard.cpp      mcu/sensor-low.c \
+    mcu/shift.c      mcu/sp03.c        mcu/srf10.c         mcu/timer-low.c  mcu/twi.c               mcu/uart.c \
+
+    mcu/SdFat/Print.cpp \
+    mcu/SdFat/FatLib/FatFile.cpp \
+    mcu/SdFat/FatLib/FatFileLFN.cpp \
+    mcu/SdFat/FatLib/FatFilePrint.cpp \
+    mcu/SdFat/FatLib/FatFileSFN.cpp \
+    mcu/SdFat/FatLib/FatVolume.cpp \
+    mcu/SdFat/FatLib/FmtNumber.cpp
 endef 
 
 define SRCPC
-    $(wildcard pc/*.c)
+    pc/bot-2-atmega_pc.c  pc/bot-2-sim_pc.c  pc/cmd-tools_pc.c  pc/delay_pc.c  pc/display_pc.c    pc/ena_pc.c       pc/init-low_pc.c \
+    pc/ir-rc5_pc.c        pc/led_pc.c        pc/motor-low_pc.c  pc/mouse_pc.c  pc/os_thread_pc.c  pc/sdfat_fs_pc.c  pc/sensor-low_pc.c \
+    pc/tcp-server.c       pc/tcp.c           pc/timer-low_pc.c  pc/trace.c     pc/uart-test_pc.c  pc/uart_pc.c
 endef
 
 define SRCHIGHLEVEL
@@ -81,7 +93,24 @@ define SRCHIGHLEVEL
 endef 
 
 define SRCLOGIC
-    $(wildcard bot-logic/*.c)
+    bot-logic/behaviour_abl.c               bot-logic/behaviour_avoid_border.c          bot-logic/behaviour_avoid_col.c \
+    bot-logic/behaviour_calibrate_pid.c     bot-logic/behaviour_calibrate_sharps.c      bot-logic/behaviour_cancel_behaviour.c \
+    bot-logic/behaviour_catch_pillar.c      bot-logic/behaviour_classify_objects.c      bot-logic/behaviour_delay.c \
+    bot-logic/behaviour_drive_area.c        bot-logic/behaviour_drive_chess.c           bot-logic/behaviour_drive_distance.c \
+    bot-logic/behaviour_drive_neuralnet.c   bot-logic/behaviour_drive_square.c          bot-logic/behaviour_drive_stack.c \
+    bot-logic/behaviour_follow_line.c       bot-logic/behaviour_follow_line_enhanced.c  bot-logic/behaviour_follow_object.c \
+    bot-logic/behaviour_follow_wall.c       bot-logic/behaviour_get_utilization.c       bot-logic/behaviour_goto.c \
+    bot-logic/behaviour_goto_obstacle.c     bot-logic/behaviour_goto_pos.c              bot-logic/behaviour_gotoxy.c \
+    bot-logic/behaviour_hang_on.c           bot-logic/behaviour_hw_test.c               bot-logic/behaviour_line_shortest_way.c \
+    bot-logic/behaviour_measure_distance.c  bot-logic/behaviour_neuralnet.c             bot-logic/behaviour_olympic.c \
+    bot-logic/behaviour_pathplanning.c      bot-logic/behaviour_prototype.c             bot-logic/behaviour_remotecall.c \
+    bot-logic/behaviour_scan.c              bot-logic/behaviour_scan_beacons.c          bot-logic/behaviour_servo.c \
+    bot-logic/behaviour_simple.c            bot-logic/behaviour_solve_maze.c            bot-logic/behaviour_test_encoder.c \
+    bot-logic/behaviour_transport_pillar.c  bot-logic/behaviour_turn.c                  bot-logic/behaviour_turn_test.c \
+    bot-logic/behaviour_ubasic.c \
+
+    bot-logic/bot-logic.c  bot-logic/network.c      bot-logic/tokenizer.c \
+    bot-logic/ubasic.c     bot-logic/ubasic_call.c  bot-logic/ubasic_cvars.c
 endef
    
 SRCMAIN = ct-Bot.c
@@ -312,6 +341,8 @@ endif
 
 ifeq ($(BUILD_TARGET), armv8l-linux-gnueabihf | arm-linux-gnueabihf)
     CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
+    CXXFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
+    ASFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
 endif
 
 ifeq ($(BUILD_TARGET), x86_64-w64-mingw32)
