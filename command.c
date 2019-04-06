@@ -831,7 +831,7 @@ int8_t command_evaluate(void) {
 				const uint16_t done = (uint16_t) received_command.data_r;
 				const uint8_t type = (uint8_t) received_command.data_l;
 				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload, received_command.payload + done);
-				void* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
+				uint8_t* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
 				const uint16_t index = (uint16_t) done % SD_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
