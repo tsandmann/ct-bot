@@ -10,7 +10,22 @@ for filename in $MYDIR/pc/*.h; do
 		echo "$MYDIR/../bot-local-override.h exists."
 		mv -v $MYDIR/../bot-local-override.h $MYDIR/../bot-local-override.h.saved
 	fi
+
+	if [ "$#" -eq 1 ]; then
+		case $1 in
+		  /*) filename=$1 ;;
+		  *) filename=$MYDIR/$1 ;;
+		esac
+		echo "just using file \"$filename\" as input."
+	fi
+
 	cp -v $filename $MYDIR/../bot-local-override.h
+	if [ $? -ne 0 ]; then
+		echo "file \"$filename\" not found, abort."
+		echo ""; echo ""; echo "TEST $filename FOR PC $BUILD_TARGET FAILED."; echo ""; echo ""
+		make DEVICE=PC clean >/dev/null
+		exit 1
+	fi
 
 	cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu)
 	echo "using $cores parallel jobs"
@@ -33,6 +48,12 @@ for filename in $MYDIR/pc/*.h; do
 	make DEVICE=PC clean >/dev/null
 
 	echo ""
+
+	if [ "$#" -eq 1 ]; then
+		echo "only file \"$filename\" was processed."
+		break
+	fi
+
 done
 
 echo ""; echo ""; echo "ALL TESTS FOR PC $BUILD_TARGET PASSED."; echo ""; echo ""
