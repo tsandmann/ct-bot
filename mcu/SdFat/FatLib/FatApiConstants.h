@@ -20,6 +20,8 @@
 #ifndef FatApiConstants_h
 #define FatApiConstants_h
 
+#include <stdint.h>
+
 #ifdef MCU
 // use the gnu style oflag in open()
 /** open() oflag for reading */
