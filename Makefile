@@ -79,7 +79,7 @@ define SRCMCU
     mcu/SdFat/FatLib/FatFileSFN.cpp \
     mcu/SdFat/FatLib/FatVolume.cpp \
     mcu/SdFat/FatLib/FmtNumber.cpp
-endef 
+endef
 
 define SRCPC
     pc/bot-2-atmega_pc.c  pc/bot-2-sim_pc.c  pc/cmd-tools_pc.c  pc/delay_pc.c  pc/display_pc.c    pc/ena_pc.c       pc/init-low_pc.c \
@@ -89,7 +89,7 @@ endef
 
 define SRCHIGHLEVEL
     bot-2-bot.c botcontrol.c command.c fifo.c init.c log.c map.c math_utils.c minilog.c motor.c pos_store.c sensor.c timer.c
-endef 
+endef
 
 define SRCLOGIC
     bot-logic/behaviour_abl.c               bot-logic/behaviour_avoid_border.c          bot-logic/behaviour_avoid_col.c \
@@ -110,7 +110,7 @@ define SRCLOGIC
     bot-logic/bot-logic.c  bot-logic/network.c      bot-logic/tokenizer.c \
     bot-logic/ubasic.c     bot-logic/ubasic_call.c  bot-logic/ubasic_cvars.c
 endef
-   
+
 SRCMAIN = ct-Bot.c
 
 SRCUI = ui/gui.c ui/misc.c ui/rc5.c
@@ -130,7 +130,7 @@ SRCBEHAVIOUR = $(SRCMAIN) $(SRCLOGIC)
 # Make them always end in a capital .S.  Files ending in a lowercase .s will not be considered source files but generated files (assembler
 # output from the compiler), and will be deleted upon "make clean"! Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does care about how the name is spelled on its command-line.
-ASRC = 
+ASRC =
 
 MATH_LIB = -lm
 
@@ -144,32 +144,32 @@ ifeq ($(DEVICE), MCU)
     #  -ahlms:    create listing
     #  -gstabs:   have the assembler create line number information; note that for use in COFF files, additional information about filenames
     #             and function names needs to be present in the assembler source files -- see avr-libc docs [FIXME: not yet described there]
-    # ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
+    # ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
     ASFLAGS =
-    
+
     CFLAGS = -ffunction-sections -fdata-sections
     CXXFLAGS = -fno-exceptions -fno-threadsafe-statics -felide-constructors -ffunction-sections -fdata-sections
-    
-    
+
+
     #Additional libraries.
-    
+
     # Minimalistic printf version
     PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
-    
+
     # Floating point printf version (requires MATH_LIB = -lm below)
     PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
-    
-    PRINTF_LIB = 
-    
+
+    PRINTF_LIB =
+
     # Minimalistic scanf version
     SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
-    
+
     # Floating point + %[ scanf version (requires MATH_LIB = -lm below)
     SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
-    
-    SCANF_LIB = 
 
-    
+    SCANF_LIB =
+
+
     # Linker flags.
     #  -Wl,...:    tell GCC to pass this to linker.
     LDFLAGS = -mmcu=$(MCU)
@@ -184,7 +184,7 @@ ifeq ($(DEVICE), MCU)
 
     LDFLAGS += -Wl,--whole-archive -Wl,--gc-sections
 
-    LIBS = -Wl,--no-whole-archive 
+    LIBS = -Wl,--no-whole-archive
     LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
@@ -193,26 +193,27 @@ ifeq ($(DEVICE), MCU)
     # Programming hardware: alf avr910 avrisp bascom bsd dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
     # Type: avrdude -c ? to get a full listing.
     #
-    AVRDUDE_PROGRAMMER = pony-stk200
-    
+    AVRDUDE_PROGRAMMER ?= avrisp2
+
     # com1 = serial port. Use lpt1 to connect to parallel port.
-    AVRDUDE_PORT = lpt1
-    
-    AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-    #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-    
-    
+    AVRDUDE_PORT ?= /dev/ttyACM0
+
+    AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -v
+    # AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep:i -v
+    # AVRDUDE_WRITE_FUSE = -U lfuse:w:0xF7:m -U hfuse:w:0xD1:m -U efuse:w:0xFF:m -v
+    # AVRDUDE_WRITE_FUSE_BL = -U lfuse:w:0xF7:m -U hfuse:w:0xD4:m -U efuse:w:0xFF:m -v
+
     # Uncomment the following if you want avrdude's erase cycle counter.
     # Note that this counter needs to be initialized first using -Yn, see avrdude manual.
     #AVRDUDE_ERASE_COUNTER = -y
-    
+
     # Uncomment the following if you do /not/ wish a verification to be performed after programming the device.
     #AVRDUDE_NO_VERIFY = -V
-    
-    # Increase verbosity level.  Please use this when submitting bug reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
+
+    # Increase verbosity level.  Please use this when submitting bug reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
     # to submit bug reports.
     #AVRDUDE_VERBOSE = -v -v
-    
+
     AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
     AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
     AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
@@ -229,12 +230,12 @@ ifeq ($(DEVICE), MCU)
     OBJDUMP = avr-objdump
     RANLIB = avr-ranlib
     SIZE = avr-size
-    
-    # Optimization level, can be [0, 1, 2, 3, s]. 
+
+    # Optimization level, can be [0, 1, 2, 3, s].
     # 0 = turn off optimization. s = optimize for size.
     # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
-    OPT = s    
-    
+    OPT = s
+
     OUTPUT = $(TARGET).elf
 else
     PTHREAD_LIB = -lpthread
@@ -276,8 +277,8 @@ else
         RANLIB = ranlib
         SIZE = size
     endif
-    
-    # Optimization level, can be [0, 1, 2, 3, s]. 
+
+    # Optimization level, can be [0, 1, 2, 3, s].
     # 0 = turn off optimization. s = optimize for size.
     # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
     OPT = 2
@@ -384,8 +385,8 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJLIBRARY_ = $(patsubst %.S,%.o,$(ASRC)) $(patsubst %.c,%.o,$(SRCLIBRARY)) 
-OBJLIBRARY = $(patsubst %.cpp,%.o,$(OBJLIBRARY_)) 
+OBJLIBRARY_ = $(patsubst %.S,%.o,$(ASRC)) $(patsubst %.c,%.o,$(SRCLIBRARY))
+OBJLIBRARY = $(patsubst %.cpp,%.o,$(OBJLIBRARY_))
 OBJBEHAVIOUR = $(SRCBEHAVIOUR:.c=.o)
 
 
@@ -417,7 +418,7 @@ endif
 elf: $(OUTPUT)
 hex: $(TARGET).hex
 eep: $(TARGET).eep
-lss: $(TARGET).lss 
+lss: $(TARGET).lss
 sym: $(TARGET).sym
 
 library: $(LIBRARY)
@@ -447,13 +448,13 @@ size:
 
 
 # Display compiler version information.
-gccversion : 
+gccversion :
 	@$(CXX) --version
 
 
-# Program the device.  
+# Program the device.
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVRDUDE_WRITE_FUSE) $(AVRDUDE_WRITE_FUSE_BL)
 
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
@@ -461,7 +462,7 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 --change-section-address .data-0x800000 \
 --change-section-address .bss-0x800000 \
 --change-section-address .noinit-0x800000 \
---change-section-address .eeprom-0x810000 
+--change-section-address .eeprom-0x810000
 
 
 coff: $(TARGET).elf
@@ -521,10 +522,10 @@ $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 
 # Compile: create object files from C source files.
 %.o : %.c
-	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
 
 %.o : %.cpp
-	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@ 
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@
 
 
 # Compile: create assembler files from C source files.
