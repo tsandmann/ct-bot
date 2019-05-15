@@ -59,8 +59,8 @@
 #define PWM_TOP (uint16_t)((float) F_CPU / 2.f / PWM_FREQUENCY)
 
 
-/* PWM fuer Servos (ATmega644(p)) */
-#define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 -> ATmega644(p) 16 MHz: 30.64 Hz; ATmega644(p) 20 MHz: 38.30 Hz */
+/* PWM fuer Servos (ATmega644(P)) */
+#define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 -> ATmega644(P) 16 MHz: 30.64 Hz; ATmega644(P) 20 MHz: 38.30 Hz */
 
 
 int16_t motor_left;  /**< zuletzt gestellter Wert linker Motor */
@@ -288,7 +288,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 		if (pos == SERVO_OFF) {
 			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM0 aus
 		} else {
-			TCCR0B |= PWM_CLK_0; // PWM0 an; ATmega644(p) 16 MHz: 30.64 Hz -> T = 32.640 ms; 20 MHz: 38.15 Hz -> T = 26.112 ms
+			TCCR0B |= PWM_CLK_0; // PWM0 an; ATmega644(P) 16 MHz: 30.64 Hz -> T = 32.640 ms; 20 MHz: 38.15 Hz -> T = 26.112 ms
 			OCR0A = (uint8_t) servo_calc_ocr(pos);
 		}
 	}

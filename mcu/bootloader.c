@@ -14,7 +14,7 @@
 *            owners in source-code and documentation of derived
 *            work. No warranty!
 *
-* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128, ATmega644(P), ATmega1284P
+* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128, ATmega644, ATmega644P, ATmega1284P
 *
 * - Initial versions have been based on the Butterfly bootloader-code
 *   by Atmel Corporation (Authors: BBrandal, PKastnes, ARodland, LHM)

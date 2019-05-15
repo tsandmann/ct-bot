@@ -64,9 +64,6 @@ void uart_init(void) {
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	/* Data mode 8N1, asynchron */
 	uint8_t ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
-#ifdef URSEL
-	ucsrc |= (1 << URSEL); // fuer ATMega32
-#endif
 	UCSRC = ucsrc;
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */
