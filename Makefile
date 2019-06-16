@@ -198,10 +198,15 @@ ifeq ($(DEVICE), MCU)
     # com1 = serial port. Use lpt1 to connect to parallel port.
     AVRDUDE_PORT ?= /dev/ttyACM0
 
-    AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -v
-    # AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep:i -v
-    # AVRDUDE_WRITE_FUSE = -U lfuse:w:0xF7:m -U hfuse:w:0xD1:m -U efuse:w:0xFF:m -v
-    # AVRDUDE_WRITE_FUSE_BL = -U lfuse:w:0xF7:m -U hfuse:w:0xD4:m -U efuse:w:0xFF:m -v
+    AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex:i
+    AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep:i
+   
+    # One of the following two options (AVRDUDE_WRITE_FUSE or AVRDUDE_WRITE_FUSE_BL) can be activated for writing 
+    # the fuse bits (with or without bootloader mode) for an atmega1284p device.
+    # In this case the two previous options (AVRDUDE_WRITE_FLASH and AVRDUDE_WRITE_EEPROM) must be deactivated!
+    # Be aware that devices other than the atmega1284p require different fuse bit settings!
+    #AVRDUDE_WRITE_FUSE = -U lfuse:w:0xF7:m -U hfuse:w:0xD1:m -U efuse:w:0xFF:m
+    #AVRDUDE_WRITE_FUSE_BL = -U lfuse:w:0xF7:m -U hfuse:w:0xD4:m -U efuse:w:0xFF:m
 
     # Uncomment the following if you want avrdude's erase cycle counter.
     # Note that this counter needs to be initialized first using -Yn, see avrdude manual.
