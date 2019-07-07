@@ -45,6 +45,7 @@ DEVICE ?= MCU
 SAVE_TEMPS ?=
 WERROR ?=
 WCONVERSION ?=
+TESTRUN ?=
 
 ifeq ($(DEVICE),PC)
     ifeq ($(OS),Windows_NT)
@@ -367,6 +368,11 @@ ifeq ($(WERROR), 1)
         CFLAGS += -Wno-error=format-truncation
         CXXFLASG += -Wno-error=format-truncation
     endif
+endif
+
+ifeq ($(TESTRUN), 1)
+	CFLAGS += -DIN_TEST_RUN
+	CXXFLAGS += -DIN_TEST_RUN
 endif
 
 # Flags for the library archiver (ar)

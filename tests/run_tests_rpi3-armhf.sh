@@ -47,7 +47,7 @@ for filename in $MYDIR/pc/*.h; do
 	cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu)
 	echo "using $cores parallel jobs"
 
-	make DEVICE=PC WERROR=1 -j$cores
+	make DEVICE=PC WERROR=1 TESTRUN=1 -j$cores
 	rc=$?
 
 	rm $MYDIR/../bot-local-override.h

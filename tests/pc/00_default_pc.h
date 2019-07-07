@@ -20,5 +20,6 @@
 #ifndef INCLUDE_BOT_LOCAL_OVERRIDE_H_
 #define INCLUDE_BOT_LOCAL_OVERRIDE_H_
 
+#include "tests/test_config.h"
 
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */
