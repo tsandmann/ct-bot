@@ -1,7 +1,8 @@
-language: cpp
-dist: xenial
+dist: bionic
+osx_image: xcode11
 sudo: true
-osx_image: xcode10.2
+
+language: cpp
 
 os:
   - linux
