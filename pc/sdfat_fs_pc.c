@@ -31,6 +31,7 @@
 #include "log.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 	char* file_mode;
@@ -127,7 +128,7 @@ int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length) {
 
 	const size_t res = fread(buffer, 1, length, p_file);
 	if (res != length) {
-		LOG_ERROR("sdfat_read(): fread(%d) = %zu failed:", length, res);
+		LOG_ERROR("sdfat_read(): fread(%d) = %" PRIuMAX " failed:", length, (uintmax_t) res);
 		perror(NULL);
 	}
 	return res;
@@ -199,7 +200,7 @@ void sdfat_test(void) {
 	}
 	char tmp[] = "Hello World!\n";
 	if (sdfat_write(file, tmp, sizeof(tmp) - 1) != sizeof(tmp) - 1) {
-		LOG_ERROR("sdfat_write(%zu) failed.", sizeof(tmp) - 1);
+		LOG_ERROR("sdfat_write(%" PRIuMAX ") failed.", (uintmax_t) (sizeof(tmp) - 1));
 		return;
 	}
 	if (sdfat_flush(file)) {
@@ -217,7 +218,7 @@ void sdfat_test(void) {
 	}
 	int16_t n = sdfat_read(file, tmp, sizeof(tmp) - 1);
 	if (n != sizeof(tmp) - 1) {
-		LOG_ERROR("sdfat_read(%zu) failed.", sizeof(tmp) - 1);
+		LOG_ERROR("sdfat_read(%" PRIuMAX ") failed.", (uintmax_t) (sizeof(tmp) - 1));
 		return;
 	}
 	printf("read %d byte:\n", n);

@@ -40,13 +40,14 @@
 #include "log.h"
 #include "bot-2-bot.h"
 #include <stdlib.h>
+#include <inttypes.h>
 
 #define DEBUG
 
 /* bot_save_waypos()-Parameter */
 #define STACK_SIZE		64 /**< Groesse des Positionsspeichers */
-#define MAX_GRADIENT		10 /**< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
-#define MAX_POS_DIFF		(200L * 200L) /**< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
+#define MAX_GRADIENT	10 /**< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
+#define MAX_POS_DIFF	(200L * 200L) /**< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
 
 #if STACK_SIZE > POS_STORE_SIZE
 #undef STACK_SIZE
@@ -173,7 +174,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	struct {
 		unsigned subresult:3;
 	} result = {BEHAVIOUR_SUBFAIL};
-	LOG_DEBUG("pos_store_send_to_bot(0x%zx, %u)", (uintptr_t) pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
+	LOG_DEBUG("pos_store_send_to_bot(0x%" PRIxPTR ", %" PRIu8 ")", (uintptr_t) pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0, (remote_call_data_t) 0) == 0) {
 			result.subresult = BEHAVIOUR_SUBSUCCESS;
@@ -208,7 +209,7 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 
 static uint8_t waypos_state = 0; 		/**< Status des drive_stack-Push-Verhaltens */
 static position_t last_pos = { 0, 0 };	/**< letzte gemerkte Position */
-static int16_t last_heading = 0;			/**< letzte gemerkte Botausrichtung */
+static int16_t last_heading = 0;		/**< letzte gemerkte Botausrichtung */
 
 #define DIST_FOR_PUSH 14400         /**< Quadrat des Abstandes [mm^2] zum letzten Punkt, ab dem gepush wird */
 #define DIST_FOR_PUSH_TURN 3600     /**< Quadrat des Abstandes [mm^2] nach erreichen eines Drehwinkels zum letzten Punkt */
@@ -322,7 +323,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 					uint8_t i;
 					for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
 						int32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
-						LOG_DEBUG(" diff=%d", diff);
+						LOG_DEBUG(" diff=%" PRId32, diff);
 						if (diff < MAX_POS_DIFF) {
 							LOG_DEBUG(" Position (%d|%d)@%u liegt in der Naehe", pos_1.x, pos_1.y, i);
 							uint8_t k;
