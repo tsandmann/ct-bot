@@ -65,7 +65,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.c.compiler.option.misc.other.1990924785" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wdouble-promotion -Wshadow -Wformat=2" valueType="string"/>
+                                <option id="gnu.c.compiler.option.misc.other.1990924785" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wdouble-promotion -Wshadow -Wformat=2" valueType="string"/>
                                 								
                                 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.504571561" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
                                 								
@@ -103,7 +103,7 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.std.1230173792" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.2078463120" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.2078463120" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.c.compiler.option.warnings.wconversion.2142143622" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -131,7 +131,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.607735332" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.607735332" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.warnings.wconversion.36465211" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -145,7 +145,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.708628212" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.708628212" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wextra -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1939571647" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -337,7 +337,7 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.482538934" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.1835572230" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1835572230" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.809879335" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
                                 							
@@ -353,7 +353,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.1365020864" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.595385134" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.595385134" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wextra -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
                                 <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.134856103" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
                                     									
@@ -371,7 +371,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.895282189" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.895282189" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.234804767" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
@@ -527,7 +527,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.c.compiler.option.misc.other.1707230278" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
+                                <option id="gnu.c.compiler.option.misc.other.1707230278" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
                                 								
                                 <option id="gnu.c.compiler.option.debugging.gprof.1133689586" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -565,9 +565,9 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.std.609947901" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.1140369897" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1140369897" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.wconversion.1374765763" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.wconversion.1374765763" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.57583523" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
@@ -585,11 +585,11 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.1930559419" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1216719228" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1216719228" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.warnings.wconversion.886791719" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.1984865103" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644 -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.1984865103" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644 -fno-exceptions -fno-threadsafe-statics -Wextra -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
                                 <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1224204732" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
                                     									
@@ -789,7 +789,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.c.compiler.option.misc.other.2045816591" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644p -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
+                                <option id="gnu.c.compiler.option.misc.other.2045816591" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
                                 								
                                 <option id="gnu.c.compiler.option.debugging.gprof.1383056871" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -827,9 +827,9 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.std.596377520" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.1376031474" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1376031474" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.wconversion.944591309" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.wconversion.944591309" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.403550054" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
@@ -865,11 +865,11 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.1810857499" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.174622853" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.174622853" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.warnings.wconversion.1090889406" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.1870281014" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644p -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.1870281014" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega644p -fno-exceptions -fno-threadsafe-statics -Wextra -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.optimization.flags.1188713196" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-Os" valueType="string"/>
                                 								
@@ -1045,7 +1045,7 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
+                                <option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wextra -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections -Wshadow -Wformat=2" valueType="string"/>
                                 								
                                 <option id="gnu.c.compiler.option.debugging.gprof.627091778" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -1083,9 +1083,9 @@
                                 								
                                 <option id="gnu.c.compiler.option.dialect.std.2048016155" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.wconversion.930891651" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.wconversion.930891651" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.c.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.510114185" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.510114185" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.c.compiler.option.dialect.flags.1396503349" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu11" valueType="string"/>
                                 								
@@ -1099,9 +1099,9 @@
                                 								
                                 <option id="gnu.cpp.compiler.exe.debug.option.debugging.level.166871041" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.1015534209" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.1015534209" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -fno-exceptions -fno-threadsafe-statics -Wextra -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections -Wlogical-op -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1857600798" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1857600798" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.warnings.wconversion.1550367535" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
@@ -1277,7 +1277,7 @@
             			
             <storageModule moduleId="cdtBuildSystem" version="4.0.0">
                 				
-                <configuration artifactExtension="" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ARM-Linux fuer Raspberry Pi (2 v1.2 oder 3)" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013" name="Debug-ARM-Linux-RPi3" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="">
+                <configuration artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ARM-Linux fuer Raspberry Pi (2 v1.2 oder 3)" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013" name="Debug-ARM-Linux-RPi3" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="">
                     					
                     <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013." name="/" resourcePath="">
                         						
@@ -1305,13 +1305,13 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.c.compiler.option.misc.other.2130077288" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wdouble-promotion -Wshadow -Wformat=2" valueType="string"/>
+                                <option id="gnu.c.compiler.option.misc.other.2130077288" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wdouble-promotion -Wshadow -Wformat=2" valueType="string"/>
                                 								
                                 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.856690442" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
                                 								
                                 <option id="gnu.c.compiler.exe.debug.option.debugging.level.770150820" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.c.compiler.option.warnings.extrawarn.1774815196" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.c.compiler.option.warnings.extrawarn.1774815196" name="Extra warnings (-Wextra)" superClass="gnu.c.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.c.compiler.option.dialect.std.1175388033" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
                                 								
@@ -1345,11 +1345,11 @@
                                     								
                                 </option>
                                 								
-                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1871848097" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="gnu.cpp.compiler.option.warnings.extrawarn.1871848097" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.warnings.wconversion.806362721" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.other.other.536232117" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.other.other.536232117" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -fmessage-length=0 -Wextra -Wmissing-declarations -Wlogical-op -Wdouble-promotion -Wshadow -Wformat=2 -Wold-style-cast -Wuseless-cast" valueType="string"/>
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.std.820840190" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
                                 								
