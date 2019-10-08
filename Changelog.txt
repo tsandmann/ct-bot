@@ -1,5 +1,23 @@
 CHANGELOG fuer c't-Bot
 ======================
+2019-10-08: Release 27 (v1.27)
+    - support for gcc version 8
+    - support specifc gcc version used by makefile-build
+    - blocking version for fifo_put_data()
+    - cleanup in map code
+    - local buffer for map-2-sim data
+    - SPI master: use faster wait-while-busy version for short timeouts
+    - short step-by-step tutorial for drive_chess behaviour from anonybot
+    - logging improved, bugfixes for some LOG-messages
+    - follow_line behavior extended with initial search
+    - bugfix for build with recent mingw64 versions and some makefile optimizations
+    - workaround for fgets()’s asynchronous behavior on mingw64 platforms
+    - bugfix for behaviour_abl, if SDFAT is disabled. Fixes #47
+    - cleanup and improvements for makefile
+    - subfolder /Documentation renamed to /doc
+    - test scripts updated with an optional parameter for testing with a specific test case file only
+    - disable __gcc_isr instructions for timer ISR on MCU, might support gcc versions >= 8.0, but it’s untested
+    - build tests updated to detect a compiler misconfiguration (at least for include paths)
 
 2018-10-18: Release 26 (v1.26)
     - Warnings korrigiert
