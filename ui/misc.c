@@ -161,13 +161,13 @@ void ram_display(void) {
 	extern unsigned char __data_end;
 	extern unsigned char __bss_end;
 	if (RC5_Code == RC5_CODE_1) {
-		LOG_DEBUG("__data_start = 0x%04x", &__data_start);
-		LOG_DEBUG("__data_end = 0x%04x", &__data_end);
-		LOG_DEBUG("__bss_start = 0x%04x", &__bss_start);
-		LOG_DEBUG("__bss_end = 0x%04x", &__bss_end);
-		LOG_DEBUG("__heap_start = 0x%04x", &__heap_start);
-		LOG_DEBUG("__heap_end = 0x%04x", __brkval);
-		LOG_DEBUG("SP = 0x%04x", sp);
+		LOG_DEBUG("__data_start = 0x%04x", (uintptr_t)&__data_start);
+		LOG_DEBUG("__data_end = 0x%04x", (uintptr_t)&__data_end);
+		LOG_DEBUG("__bss_start = 0x%04x", (uintptr_t)&__bss_start);
+		LOG_DEBUG("__bss_end = 0x%04x", (uintptr_t)&__bss_end);
+		LOG_DEBUG("__heap_start = 0x%04x", (uintptr_t)&__heap_start);
+		LOG_DEBUG("__heap_end = 0x%04x", (uintptr_t)__brkval);
+		LOG_DEBUG("SP = 0x%04x", (uintptr_t)sp);
 		LOG_DEBUG("RAMEND = 0x%04x", RAMEND);
 		RC5_Code = 0;
 	}

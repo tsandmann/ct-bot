@@ -93,8 +93,6 @@
 char EEPROM abl_eeprom_data[3584] = ABL_PROG; /**< 3584 Byte grosser EEPROM-Bereich fuer ABL-Daten */
 #elif defined MCU_ATMEGA644X // ATmega644(P)
 char EEPROM abl_eeprom_data[1536] = ABL_PROG; /**< 1536 Byte grosser EEPROM-Bereich fuer ABL-Daten */
-#else // ATmega32
-char EEPROM abl_eeprom_data[512] = ABL_PROG; /**< 512 Byte grosser EEPROM-Bereich fuer ABL-Daten */
 #endif // MCU-Typ
 
 #ifdef BEHAVIOUR_ABL_AVAILABLE
@@ -255,27 +253,20 @@ static void load_program(int8_t dir) {
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
 	if (dir > 0 && addr < 3584 - 512) {
 		addr += 512;
-	} else if (direction < 0 && addr >= 512) {
+	} else if (dir < 0 && addr >= 512) {
 		addr -= 512;
-	} else if (direction != 0) {
-		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
-	}
-#elif defined MCU_ATMEGA644X
-	/* on ATmega644(P) we have 1536 Bytes EEPROM for ABL */
-	if (dir > 0 && addr < 1536 - 512) {
-		addr += 512;
-	} else if (direction < 0 && addr >= 512) {
-		addr -= 512;
-	} else if (direction != 0) {
+	} else if (dir != 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
 #else
-	/* on ATmega32 we have 512 Bytes EEPROM for ABL */
-	(void) dir;
-	if (addr > 0) {
+	/* on ATmega644(P) we have 1536 Bytes EEPROM for ABL */
+	if (dir > 0 && addr < 1536 - 512) {
+		addr += 512;
+	} else if (dir < 0 && addr >= 512) {
+		addr -= 512;
+	} else if (dir != 0) {
 		LOG_ERROR("EEPROM Zugriff out of bounds, addr=%u", addr);
 	}
-	addr = 0;
 #endif // MCU Typ
 	ctbot_eeprom_read_block(p_abl_i_data, &abl_eeprom_data[addr], 512);
 #endif // SDFAT_AVAILABLE

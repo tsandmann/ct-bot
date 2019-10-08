@@ -64,9 +64,6 @@ void uart_init(void) {
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	/* Data mode 8N1, asynchron */
 	uint8_t ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
-#ifdef URSEL
-	ucsrc |= (1 << URSEL); // fuer ATMega32
-#endif
 	UCSRC = ucsrc;
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */
@@ -133,7 +130,7 @@ int16_t uart_write(const void * data, int16_t length) {
 	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {}
 
 	/* Daten in Ausgangs-FIFO kopieren */
-	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length)) {
+	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length, False)) {
 		return 0;
 	}
 

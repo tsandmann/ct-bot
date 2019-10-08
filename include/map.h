@@ -272,6 +272,16 @@ extern char* map_file; /**< Dateiname fuer Ex- / Import */
  * \param filename	Zieldatei
  */
 void map_to_pgm(const char* filename);
+
+/**
+ * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
+ * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
+ * \param min_x Zeiger auf einen uint16_t, der den minimalen X-Wert puffert
+ * \param max_x Zeiger auf einen uint16_t, der den maximalen X-Wert puffert
+ * \param min_y Zeiger auf einen uint16_t, der den minimalen Y-Wert puffert
+ * \param max_y Zeiger auf einen uint16_t, der den maximalen Y-Wert puffert
+ */
+void shrink(int16_t* min_x, int16_t* max_x, int16_t* min_y, int16_t* max_y);
 #endif // PC
 
 #ifdef DISPLAY_MAP_AVAILABLE

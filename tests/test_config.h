@@ -17,9 +17,12 @@
  *
  */
 
-#ifndef INCLUDE_BOT_LOCAL_OVERRIDE_H_
-#define INCLUDE_BOT_LOCAL_OVERRIDE_H_
+#ifndef INCLUDE_TEST_CONFIG_H_
+#define INCLUDE_TEST_CONFIG_H_
 
-#include "tests/test_config.h"
+#ifndef IN_TEST_RUN
+#error "Test-Config eingebunden, aber nicht im Test-Modus. Falsche Compiler-include-Pfade gesetzt?"
+#endif
+#define TEST_CONFIG
 
-#endif /* INCLUDE_BOT_LOCAL_OVERRIDE_H_ */
+#endif /* INCLUDE_TEST_CONFIG_H_ */

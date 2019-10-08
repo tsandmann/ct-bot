@@ -90,7 +90,7 @@ protected:
 				"sbiw %2,1		; 2 nop		\n\t"
 				"adiw %2,1		; 2 nop		\n\t"
 				"sbiw %2,1		; 2 nop		\n\t"
-				"nop				; 1 nop		\n\t"
+				"nop			; 1 nop		\n\t"
 				"in %0,%3		; tmp		\n\t" // load from SPDR
 				"out %3,__zero_reg__			\n\t" // start next SPI-transfer
 				"st Z+,%0	 	; tmp		\n\t" // save to *buffer
@@ -136,7 +136,7 @@ protected:
 			uint8_t tmp;
 			__asm__ __volatile__(
 				"1:							\n\t"
-				"ld %0,Z	 		; tmp	2	\n\t" // load from *buffer
+				"ld %0,Z	 	; tmp	2	\n\t" // load from *buffer
 				"out %3,%0					\n\t" // start next SPI-transfer
 				"adiw %2,1 		; 2 nop		\n\t" // wait 17 cycles for SPI transfer to finish
 				"sbiw %2,1		; 2 nop		\n\t"
@@ -177,32 +177,31 @@ protected:
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
 		auto yield_start_time(starttime);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
-		if (m_divisor == 2 && 0 /* deactivated because of ToDo below */) {
+		if (m_divisor == 2 && timeout_ms <= 3000) {
 			bool ret;
 			__asm__ __volatile__(
-/** \todo call os_exit_CS() in asm code */
-				"ldi %A0,0			; 	 		\n\t"
+				"ldi %A0,0				; 	 		\n\t"
 				"ldi %B0,lo8(-1)		; 	 		\n\t"
-				"jmp 2f				; 			\n\t"
-				"1:					;			\n\t"
+				"jmp 2f					; 			\n\t"
+				"1:						;			\n\t"
 				"cli					; 1			\n\t" // wait 16 cycles for SPI reception to finish
 				"lds %B0,tickCount+1	; 2			\n\t"
-				"lds %A0,tickCount	; 2			\n\t"
+				"lds %A0,tickCount		; 2			\n\t"
 				"sei					; 1			\n\t"
 				"sub %A0,%A1			; 1			\n\t"
 				"sbc %B0,%B1			; 1			\n\t"
-				"cp %A2,%A0			; 1			\n\t"
+				"cp %A2,%A0				; 1			\n\t"
 				"cpc %B2,%B0			; 1			\n\t"
-				"ldi %A0,0			; 1  		\n\t"
+				"ldi %A0,0				; 1  		\n\t"
 				"brlo 3f				; 1			\n\t"
-				"ldi %B0,lo8(-1)		; 1 			\n\t"
-				"in %A0,%3			;			\n\t"
-				"2:					;			\n\t"
-				"out %3,%B0			;			\n\t"
+				"ldi %B0,lo8(-1)		; 1 		\n\t"
+				"in %A0,%3				;			\n\t"
+				"2:						;			\n\t"
+				"out %3,%B0				;			\n\t"
 				"cpi %A0,lo8(-1)		; ==0xff? 1 \n\t"
 				"brne 1b				; 2			\n\t"
-				"ldi %A0,1			;   			\n\t"
-				"3:					;   				"
+				"ldi %A0,1				;  			\n\t"
+				"3:						;  				"
 				: "=&w" (ret) /* %0 */
 				: "d" (starttime) /* %1 */, "d" (timeout_ticks) /* %2 */, "M" (_SFR_IO_ADDR(SPDR)) /* %3 */
 				:

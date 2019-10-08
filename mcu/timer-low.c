@@ -44,14 +44,14 @@ static uint8_t scheduler_ticks = 0;
 
 // ---- Timer 2 ----
 
+#if GCC_VERSION >= 80000
+ISR(TIMER2_COMPA_vect) __attribute__((no_gccisr));
+#endif // GCC_VERSION
+
 /**
  Interrupt Handler fuer Timer/Counter 2(A)
  */
-#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 ISR(TIMER2_COMPA_vect) {
-#else
-ISR(TIMER2_COMP_vect) {
-#endif
 	/* ----- TIMER ----- */
 	uint32_t ticks = tickCount.u32; // TickCounter [176 us] erhoehen
 	ticks++;

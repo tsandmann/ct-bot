@@ -254,7 +254,7 @@ void os_schedule(uint32_t tickcount) {
 							log_entry.time = (uint16_t) tickcount;
 							log_entry.from = (uint8_t) (os_thread_running - os_threads);
 							log_entry.to = (uint8_t) (ptr - os_threads);
-							fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
+							fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry), False);
 						}
 #endif // OS_KERNEL_LOG_AVAILABLE
 

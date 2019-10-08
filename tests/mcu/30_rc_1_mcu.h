@@ -20,6 +20,8 @@
 #ifndef INCLUDE_BOT_LOCAL_OVERRIDE_H_
 #define INCLUDE_BOT_LOCAL_OVERRIDE_H_
 
+#include "tests/test_config.h"
+
 /* Logging-Funktionen */
 #define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 #undef  LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */

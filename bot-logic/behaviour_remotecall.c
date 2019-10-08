@@ -26,7 +26,7 @@
  * \see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 #include <stdlib.h>
@@ -89,6 +89,12 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
 
 #define PREPARE_REMOTE_CALL_MANUAL(func, beh_func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, beh_func}
 
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
+
 /**
  * \brief Hier muessen alle Boten-Funktionen rein, die remote aufgerufen werden sollen.
  *
@@ -147,7 +153,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_solve_maze, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_follow_line, 0, "", 0),
+	PREPARE_REMOTE_CALL(bot_follow_line, 1, "uint8 search", 1),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_follow_line_enh, 0, "", 0),
@@ -251,6 +257,10 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 	{0, {0}, "", "", NULL, NULL}
 };
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic pop
+#endif
 
 /** Anzahl der Remote-Calls im Array */
 #define STORED_CALLS (sizeof(remotecall_beh_list) / sizeof(remotecall_entry_t))

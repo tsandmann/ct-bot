@@ -109,8 +109,8 @@
 #define G_POS			0.5f		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
 /* Servo-Parameter */
-#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega644: Schrittweite 18, Offset 7) */
-#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega644: Schrittweite 18, Offset 7) */
+#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega644(P): Schrittweite 18, Offset 7) */
+#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega644(P): Schrittweite 18, Offset 7) */
 #define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
 #define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
 #define CAM_CENTER	120	/**< Mittelstellung Servo 2 */

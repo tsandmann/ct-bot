@@ -72,7 +72,7 @@ static int16_t current_token = TOKENIZER_ERROR;
 extern PTR_TYPE program_ptr;
 
 #if UBASIC_EXT_PROC
-	extern char current_proc[MAX_PROG_NAME_LEN];
+	extern char current_proc[MAX_PROG_NAME_LEN + 1];
 #endif
 
 

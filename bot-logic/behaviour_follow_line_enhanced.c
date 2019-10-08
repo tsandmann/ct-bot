@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * @file 	behaviour_follow_line_enhanced.c
  * @brief 	erweiterter Linienverfolger, der auch mit Unterbrechungen und Hindernissen klarkommt
  * @author 	Frank Menzel (Menzelfr@gmx.de)
@@ -25,7 +25,7 @@
  */
 
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 #include "math_utils.h"
@@ -51,7 +51,7 @@ static uint8_t next_linestate = 0;
 #define SEARCH_LINE         8
 #define END_LINE_ENH        99
 
-/*!
+/**
  * Check-Routine zum Erkennen ob sich bot schon auf der Linie befindet
  * @return True wenn Linie erkannt wurde
  */
@@ -63,7 +63,7 @@ static uint8_t check_line_sensors(void) {
 	return False;
 }
 
-/*!
+/**
  * Check-Routine zum Erkennen ob sich linker Liniensensor allein schon auf der Linie befindet; dies waere
  * ja optimal fuer den Linienfolger, da dieser ja auf linker Kante faehrt; wird verwendet nach Umrunden des
  * Hindernisses, um sich wieder auf Linie in richtiger Richtung, also vom Hindernis weg, auszurichten
@@ -75,7 +75,7 @@ static uint8_t check_left_line_sensor(void) {
 	return False;
 }
 
-/*!
+/**
  * Check-Routine zum Erkennen, ob sich bot an einer Linienunterberechung befindet oder Hindernis gesehen wird; wird
  * verwendet zum Abbrechen des Linienfolgers an Unterbrechung oder Hindernis
  * @return True wenn Unterbrechung erkannt wird oder Hindernis voraus gesehen wird
@@ -106,7 +106,7 @@ static uint8_t check_sensors(void) {
 	return False;
 }
 
-/*!
+/**
  * erweiterter Linienfolger, der auch Linienunterbrechungen und Hindernisse handhabt, waehrend der Bot die Linie verfolgt;
  * die Linienunterbrechung darf nur relativ klein sein (~3cm), so dass sich beim Drehen am Ende der Linie der rechte Abgrundsensor
  * ueber dem Neubeginn der unterbrochenen Linie drehn muss
@@ -124,7 +124,7 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
 		break;
 
 	case START_LINE_ENH: // Einsprung falls sich bot nun auf Linie befindet, weiter mit Linienfolger
-		bot_follow_line(data); // Linienfolger laeuft los
+		bot_follow_line(data, 0); // Linienfolger laeuft los
 		bot_cancel_behaviour(data, bot_follow_line_behaviour, check_sensors); // Abbruch Linienfolger bei Unterbrechung oder Hindernis
 		line_state_enh = END_LINE_ENH; // einfach mal auf Ende, bei Cancel Linienfolger wird dort Einsprung gesetzt
 		break;
@@ -197,7 +197,7 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
 
 }
 
-/*!
+/**
  * Botenverhalten fuer den erweiterten Linienfolger
  * @param *caller Verhaltensdatensatz des Aufrufers
  */

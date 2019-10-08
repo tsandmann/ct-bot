@@ -106,6 +106,11 @@
 #include "global.h" // ct-Bot Datentypen
 #include "bot-local.h" // Hardwarekonfigurationen, die bei den Bots verschieden sein koennen
 
+#ifdef IN_TEST_RUN
+#ifndef TEST_CONFIG
+#error "Test-Modus, aber keine Test-Config eingebunden. Falsche Compiler-include-Pfade gesetzt?"
+#endif
+#endif
 
 #if ! (defined PC && defined ARM_LINUX_BOARD && defined __arm__ && defined __gnu_linux__)
 #undef ARM_LINUX_BOARD

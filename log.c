@@ -132,6 +132,22 @@ static char screen_output[4][LOG_BUFFER_SIZE];	/**< Puffer, damit mehr als eine 
 
 #ifdef PC
 /**
+ * Formatiert und schreibt eine Log-Message in den Log-Buffer
+ * \param format Format-String wie bei printf()
+ * \param ... Weitere Argumente
+ */
+uint16_t log_printf(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+
+	const uint16_t len = strlen(log_buffer);
+	const int16_t n = vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
+
+	va_end(args);
+	return n > 0 ? (uint16_t)n : 0;
+}
+
+/**
  * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
  * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
  * freigegeben werden!
@@ -268,10 +284,11 @@ void log_flash_printf(const char * format, ...) {
 	get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE / 2 + 2); // String aus dem Flash holen
 
 	va_list	args;
-	uint16_t len = strlen(log_buffer);
-
 	va_start(args, format);
+
+	uint16_t len = strlen(log_buffer);
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
+
 	va_end(args);
 }
 #endif // MCU

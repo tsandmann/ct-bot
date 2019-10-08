@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * @file 	behaviour_follow_line.c
  * @brief 	Linienverfolger
  * @author 	Torsten Evers (tevers@onlinehome.de) Version 1
@@ -26,22 +26,23 @@
  * @date 	21.09.2007
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
 //#define DEBUG_BEHAVIOUR_FOLLOW_LINE // Schalter fuer Debug-Code
 
+#include "log.h"
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_FOLLOW_LINE
 #endif
 #ifndef DEBUG_BEHAVIOUR_FOLLOW_LINE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...)
 #endif
 
 
-#if FOLLOW_LINE_VERSION == 1  // urspruenglich altes Linienverhalten
+#if FOLLOW_LINE_VERSION == 1  	// urspruenglich altes Linienverhalten
 
 /* Konstanten fuer das Verhalten */
 #define CORNER_LEFT					1
@@ -59,12 +60,12 @@
 static int8_t lineState=CHECK_LINE;
 static int8_t cornerDetected=False;
 
-/*!
+/**
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t * data) {
+void bot_follow_line_behaviour(Behaviour_t* data) {
 	switch (lineState) {
 	case CHECK_LINE: /* sind beide Sensoren ueber einer Linie? */
 		if (sensLineL>=LINE_SENSE&& sensLineR>=LINE_SENSE) {
@@ -181,77 +182,141 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * @param *caller Verhaltensdatensatz des Aufrufers
  */
-void bot_follow_line(Behaviour_t * caller) {
+void bot_follow_line(Behaviour_t* caller, uint8_t dummy) {
+	(void) dummy;
 	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
-	lineState=CHECK_LINE;
-	cornerDetected=False;
+	lineState = CHECK_LINE;
+	cornerDetected = False;
 }
 
-#elif FOLLOW_LINE_VERSION == 2    // neuere Version des Linienfolgers
+#elif FOLLOW_LINE_VERSION == 2	// neuere Version des Linienfolgers
 #include "timer.h"
 
-/*!
+#ifndef BEHAVIOUR_AVOID_COL_AVAILABLE
+#warning "BEHAVIOUR_AVOID_COL_AVAILABLE sollte aktiv sein fuer FOLLOW_LINE_VERSION == 2"
+#endif
+
+static uint8_t state; /*< Status des Verhaltens (0: init, 1: Linie suchen, 2: Linie gefunden, 10: Linie verfolgen) */
+
+/**
  * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren,
  * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch)
  */
 #define	CORRECTION_DELAY	150
 
-/*!
+/**
  * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
- * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite
- * beider CNY70 haben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite beider CNY70 haben.
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t * data) {
-	data = data; // kein warning
+void bot_follow_line_behaviour(Behaviour_t* data) {
 	static int16_t lastLeft = 0;
 	static int16_t lastRight = 0;
 	static uint8_t lastCorrection = 0;
 	static uint32_t lastCorrectionTime = 0;
-	uint8_t correction = 0;
+	static uint32_t find_i = 1;
 
-	if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
-		/* Bot faehrt auf rechter Linienkante */
-		speedWishLeft = BOT_SPEED_SLOW;
-		speedWishRight = BOT_SPEED_SLOW;
-	} else if (sensLineL < LINE_SENSE) {
-		/* Bot fahert rechts neben der Linie */
-		speedWishLeft = -BOT_SPEED_FOLLOW;
-		speedWishRight = BOT_SPEED_FOLLOW;
-		correction = 1;
-	} else {
-		/* Bot faehrt auf der Linie */
-		speedWishLeft = BOT_SPEED_FOLLOW;
-		speedWishRight = -BOT_SPEED_FOLLOW;
-		correction = 2;
+	switch (state) {
+	case 0:
+		/* Initialisierung */
+		lastCorrectionTime = 0;
+		find_i = 1;
+		state = 1;
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		activateBehaviour(data, bot_avoid_col_behaviour);
+#endif
+		break;
+
+	case 1:
+		/* Linie suchen */
+		if (sensLineL < LINE_SENSE && sensLineR < LINE_SENSE) {
+			/* Bot steht nicht auf der Linie -> Spirale gegen den Uhrzeigersinn fahren */
+			if (TIMER_GET_TICKCOUNT_32 - lastCorrectionTime < MS_TO_TICKS(500)) {
+				speedWishLeft = BOT_SPEED_STOP;
+				speedWishRight = BOT_SPEED_FOLLOW;
+				return;
+			} else if (TIMER_GET_TICKCOUNT_32 - lastCorrectionTime < MS_TO_TICKS(find_i)) {
+				speedWishLeft = BOT_SPEED_SLOW;
+				speedWishRight = BOT_SPEED_SLOW;
+				return;
+			}
+			lastCorrectionTime = TIMER_GET_TICKCOUNT_32;
+			find_i += 10;
+			speedWishLeft = BOT_SPEED_IGNORE;
+			speedWishRight = BOT_SPEED_IGNORE;
+		} else if (sensLineL >= LINE_SENSE && sensLineR >= LINE_SENSE) {
+			/* Beide Sensoren sehen die Linie -> im Uhrzeigersinn drehen */
+			speedWishLeft = BOT_SPEED_SLOW;
+			speedWishRight = BOT_SPEED_STOP;
+		} else if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
+			/* rechte Linienkante gefunden */
+			LOG_DEBUG("follow_line: rechte Kante gefunden.");
+			state = 2;
+		} else if (sensLineL < LINE_SENSE && sensLineR >= LINE_SENSE) {
+			/* linke Linienkante gefunden -> um 180 Grad drehen */
+			LOG_DEBUG("follow_line: linke Kante gefunden.");
+			speedWishLeft = BOT_SPEED_STOP;
+			speedWishRight = BOT_SPEED_STOP;
+			bot_turn(data, 180);
+			state = 2;
+		}
+		break;
+
+	case 2:
+		/* Linie gefunden */
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
+		state = 10;
+		break;
+
+	default: {
+		/* Linie verfolgen */
+		uint8_t correction = 0;
+		if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
+			/* Bot faehrt auf rechter Linienkante */
+			speedWishLeft = BOT_SPEED_SLOW;
+			speedWishRight = BOT_SPEED_SLOW;
+		} else if (sensLineL < LINE_SENSE) {
+			/* Bot fahert rechts neben der Linie */
+			speedWishLeft = -BOT_SPEED_FOLLOW;
+			speedWishRight = BOT_SPEED_FOLLOW;
+			correction = 1;
+		} else {
+			/* Bot faehrt auf der Linie */
+			speedWishLeft = BOT_SPEED_FOLLOW;
+			speedWishRight = -BOT_SPEED_FOLLOW;
+			correction = 2;
+		}
+
+		if (lastCorrection != correction && !timer_ms_passed_32(&lastCorrectionTime, CORRECTION_DELAY)) {
+			/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
+			speedWishLeft = lastLeft;
+			speedWishRight = lastRight;
+			return;
+		}
+
+		/* neue Werte merken */
+		lastCorrection = correction;
+		lastLeft = speedWishLeft;
+		lastRight = speedWishRight;
+		break;
 	}
-
-	if (lastCorrection != correction && !timer_ms_passed_32(
-			&lastCorrectionTime, CORRECTION_DELAY)) {
-		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
-		speedWishLeft = lastLeft;
-		speedWishRight = lastRight;
-		return;
 	}
-
-	/* neue Werte merken */
-	lastCorrection = correction;
-	lastLeft = speedWishLeft;
-	lastRight = speedWishRight;
 }
 
-/*!
+/**
  * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
- * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite
- * beider CNY70 haben.
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite beider CNY70 haben.
+ * @param *caller Verhaltensdatensatz des Aufrufers
+ * @param search Falls 1, wird zunaechst nach einer Linie gesucht. Falls 0, muss der Bot auf der rechten Linienkante stehen.
  */
-void bot_follow_line(Behaviour_t * caller) {
+void bot_follow_line(Behaviour_t* caller, uint8_t search) {
 	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
 	/* stoerende Notfallverhalten aus */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
@@ -264,40 +329,41 @@ void bot_follow_line(Behaviour_t * caller) {
 	set_scan_otf_border(0); // keine Abgruende (die Linie) in die Map eintragen
 	set_scan_otf_mapmode(0); // Kartographiemodus aus
 #endif
+	state = search ? 0 : 10;
 }
 
 #elif FOLLOW_LINE_VERSION == 3  // neueste Version des Linienfolgers, die mit drive_line_shortest_way entstanden ist
 #include "math_utils.h"
 
-/*!
+/**
  * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren,
  * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch)
  */
 #define	CORRECTION_DELAY	100
 
-/*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
+/** Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
  *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
 static uint8_t border_side_l_fired = 0;
 
-/*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
+/** Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
  *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
 static uint8_t border_side_r_fired = 0;
 
 static int16_t lastpos_x = 0;
 static int16_t lastpos_y = 0;
 
-/*! nach dieser gefahrenen Strecke in mm werden Borderkennungen rueckgesetzt */
+/** nach dieser gefahrenen Strecke in mm werden Borderkennungen rueckgesetzt */
 #define CHECK_DISTANCE 100
 #define CHECK_DISTANCE_QUAD (CHECK_DISTANCE * CHECK_DISTANCE)  /*!< Quadrat der gefahrenen Strecke */
 
 
-/*!
+/**
  * Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
  * @param  *last_xpoint   letzte gemerkte X-Koordinate
  * @param  *last_ypoint   letzte gemerkte Y-Koordinate
  * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
  */
-static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
+static uint8_t distance_reached(int16_t* last_xpoint, int16_t* last_ypoint) {
 	// Abstand seit letztem Observerlauf ermitteln
 	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
 
@@ -310,12 +376,12 @@ static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
 	return False;
 }
 
-/*!
+/**
  * Folgt einer Linie. Der linke Liniensensor oder auch beide sind dabei auf der Linie.
  * Version optimal fuer bot_line_shortest_way, hat auf dem echten Bot aber zurzeit Probleme mit spitzen Winkeln
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t * data) {
+void bot_follow_line_behaviour(Behaviour_t* data) {
 	static int16_t lastLeft = 0;
 	static int16_t lastRight = 0;
 	static uint8_t lastCorrection = 0;
@@ -364,8 +430,7 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
 		}
 
 	// Naechstes klappt prima im Sim, beim echten Bot jedoch nicht und dreht dort links, scheinbar wird die Var zu frueh rueckgesetzt
-	} else if (sensLineL < LINE_SENSE && sensLineR < LINE_SENSE
-			&& !border_side_r_fired) {
+	} else if (sensLineL < LINE_SENSE && sensLineR < LINE_SENSE && !border_side_r_fired) {
 		/* Linker Sensor und rechter nicht auf Linie, dann rechts daneben und links drehen */
 		speedWishLeft = -BOT_SPEED_FOLLOW;
 		speedWishRight = BOT_SPEED_FOLLOW;
@@ -377,8 +442,7 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
 		correction = 2;
 	}
 
-	if (lastCorrection != correction && !timer_ms_passed_32(
-			&lastCorrectionTime, CORRECTION_DELAY)) {
+	if (lastCorrection != correction && !timer_ms_passed_32(&lastCorrectionTime, CORRECTION_DELAY)) {
 		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
 		speedWishLeft = lastLeft;
 		speedWishRight = lastRight;
@@ -398,14 +462,15 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
 	lastRight = speedWishRight;
 }
 
-/*!
+/**
  * Folgt einer Linie. Der linke Liniensensor oder auch beide sind dabei auf der Linie.
  * Der Bot faehrt also auf der rechten Kante der Linie oder der Linie selbst. Sie sollte in etwa die Breite
  * beider CNY70 haben.
  * Version optimal fuer bot_line_shortest_way
  * @param *caller Verhaltensdatensatz des Aufrufers
  */
-void bot_follow_line(Behaviour_t * caller) {
+void bot_follow_line(Behaviour_t* caller, uint8_t dummy) {
+	(void) dummy;
 	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
 
 	// Kennungen init.
@@ -423,5 +488,5 @@ void bot_follow_line(Behaviour_t * caller) {
 #endif
 }
 
-#endif	// VERSION
+#endif // VERSION
 #endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE

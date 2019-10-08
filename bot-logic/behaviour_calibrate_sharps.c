@@ -168,6 +168,12 @@ static void goto_next_pos(void) {
 	wait_for_userinput();
 }
 
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-overflow="
+#pragma GCC diagnostic ignored "-Wrestrict"
+#endif
+
 /**
  * Das eigentliche Verhalten
  * \param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
@@ -225,6 +231,10 @@ void bot_calibrate_sharps_behaviour(Behaviour_t* data) {
 		}
 	}
 }
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic pop
+#endif
 
 /**
  * Kalibriert die Distanzsensoren des ct-Bots

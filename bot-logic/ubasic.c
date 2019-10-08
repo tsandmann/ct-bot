@@ -68,11 +68,16 @@
 #endif
 
 #if UBASIC_EXT_PROC
-	extern char current_proc[MAX_PROG_NAME_LEN];
+	extern char current_proc[MAX_PROG_NAME_LEN + 1];
 #endif
 
 #if !BREAK_NOT_EXIT
 	#include <stdlib.h> /* exit() */
+#endif
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
 #endif
 
 PTR_TYPE program_ptr;
@@ -652,7 +657,7 @@ static void gosub_statement(void){
 	ubasic_accept(TOKENIZER_GOSUB);
 
 #if UBASIC_EXT_PROC
-	char p_name[MAX_PROG_NAME_LEN]="";
+	char p_name[MAX_PROG_NAME_LEN + 1]="";
 	if (tokenizer_token() == TOKENIZER_STRING) {
 		strncpy(p_name, tokenizer_last_string_ptr(), MAX_PROG_NAME_LEN);
 		jump_to_next_linenum();
@@ -1655,5 +1660,9 @@ uint32_t rand31_next(void)
 }
 #endif
 /*---------------------------------------------------------------------------*/
+
+#if __clang__ != 1 && GCC_VERSION >= 80000
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

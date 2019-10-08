@@ -203,8 +203,7 @@ static struct {
 static Tcb_t* map_2_sim_worker; /**< Worker-Thread fuer die Map-2-Sim-Anzeige */
 uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /**< Stack des Map-2-Sim-Threads */
 static pFatFile map_2_sim_file_desc; /**< File-Deskriptor fuer Map-2-Sim */
-/** \todo use local buffer */
-#define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /**< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
+static uint8_t map_2_sim_buffer[512]; /**< Puffer fuer zur Map-2-Sim-Kommunikation */
 static os_signal_t map_2_sim_signal = OS_SIGNAL_INITIALIZER; /**< Signal, um gleichzeitiges Senden von Map-Daten zu verhindern */
 #endif // MAP_2_SIM_AVAILABLE
 
@@ -582,7 +581,7 @@ static map_section_t* get_section(int16_t x, int16_t y) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 		map_2_sim_data.error = pos_error_radius / (1000 / MAP_RESOLUTION) + (BOT_DIAMETER / 2 / (1000 / MAP_RESOLUTION));
 #endif
-		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block));
+		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block), True);
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef DEBUG_MAP_TIMES
@@ -1778,10 +1777,7 @@ static void draw_test_scheme(void) {
 	LOG_DEBUG("fertig.");
 	os_signal_unlock(&lock_signal);
 }
-#endif // PC
 
-// FIXME: ist shrink() erforderlich?
-#if 0
 /**
  * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
  * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
@@ -1790,7 +1786,7 @@ static void draw_test_scheme(void) {
  * \param min_y Zeiger auf einen uint16_t, der den minimalen Y-Wert puffert
  * \param max_y Zeiger auf einen uint16_t, der den maximalen Y-Wert puffert
  */
-static void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * max_y) {
+void shrink(int16_t* min_x, int16_t* max_x, int16_t* min_y, int16_t* max_y) {
 	int16_t x, y;
 
 	// lokale Variablen mit den defaults befuellen
@@ -1848,9 +1844,7 @@ static void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * 
 	}
 	os_signal_unlock(&lock_signal);
 }
-#endif // 0
 
-#ifdef PC
 /**
  * Schreibt eine Karte in eine PGM-Datei
  * \param *filename Zieldatei
