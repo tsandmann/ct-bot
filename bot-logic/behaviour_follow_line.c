@@ -275,6 +275,16 @@ void bot_follow_line_behaviour(Behaviour_t* data) {
 		state = 10;
 		break;
 
+	case 5:
+		if (sensLineL < LINE_SENSE && sensLineR < LINE_SENSE) {
+			/* Bot sieht keine Linie -> erstmal geradeaus */
+			speedWishLeft = BOT_SPEED_SLOW;
+			speedWishRight = BOT_SPEED_SLOW;
+		} else {
+			state = 10;
+		}
+		break;
+
 	default: {
 		/* Linie verfolgen */
 		uint8_t correction = 0;
@@ -290,7 +300,7 @@ void bot_follow_line_behaviour(Behaviour_t* data) {
 		} else {
 			/* Bot faehrt auf der Linie */
 			speedWishLeft = BOT_SPEED_FOLLOW;
-			speedWishRight = -BOT_SPEED_FOLLOW;
+			speedWishRight = -BOT_SPEED_SLOW;
 			correction = 2;
 		}
 
@@ -329,7 +339,7 @@ void bot_follow_line(Behaviour_t* caller, uint8_t search) {
 	set_scan_otf_border(0); // keine Abgruende (die Linie) in die Map eintragen
 	set_scan_otf_mapmode(0); // Kartographiemodus aus
 #endif
-	state = search ? 0 : 10;
+	state = search ? 0 : 5;
 }
 
 #elif FOLLOW_LINE_VERSION == 3  // neueste Version des Linienfolgers, die mit drive_line_shortest_way entstanden ist
