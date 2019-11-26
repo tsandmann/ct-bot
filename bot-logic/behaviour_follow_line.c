@@ -290,7 +290,10 @@ void bot_follow_line_behaviour(Behaviour_t* data) {
 		} else {
 			/* Bot faehrt auf der Linie */
 			speedWishLeft = BOT_SPEED_FOLLOW;
-			speedWishRight = -BOT_SPEED_FOLLOW;
+			//org:
+			//speedWishRight = -BOT_SPEED_FOLLOW;
+			//Timos Patch, damit der Bot nicht auf der Stelle dreht, wenn er beim Start schon mittig auf der Linie steht:
+			speedWishRight = -BOT_SPEED_SLOW;
 			correction = 2;
 		}
 
