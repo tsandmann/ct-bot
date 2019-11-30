@@ -48,7 +48,7 @@ static uint8_t adventcal_state = 0;
 #define STATE_ADVENTCAL_TURNTOSTARTPOS 7
 
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
-static uint8_t bot_follow_line_cancel_find(void) {
+static uint8_t cancel_follow_line_object_catched(void) {
 	//...und zwar in Abhaengigkeit davon, ob der Sensor im Transportfach etwas sieht oder nicht
 	if (sensTrans == 1) {
 		//"1" bedeutet, dass ein Objekt im Transportfach ist und die Abbruch-Funktion mittels "return" meldet, dass die Abbruch-Bedingung erfuellt ist und das Verhalten, einer Linie zu folgen, abgebrochen werden soll
@@ -61,7 +61,7 @@ static uint8_t bot_follow_line_cancel_find(void) {
 }
 
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
-static uint8_t bot_follow_line_cancel_deliver(void) {
+static uint8_t cancel_follow_line_on_border(void) {
 	//...und zwar in Abhaengigkeit davon, ob die Abgrund- bzw. Kanten-Sensoren eine schwarze Linie sehen oder nicht
 	if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
 		//wenn die Abbruch-Bedingung erfuellt ist, die beiden Kanten-Sensoren also eine schwarze Linie sehen, meldet die Abbruch-Funktion mittels "return", dass die Abbruch-Bedingung erfuellt ist und das Verhalten, einer Linie zu folgen, abgebrochen werden soll
@@ -75,60 +75,76 @@ static uint8_t bot_follow_line_cancel_deliver(void) {
 
 void bot_adventcal_behaviour(Behaviour_t * data) {
 	switch (adventcal_state) {
+	//Oeffnen der Transportfach-Klappe, bevor die Suche nach dem Transportfach-Objekt beginnt
 	case STATE_ADVENTCAL_START:
 			LOG_DEBUG("STATE_ADVENTCAL_START_BEGIN");
 			bot_servo(data, SERVO1, DOOR_OPEN);
 			adventcal_state = STATE_ADVENTCAL_FIND;
 			LOG_DEBUG("STATE_ADVENTCAL_START_END");
 			break;
+	//Suchen des Transportfach-Objekts
 	case STATE_ADVENTCAL_FIND:
 		LOG_DEBUG("STATE_ADVENTCAL_FIND_BEGIN");
+		//Solange der Transportfach-Sensor nichts sieht...
 		if (sensTrans == 0) {
+			//...folgt der Bot der Linie...
 			bot_follow_line(data, 0);
-			bot_cancel_behaviour(data, bot_follow_line_behaviour, bot_follow_line_cancel_find);
+			//...und bricht ab, sobald der Transportfach-Senor ein Objekt im Transportfach registriert
+			bot_cancel_behaviour(data, bot_follow_line_behaviour, cancel_follow_line_object_catched);
 		}
 		adventcal_state = STATE_ADVENTCAL_FLAPCLOSE;
 		LOG_DEBUG("STATE_ADVENTCAL_FIND_END");
 		break;
+	//Schlieszen der Transportfach-Klappe
 	case STATE_ADVENTCAL_FLAPCLOSE:
 		LOG_DEBUG("STATE_ADVENTCAL_FLAPCLOSE_BEGIN");
 		bot_servo(data, SERVO1, DOOR_CLOSE);
 		adventcal_state = STATE_ADVENTCAL_TURNTODELIVER;
 		LOG_DEBUG("STATE_ADVENTCAL_FLAPCLOSE_END");
 		break;
+	//180Grad-Wende als Vorbereitung, um das Transportfach-Objekt zur Startposition zurueckzubringen
 	case STATE_ADVENTCAL_TURNTODELIVER:
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_BEGIN");
 		bot_turn(data, 180);
 		adventcal_state = STATE_ADVENTCAL_DELIVER;
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_END");
 		break;
+	//Transport des Transportfach-Objekts zur Startposition
 	case STATE_ADVENTCAL_DELIVER:
 		LOG_DEBUG("STATE_ADVENTCAL_DELIVER_BEGIN");
+		//Soalange die Kanten-Sensoren keine Linie erkennen...
 		if (sensBorderL<BORDER_DANGEROUS && sensBorderR<BORDER_DANGEROUS) {
+			//...folgt der Bot der Linie...
 			bot_follow_line(data, 0);
-			bot_cancel_behaviour(data, bot_follow_line_behaviour, bot_follow_line_cancel_deliver);
+			//...und bricht ab, sobald beide Kanten-Sensoren eine Linie erkennen.
+			bot_cancel_behaviour(data, bot_follow_line_behaviour, cancel_follow_line_on_border);
 		}
 		adventcal_state = STATE_ADVENTCAL_FLAPOPEN;
 		LOG_DEBUG("STATE_ADVENTCAL_DELIVER_END");
 		break;
+	//Oeffnen der Transportfach-Klappe, bevor das Transportfach-Objekt freigegeben wird
 	case STATE_ADVENTCAL_FLAPOPEN:
 		LOG_DEBUG("STATE_ADVENTCAL_FLAPOPEN_BEGIN");
 		bot_servo(data, SERVO1, DOOR_OPEN);
 		adventcal_state = STATE_ADVENTCAL_MOVEBACK;
 		LOG_DEBUG("STATE_ADVENTCAL_FLAPOPEN_END");
 		break;
+	//Freigabe des Transportfach-Objekts...
 	case STATE_ADVENTCAL_MOVEBACK:
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_BEGIN");
+		//...durch rueckwaertiges Fahren
 		bot_drive_distance(data, 0, -BOT_SPEED_FOLLOW, 10);
 		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS;
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_END");
 		break;
+	//180Grad-Drehung zurueck in Ausgangsposition
 	case STATE_ADVENTCAL_TURNTOSTARTPOS:
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_BEGIN");
 		bot_turn(data, 180);
 		adventcal_state = 99;
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_END");
 		break;
+	//Default-Verhalten, in diesem Fall: Gar nichts tun (Ende des Verhaltens)
 	default:
 		LOG_DEBUG("default_BEGIN");
 		return_from_behaviour(data);
@@ -144,7 +160,7 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
  */
 void bot_adventcal(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_adventcal_behaviour, BEHAVIOUR_OVERRIDE);
-	adventcal_state = STATE_ADVENTCAL_FIND;
+	adventcal_state = STATE_ADVENTCAL_START;
 }
 
 // Alternative Botenfunktion mit Uebergabeparameter

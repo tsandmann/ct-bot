@@ -33,11 +33,19 @@
 
 #ifdef BEHAVIOUR_ADVENTCAL_AVAILABLE
 /*!
- * Verhalten für einen Adventskalender: Der Bot faehrt eine Linie ab, auf der 24 Behaelter (bspw. Fotodosen) stehen. Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und gibt ihn frei.
+ * Verhalten für einen Adventskalender:
+ * Der Bot faehrt eine Linie ab, auf der 24 Behaelter (bspw. Fotodosen) stehen.
+ * Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und
+ * gibt ihn frei.
+ * Da der Bot noch kein Verdauungssystem besitzt, duerfen die Sueszigkeiten,
+ * die zuvor in den Dosen platziert wurden, von der Person gegessen werden,
+ * die den Bot angeschaltet hatte.
  *
- * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml (zugleich Hilfe fuer den Aufbau des realen Adventskalender).
+ * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml (zugleich Hilfe
+ * fuer den Aufbau des realen Adventskalender).
  *
- * Das Verhalten geht davon aus, dass der Bot bereits eine ideale Startposition hat, bevor er angeschaltet wird, woraufhin sich das Verhalten automatisch startet.
+ * Das Verhalten geht davon aus, dass der Bot bereits eine ideale Startposition hat,
+ * bevor er angeschaltet wird, woraufhin sich das Verhalten automatisch startet.
  * Die ideale Startposition ist:
  * - linker Linien-Sensor steht auf der schwarzen Linke
  * - rechter Linien-Sensor steht nicht auf der schwarzen Linke

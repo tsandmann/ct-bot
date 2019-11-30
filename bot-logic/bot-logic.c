@@ -84,6 +84,10 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
+#ifdef BEHAVIOUR_ADVENTCAL_AVAILABLE
+	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_adventcal_behaviour, BEHAVIOUR_ACTIVE));
+#endif
+
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	// Dieses Verhalten kann andere Verhalten starten
 	insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour, BEHAVIOUR_INACTIVE));

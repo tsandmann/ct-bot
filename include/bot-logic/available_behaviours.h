@@ -56,8 +56,9 @@
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
 
 /* Anwendungs-Verhalten */
-#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
-//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
+#define BEHAVIOUR_ADVENTCAL_AVAILABLE 				/**< Adventskalender-Verhalten */
+//#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
+#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 //#define BEHAVIOUR_PATHPLANNING_AVAILABLE 			/**< Pfadplanungsverhalten */
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE				/**< Olympiadenverhalten */
@@ -292,6 +293,7 @@
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
 #include "behaviour_prototype.h"
+#include "behaviour_adventcal.h"
 #include "behaviour_hw_test.h"
 #include "behaviour_simple.h"
 #include "behaviour_drive_square.h"
