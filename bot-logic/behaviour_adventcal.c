@@ -63,7 +63,10 @@ static uint8_t cancel_follow_line_object_catched(void) {
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
 static uint8_t cancel_follow_line_on_border(void) {
 	//...und zwar in Abhaengigkeit davon, ob die Abgrund- bzw. Kanten-Sensoren eine schwarze Linie sehen oder nicht
-	if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
+	//fuer Sim-Tests folgende Zeile nutzen
+	//if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
+	//fuer Real-Tests folgende Zeile nutzen und ggf. an Schwarz-Werte des verwendeten Klebebandes anpassen
+	if (sensBorderL>0x2A0 && sensBorderR>0x2A0) {
 		//wenn die Abbruch-Bedingung erfuellt ist, die beiden Kanten-Sensoren also eine schwarze Linie sehen, meldet die Abbruch-Funktion mittels "return", dass die Abbruch-Bedingung erfuellt ist und das Verhalten, einer Linie zu folgen, abgebrochen werden soll
 		return 1;
 
@@ -75,7 +78,7 @@ static uint8_t cancel_follow_line_on_border(void) {
 
 void bot_adventcal_behaviour(Behaviour_t * data) {
 	switch (adventcal_state) {
-	//Oeffnen der Transportfach-Klappe, bevor die Suche nach dem Transportfach-Objekt beginnt
+	//Sicherstellen, dass die Transportfach-Klappe geoeffnet ist, bevor die Suche nach dem "Tuerchen" beginnt
 	case STATE_ADVENTCAL_START:
 			LOG_DEBUG("STATE_ADVENTCAL_START_BEGIN");
 			bot_servo(data, SERVO1, DOOR_OPEN);
@@ -102,10 +105,11 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 		adventcal_state = STATE_ADVENTCAL_TURNTODELIVER;
 		LOG_DEBUG("STATE_ADVENTCAL_FLAPCLOSE_END");
 		break;
-	//180Grad-Wende als Vorbereitung, um das Transportfach-Objekt zur Startposition zurueckzubringen
+	//Wende als Vorbereitung, um das Transportfach-Objekt zur Startposition zurueckzubringen
 	case STATE_ADVENTCAL_TURNTODELIVER:
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_BEGIN");
-		bot_turn(data, 180);
+		//nicht ganz 180 Grad, damit das Liniensuchverhalten nicht dazu tendiert, den Bot in die falsche Richtung zu drehen
+		bot_turn(data, 170);
 		adventcal_state = STATE_ADVENTCAL_DELIVER;
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_END");
 		break;
@@ -137,10 +141,14 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS;
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_END");
 		break;
-	//180Grad-Drehung zurueck in Ausgangsposition
+	//180Grad-Drehung zurueck in Ausgangsposition und schlieszen der Transportfach-Klappe
 	case STATE_ADVENTCAL_TURNTOSTARTPOS:
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_BEGIN");
-		bot_turn(data, 180);
+		//nicht ganz 180 Grad, damit das Liniensuchverhalten weniger dazu tendiert, den Bot beim Start am naechsten Tag nicht in die falsche Richtung zu drehen, sodass keine ideale Neuausrichtung des Bots noetig ist
+		bot_turn(data, 170);
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN_DONE");
+		bot_servo(data, SERVO1, DOOR_CLOSE);
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_FLAP_CLOSED");
 		adventcal_state = 99;
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_END");
 		break;

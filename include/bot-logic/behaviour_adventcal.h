@@ -34,15 +34,18 @@
 #ifdef BEHAVIOUR_ADVENTCAL_AVAILABLE
 /*!
  * Verhalten für einen Adventskalender:
- * Der Bot faehrt eine Linie ab, auf der 24 Behaelter (bspw. Fotodosen) stehen.
+ * Der Bot faehrt eine Linie ab, auf der 24 Fotodosen stehen.
  * Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und
  * gibt ihn frei.
  * Da der Bot noch kein Verdauungssystem besitzt, duerfen die Sueszigkeiten,
  * die zuvor in den Dosen platziert wurden, von der Person gegessen werden,
  * die den Bot angeschaltet hatte.
  *
- * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml (zugleich Hilfe
- * fuer den Aufbau des realen Adventskalender).
+ * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml - beim Nachbau fuer den realen Kalender sollte Folgendes beachtet werdne:
+ * - zwischen Start-Position des Bots und erster Fotodose muss Abstand sein (10cm sollten reichen),
+ * damit der Transportfach-Klappen-Servo wahrend der Fahrt seinen Arbeitsvorgang abschliessen kann, sonst wird das Verhalten zum Schliessen desselben aufgerufen, wenn er noch mit der Oeffnen-Aktion beschaeftig ist, wodurch das Schlieszen verhindert wird
+ *
+ * Bei der realen "Kalenderflaeche" muss die Ziel-Linie eventuell in doppelter Breite angelegt werden, also bei Verwendung von 1cm schwarzem Klebeband (fuer die Fahrtlinie wunderbar) ca. 2cm, damit der Oeffnungswinkel der Kanten-Sensoren genuegend Flaeche hat, sie zu erkennen.
  *
  * Das Verhalten geht davon aus, dass der Bot bereits eine ideale Startposition hat,
  * bevor er angeschaltet wird, woraufhin sich das Verhalten automatisch startet.
@@ -50,7 +53,7 @@
  * - linker Linien-Sensor steht auf der schwarzen Linke
  * - rechter Linien-Sensor steht nicht auf der schwarzen Linke
  * - die erste Dose findet sich in Fahrtrichtung
- * - im ct-Sim bedeutet dies für "X [m]" den Wert "0.363" und fuer "Richtung" den Wert "0".
+ * - im Sim findet der Bot durch die optimalen Bedingungen die Linie auch in Aufruf-Position, falls doch nicht fuer "X [m]" den Wert "0.363" und fuer "Richtung" den Wert "0" verwenden
  * Dies bedeutet leider auch, dass der Bot nach dem Abliefern der Dose neu ideal positioniert werden muss.
  */
 void bot_adventcal_behaviour(Behaviour_t * data);
