@@ -35,17 +35,29 @@
  * Verhalten für einen Adventskalender:
  * @param *data Der Verhaltensdatensatz
  *
- * Der Bot faehrt eine Linie ab, auf der 24 Fotodosen stehen.
+ * Der Bot faehrt direkt nach dem Einschalten eine Linie ab, auf der 24 Fotodosen stehen.
  * Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und
  * gibt ihn frei.
  * Da der Bot noch kein Verdauungssystem besitzt, duerfen die Sueszigkeiten,
  * die zuvor in den Dosen platziert wurden, von der Person gegessen werden,
- * die den Bot angeschaltet hatte.
+ * die den Bot angeschaltet hatte. ;)
+ *
+ * Zur Aktivierung muss in include/bot-logic/available_behaviours.h neben
+ * - "BEHAVIOUR_ADVENTCAL_AVAILABLE"
+ * auch
+ * - "BEHAVIOUR_FOLLOW_LINE_AVAILABLE" aktiviert sein, damit das Verhalten funktioniert.
+ * Achtung: Im Default wird davon ausgegangen, dass das Verhalten zunaechst im Sim ausprobiert wird,
+ * sodass fuer reale Tests in bot-logic/behaviour_adventcal.c fuer die Abbruch-Funktion "cancel_follow_line_on_border"
+ * die entsprechend kommentierte Zeile deaktiviert bzw. aktiviert werden muss, damit der Bot die Linie findet.
+ *
  *
  * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml - beim Nachbau fuer den realen Kalender sollte Folgendes beachtet werden:
- * - zwischen Start-Position des Bots und erster Fotodose muss Abstand sein (10cm sollten reichen),
- * damit der Transportfach-Klappen-Servo wahrend der Fahrt seinen Arbeitsvorgang abschliessen kann, sonst wird das Verhalten zum
- * Schliessen desselben aufgerufen, wenn er noch mit der Oeffnen-Aktion beschaeftig ist, wodurch das Schlieszen verhindert wird.
+ * - zwischen Start-Position des Bots und erster Fotodose muss ein gewisser Abstand sein, falls gewuenscht ist,
+ * dass die Transportfach-Klappe nach dem Einfangen einer Fotodose ordentlich schliesst (zur Zeit
+ * der Erstellung dieses Verhaltens waren das 15cm zwischen geschlossener Bot-Klappe und erster Fotodose).
+ * Dies ist noetig, damit der Transportfach-Klappen-Servo wahrend der Fahrt unmittelbar nach dem Start genuegend Zeit hat,
+ * seinen Arbeitsvorgang abschliessen zu koennen, da sonst das Verhalten zum Schliessen desselben aufgerufen wird,
+ * waehrend der Klappen-Servo noch mit der Oeffnen-Aktion beschaeftig ist, wodurch das Schlieszen verhindert wird.
  *
  * Bei der realen "Kalenderflaeche" muss die Ziel-Linie eventuell in doppelter Breite angelegt werden, also bei Verwendung von
  * 1cm schwarzem Klebeband (fuer die Fahrtlinie wunderbar) ca. 2cm, damit der Oeffnungswinkel der Kanten-Sensoren genuegend
@@ -56,10 +68,12 @@
  * Die ideale Startposition ist:
  * - linker Linien-Sensor steht auf der schwarzen Linke
  * - rechter Linien-Sensor steht nicht auf der schwarzen Linke
- * - die erste Dose findet sich in Fahrtrichtung
- * - im Sim findet der Bot durch die optimalen Bedingungen die Linie auch in Aufruf-Position, falls doch nicht fuer "X [m]"
- * den Wert "0.363" und fuer "Richtung" den Wert "0" verwenden.
- * Dies bedeutet leider auch, dass der Bot nach dem Abliefern der Dose neu ideal positioniert werden muss.
+ * - die erste Dose findet sich in "Blickrichtung" des Bots
+ * - im Sim findet der Bot durch die optimalen Bedingungen die Linie auch in Aufruf-Position,
+ * falls doch nicht, muss im Sim nach Aufruf und vor Start des Bots
+ * fuer "X [m]" der Wert "0.363" und fuer "Richtung" der Wert "0" eingestellt werden.
+ * Dies bedeutet leider auch, dass der Bot nach dem Abliefern der Dose neu ideal positioniert werden muss,
+ * falls er am Ende des Verhaltens mit beiden Linien-Sensoren links von der Linie zum Stehen gekommen ist.
  */
 void bot_adventcal_behaviour(Behaviour_t * data);
 

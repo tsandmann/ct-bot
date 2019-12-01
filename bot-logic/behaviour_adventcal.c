@@ -59,9 +59,9 @@ static uint8_t cancel_follow_line_object_catched(void) {
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
 static uint8_t cancel_follow_line_on_border(void) {
 	//...und zwar in Abhaengigkeit davon, ob die Abgrund- bzw. Kanten-Sensoren eine schwarze Linie sehen oder nicht
-	//fuer Sim-Tests folgende Zeile nutzen
+	//fuer Sim-Tests nur folgende Zeile nutzen
 	//if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
-	//fuer Real-Tests folgende Zeile nutzen und ggf. an Schwarz-Werte des verwendeten Klebebandes anpassen
+	//fuer Real-Tests nur folgende Zeile nutzen und ggf. die Werte (0x2A0) an Schwarz-Werte des verwendeten Klebebandes anpassen, die der Bot uber die Linien-Sensoren meldet
 	if (sensBorderL>0x2A0 && sensBorderR>0x2A0) {
 		//wenn die Abbruch-Bedingung erfuellt ist, die beiden Kanten-Sensoren also eine schwarze Linie sehen, meldet die Abbruch-Funktion mittels "return", dass die Abbruch-Bedingung erfuellt ist und das Verhalten, einer Linie zu folgen, abgebrochen werden soll
 		return 1;
@@ -136,7 +136,7 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 	case STATE_ADVENTCAL_MOVEBACK:
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_BEGIN");
 		//...durch rueckwaertiges Fahren
-		bot_drive_distance(data, 0, -BOT_SPEED_FOLLOW, 10);
+		bot_drive_distance(data, 0, -BOT_SPEED_FOLLOW, 6);
 		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS;
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_END");
 		break;
