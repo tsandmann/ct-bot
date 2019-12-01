@@ -93,7 +93,8 @@ define SRCHIGHLEVEL
 endef
 
 define SRCLOGIC
-    bot-logic/behaviour_abl.c               bot-logic/behaviour_avoid_border.c          bot-logic/behaviour_avoid_col.c \
+    bot-logic/behaviour_abl.c               bot-logic/behaviour_adventcal.c \
+    bot-logic/behaviour_avoid_border.c      bot-logic/behaviour_avoid_col.c \
     bot-logic/behaviour_calibrate_pid.c     bot-logic/behaviour_calibrate_sharps.c      bot-logic/behaviour_cancel_behaviour.c \
     bot-logic/behaviour_catch_pillar.c      bot-logic/behaviour_classify_objects.c      bot-logic/behaviour_delay.c \
     bot-logic/behaviour_drive_area.c        bot-logic/behaviour_drive_chess.c           bot-logic/behaviour_drive_distance.c \
