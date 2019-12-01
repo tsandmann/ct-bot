@@ -31,11 +31,12 @@
  * Ausgeschaltete Optionen belegen keinen Platz im Flash-Speicher des Controllers. ***/
 
 /* Logging-Funktionen */
+//Achtung: Bis auf #define USE_MINILOG, das zusaetzlich aktiviert sein kann, kann immer nur eine Logging-Ausgabe aktiviert sein
 //#define LOG_CTSIM_AVAILABLE				/**< Logging zum ct-Sim (PC und MCU) */
-//#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
+//#define LOG_DISPLAY_AVAILABLE				/**< Logging-Ausgabe ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
-//#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
-#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
+//#define LOG_RPI_AVAILABLE					/**< Logging-Ausgabe vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
+#define LOG_STDOUT_AVAILABLE 				/**< Logging-Ausgabe auf die Konsole, von der der Bot gestartet wurde (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 //#define CREATE_TRACEFILE_AVAILABLE			/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
