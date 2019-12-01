@@ -20,9 +20,8 @@
 /*!
  * @file 	behaviour_adventcal.c
  * @brief 	Adventskalender-Verhalten
- * @author 	Benjamin Benz (bbe@heise.de) (Template "behaviour_prototype.c")
- * @author 	anonybotATriseupDOTnet (behaviour_adventcal.c)
- * @date 	2019-11-07
+ * @author 	Anonybot (anonybot@riseup.net), based on template "behaviour_prototype.h" by Benjamin Benz (bbe@heise.de), created with a lot of help by Timo Sandmann (mail@timosandmann.de)
+ * @date 	2019-11-30
  */
 
 
@@ -110,6 +109,9 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_BEGIN");
 		//nicht ganz 180 Grad, damit das Liniensuchverhalten nicht dazu tendiert, den Bot in die falsche Richtung zu drehen
 		bot_turn(data, 170);
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_TURN_DONE");
+		//bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 1);
+		//LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_MOVE1CM_DONE");
 		adventcal_state = STATE_ADVENTCAL_DELIVER;
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_END");
 		break;
@@ -147,6 +149,8 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 		//nicht ganz 180 Grad, damit das Liniensuchverhalten weniger dazu tendiert, den Bot beim Start am naechsten Tag nicht in die falsche Richtung zu drehen, sodass keine ideale Neuausrichtung des Bots noetig ist
 		bot_turn(data, 170);
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN_DONE");
+		//bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 1);
+		//LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_MOVE1CM_DONE");
 		bot_servo(data, SERVO1, DOOR_CLOSE);
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_FLAP_CLOSED");
 		adventcal_state = 99;
@@ -173,7 +177,7 @@ void bot_adventcal(Behaviour_t * caller) {
 
 // Alternative Botenfunktion mit Uebergabeparameter
 /*!
- * Rufe das Prototyp-Verhalten auf
+ * Rufe das Adventskalender-Verhalten auf
  * und nutze dabei einen Uebergabeparameter
  * @param *caller Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param param Uebergabeparameter
