@@ -338,8 +338,8 @@ void bot_behave_init(void) {
 
 #ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
 	// Verhaltens-Prorotyp als Vorlage fuer neue Verhalten
-	// hatte urspruenglich die Prioritaet "102" - in diesem Bereich sollte ein neues Verhalten im Zweifel priorisiert werdne
-	// Wichtig: Prioritaetswert nicht doppelt vergeben und neues Verhalten nach Sortierung einsortieren
+	// hatte urspruenglich die Prioritaet "102" - in diesem Bereich sollte ein neues Verhalten im Zweifel priorisiert werden
+	// Wichtig: Prioritaetswert sollten nicht doppelt vergeben und neue Verhalten entsprechend einsortiert werden
 	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_prototype_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 }
