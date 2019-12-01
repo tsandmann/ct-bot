@@ -20,7 +20,7 @@
 /*!
  * @file 	behaviour_adventcal.c
  * @brief 	Adventskalender-Verhalten
- * @author 	Anonybot (anonybot@riseup.net), based on template "behaviour_prototype.h" by Benjamin Benz (bbe@heise.de), created with a lot of help by Timo Sandmann (mail@timosandmann.de)
+ * @author 	anonybot (anonybot@riseup.net), based on template "behaviour_prototype.h" by Benjamin Benz (bbe@heise.de), created with a lot of help by Timo Sandmann (mail@timosandmann.de)
  * @date 	2019-11-30
  */
 
