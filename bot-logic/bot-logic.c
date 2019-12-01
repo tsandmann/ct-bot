@@ -80,7 +80,7 @@ int8_t register_emergency_proc(void (* fkt)(void));
  *
  * Die Zahl hinter der Klammer hinter "new_behaviour" gibt die Prioritaet des Verhaltens an:
  * Je hoeher die Zahl, desto priorisierter wird es ausgefuehrt (wichtig fuer Notfall-Verhalten,
- * bspw. um zu verhindern, dass sich der Bot in einen Abgrund stuerzt). Der Wert sollte muss
+ * bspw. um zu verhindern, dass sich der Bot in einen Abgrund stuerzt). Der Wert muss
  * eindeutig unter allen aktivierten Verhalten sein (also nicht doppelt vergeben), unter diesem
  * Aspekt ist es allerdings sinnvoll, ihn generell eindeutig zu vergeben (also sowohl unter
  * aktivierten als auch nicht aktivierten Verhalten).
@@ -98,12 +98,12 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
-	// Notfall Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
+	// Notfall-Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_border_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-	// Notfall Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
+	// Notfall-Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(248, bot_avoid_col_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
@@ -128,7 +128,7 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
-	// Notfall Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
+	// Notfall-Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(245, bot_hang_on_behaviour, BEHAVIOUR_ACTIVE));
 	// Registrierung des Handlers zur Behandlung des Haengenbleibens
 	register_emergency_proc(&hang_on_handler);
@@ -153,48 +153,46 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_turn_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	insert_behaviour_to_list(&behaviour, new_behaviour(149, bot_drive_distance_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
-	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
+	// bot_goto ist allerdings veraltet, besser bot_drive_distance benutzen!
 	insert_behaviour_to_list(&behaviour, new_behaviour(148, bot_goto_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
-	// Hilfsverhalten zum Anfahren von Positionen
+	// Hilfsverhalten zum Anfahren von Positionen. Allerdings veraltet, besser bot_goto_pos benutzen.
 	insert_behaviour_to_list(&behaviour, new_behaviour(147, bot_gotoxy_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	// Hilfsverhalten zum Anfahren von Positionen
 	insert_behaviour_to_list(&behaviour, new_behaviour(146, bot_goto_pos_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
-	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
-	// Hilfsverhalten zum Anfahren von Positionen
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
+	// Hilfsverhalten zum Einhalten eines Abstands zu einem Hindernis
 	insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_goto_obstacle_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
-	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
-	// Hilfsverhalten zum Anfahren von Positionen
+	// Hilfsverhalten, das Befehle von Boten-Funktionen ausfuehrt, erstmal inaktiv, wird vom Boten aktiviert
+	// Hilfsverhalten zur Auswertung der  Distanzsensoren
 	insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, BEHAVIOUR_INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_check_distance_behaviour, BEHAVIOUR_INACTIVE));
 #endif
@@ -230,11 +228,11 @@ void bot_behave_init(void) {
 	// links hoeher als rechts, damit rechts zuletzt Werte in den Stack schreibt
 	insert_behaviour_to_list(&behaviour, new_behaviour(171, bot_observe_left_behaviour, BEHAVIOUR_INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_right_behaviour, BEHAVIOUR_INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, BEHAVIOUR_INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(73, bot_drive_area_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_PATHPLANNING_AVAILABLE
-	insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, BEHAVIOUR_INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_calc_wave_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
@@ -255,11 +253,11 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+	// Demo-Verhalten fuer aufwendiges System, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_olympic_behaviour, BEHAVIOUR_INACTIVE));
 	// unwichtigere Hilfsverhalten
 	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_explore_behaviour, BEHAVIOUR_INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(54, bot_do_slalom_behaviour, BEHAVIOUR_INACTIVE));
-	// Demo-Verhalten fuer aufwendiges System, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_olympic_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
@@ -270,7 +268,7 @@ void bot_behave_init(void) {
 #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 	// Explorer-Verhalten um einer Wand zu folgen
 	insert_behaviour_to_list(&behaviour, new_behaviour(48, bot_follow_wall_behaviour, BEHAVIOUR_INACTIVE));
-	// Registrierung zur Behandlung des Notfallverhaltens zum R ueckwaertsfahren
+	// Registrierung zur Behandlung des Notfall-Verhaltens zum Rueckwaertsfahren
 	register_emergency_proc(&border_follow_wall_handler);
 #endif
 
@@ -339,7 +337,7 @@ void bot_behave_init(void) {
 #ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
 	// Verhaltens-Prorotyp als Vorlage fuer neue Verhalten
 	// hatte urspruenglich die Prioritaet "102" - in diesem Bereich sollte ein neues Verhalten im Zweifel priorisiert werden
-	// Wichtig: Prioritaetswert sollten nicht doppelt vergeben und neue Verhalten entsprechend einsortiert werden
+	// Wichtig: Prioritaetswert duerfen nicht doppelt vergeben werden, neue Verhalten bitte entsprechend einsortieren
 	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_prototype_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 }
@@ -386,7 +384,7 @@ static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Beha
  * \param *behave	Zeiger auf einzufuegendes Verhalten
  */
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave) {
-	Behaviour_t	* ptr	= * list;
+	Behaviour_t	* ptr = * list;
 	Behaviour_t * temp;
 
 	/* Kein Eintrag dabei? */
