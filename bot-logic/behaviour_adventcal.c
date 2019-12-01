@@ -34,9 +34,6 @@
 // Status des Adventskalender-Verhaltens beim Start des Verhaltens
 static uint8_t adventcal_state = 0;
 
-// Optionaler Puffer fuer den Uebergabeparameter
-//static int16_t adventcal_parameter = 0;	/*!< Uebergabevariable fuer Prototype */
-
 #define STATE_ADVENTCAL_START 0
 #define STATE_ADVENTCAL_FIND 1
 #define STATE_ADVENTCAL_FLAPCLOSE 2
@@ -167,7 +164,7 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * Rufe das Prototyp-Verhalten auf
+ * Rufe das Adventskalender-Verhalten auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_adventcal(Behaviour_t * caller) {
@@ -175,18 +172,4 @@ void bot_adventcal(Behaviour_t * caller) {
 	adventcal_state = STATE_ADVENTCAL_START;
 }
 
-// Alternative Botenfunktion mit Uebergabeparameter
-/*!
- * Rufe das Adventskalender-Verhalten auf
- * und nutze dabei einen Uebergabeparameter
- * @param *caller Der obligatorische Verhaltensdatensatz des Aufrufers
- * @param param Uebergabeparameter
- */
-/*
-void bot_adventcal(Behaviour_t * caller, int16_t param) {
-	switch_to_behaviour(caller, bot_adventcal_behaviour, BEHAVIOUR_OVERRIDE);
-	adventcal_parameter = param;
-	prototyp_state = STATE_ADVENTCAL_INIT;
-}
-*/
 #endif // BEHAVIOUR_ADVENTCAL_AVAILABLE

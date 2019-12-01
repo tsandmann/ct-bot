@@ -128,7 +128,6 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 #ifdef BEHAVIOUR_ADVENTCAL_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_adventcal, 0, "", 0),
-//	PREPARE_REMOTE_CALL(bot_adventcal, 1, "int16 param", 2),
 #endif
 	/* Demo-Verhalten fuer Einsteiger */
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
