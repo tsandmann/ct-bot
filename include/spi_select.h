@@ -78,6 +78,8 @@ protected:
 	void set_cs(const bool status) const {
 #ifdef SPI_AVAILABLE
 		status ? PORTB |= _BV(PB4) : PORTB &= ~_BV(PB4);
+#else
+		(void) status;
 #endif
 	}
 };
