@@ -203,7 +203,9 @@ void ctbot_shutdown(void) {
 	display_puts("SYSTEM HALTED.");
 #endif // DISPLAY_AVAILABLE
 
+#ifdef ENA_AVAILABLE
 	ENA_off(0xff);
+#endif
 
 	ctbot_shutdown_low();
 

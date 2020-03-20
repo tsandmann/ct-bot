@@ -31,6 +31,7 @@
 #ifdef MCU
 #include "sdcard.h"
 #include "sdcard_wrapper.h"
+#include <util/delay.h>
 
 #ifdef MMC_AVAILABLE
 
@@ -139,9 +140,10 @@ bool SdCard::init(uint8_t sckDivisor) {
 	m_errorCode = m_type = 0;
 	const bool lock_set(os_lock());
 
-	const auto t0(TIMER_GET_TICKCOUNT_16);
+	auto t0(TIMER_GET_TICKCOUNT_16);
 
 	/* initialize SPI bus */
+	init_cs();
 	SPI::init();
 	/* set SCK rate for initialization commands */
 	SPI::set_speed(SPI_SCK_INIT_DIVISOR);
@@ -151,7 +153,7 @@ bool SdCard::init(uint8_t sckDivisor) {
 	cs_high();
 
 	/* must supply min of 74 clock cycles with CS high */
-	for (uint8_t i(0); i < 16; ++i) {
+	for (uint8_t i(0); i < 10; ++i) {
 		SPI::send(0xff);
 	}
 
@@ -170,18 +172,21 @@ bool SdCard::init(uint8_t sckDivisor) {
 
 	/* check SD version */
 	while (1) {
-		if (send_cmd(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
-			set_type(SD_CARD_TYPE_SD1);
-			break;
-		}
+		const uint8_t res = send_cmd(CMD8, 0x1AA);
+		if (res & R1_IDLE_STATE) {
+			if (res & R1_ILLEGAL_COMMAND) {
+				set_type(SD_CARD_TYPE_SD1);
+				break;
+			}
 
-		for (uint8_t i(0); i < 4; ++i) {
-			m_status = SPI::receive();
-		}
+			for (uint8_t i(0); i < 4; ++i) {
+				m_status = SPI::receive();
+			}
 
-		if (m_status == 0xaa) {
-			set_type(SD_CARD_TYPE_SD2);
-			break;
+			if (m_status == 0xaa) {
+				set_type(SD_CARD_TYPE_SD2);
+				break;
+			}
 		}
 
 		if ((TIMER_GET_TICKCOUNT_16 - t0) > MS_TO_TICKS(SD_INIT_TIMEOUT)) {
@@ -191,11 +196,14 @@ bool SdCard::init(uint8_t sckDivisor) {
 
 	/* initialize card and send host supports SDHC if SD2 */
 	const uint32_t arg(get_type() == SD_CARD_TYPE_SD2 ? 0x40000000 : 0);
+	t0 = TIMER_GET_TICKCOUNT_16;
 	while (send_app_cmd(ACMD41, arg) != R1_READY_STATE) {
 		/* check for timeout */
 		if ((TIMER_GET_TICKCOUNT_16 - t0) > MS_TO_TICKS(SD_INIT_TIMEOUT)) {
 			return error_handler(SD_CARD_ERROR_ACMD41, lock_set);
 		}
+
+		cs_high();
 	}
 
 	/* if SD2 read OCR register to check for SDHC card */

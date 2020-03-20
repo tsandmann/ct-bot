@@ -72,7 +72,12 @@ using SpiType = SpiMaster;
 using SpiType = SpiMasterSoft;
 #endif
 
+#ifdef EXPANSION_BOARD_AVAILABLE
 using CsType = SelectEna;
+#else
+using CsType = SelectPB4;
+//using CsType = SelectPC2;
+#endif
 } // namespace SdCardTypes
 
 /**
@@ -82,7 +87,7 @@ using CsType = SelectEna;
 class SdCard : public SdCardBase<SdCardTypes::SpiType, SdCardTypes::CsType> {
 public:
 	/** Construct an instance of SdSpiCard. */
-	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0), m_last_error_time(0) {}
+	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_status(0), m_type(0), m_last_error_time(0) {}
 
 	/**
 	 * Initialize the SD card.
