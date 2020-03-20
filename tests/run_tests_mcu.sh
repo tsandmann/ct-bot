@@ -6,7 +6,7 @@ if [[ "$TRAVIS" == "true" ]]; then
 
 if [[ "`uname`" == "Darwin" ]]; then
 	if [[ ! -e $MYDIR/avr8-gnu-toolchain-darwin_x86_64 ]]; then
-		cd $MYDIR/; curl -L -o avr8-gnu-toolchain-osx.tar.gz 'http://ww1.microchip.com/downloads/en/DeviceDoc/avr8-gnu-toolchain-osx-3.6.2.503-darwin.any.x86_64.tar.gz'; tar xzf avr8-gnu-toolchain-osx.tar.gz
+		cd $MYDIR/; curl -L -o avr8-gnu-toolchain-osx.tar.gz 'https://dl.bintray.com/platformio/dl-packages/toolchain-atmelavr-darwin_x86_64-1.70300.191015.tar.gz'; tar xzf avr8-gnu-toolchain-osx.tar.gz
 	fi
 
 	export PATH=$MYDIR/avr8-gnu-toolchain-darwin_x86_64/bin:$PATH
@@ -14,7 +14,7 @@ fi
 
 if [[ "`uname`" == "Linux" ]]; then
 	if [[ ! -e $MYDIR/avr8-gnu-toolchain-linux_x86_64 ]]; then
-		cd $MYDIR/; curl -L -o avr8-gnu-toolchain-linux.tar.gz 'http://ww1.microchip.com/downloads/en/DeviceDoc/avr8-gnu-toolchain-3.6.2.1759-linux.any.x86_64.tar.gz'; tar xzf avr8-gnu-toolchain-linux.tar.gz
+		cd $MYDIR/; curl -L -o avr8-gnu-toolchain-linux.tar.gz 'https://dl.bintray.com/platformio/dl-packages/toolchain-atmelavr-linux_x86_64-1.70300.191015.tar.gz'; tar xzf avr8-gnu-toolchain-linux.tar.gz
 	fi
 
 	export PATH=$MYDIR/avr8-gnu-toolchain-linux_x86_64/bin:$PATH
