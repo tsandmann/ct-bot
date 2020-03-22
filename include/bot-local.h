@@ -55,7 +55,7 @@
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70	/**< PID-Parameter proportional */
-#define PID_Ki				10	/**< PID-Parameter intergral */
+#define PID_Ki				10	/**< PID-Parameter integral */
 #define PID_Kd				20	/**< PID-Parameter differential */
 #define PID_Ta				1	/**< Abtastzeit */
 #define PID_SHIFT			4	/**< Rechtsshift der Stellgroessenkorrektur */
@@ -77,7 +77,7 @@
 #undef PID_Kp
 #define PID_Kp				30	/**< PID-Parameter proportional */
 #undef PID_Ki
-#define PID_Ki				10	/**< PID-Parameter intergral */
+#define PID_Ki				10	/**< PID-Parameter integral */
 #undef PID_Kd
 #define PID_Kd				0	/**< PID-Parameter differential */
 #undef PID_SPEED_THRESHOLD
