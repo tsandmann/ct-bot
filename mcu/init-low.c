@@ -194,6 +194,7 @@ void ctbot_shutdown_low() {
 
 #ifdef UART_AVAILABLE
 	while (uart_outfifo.count > 0) {} // Commands flushen
+	uart_flush();
 #endif
 
 	__builtin_avr_cli();
