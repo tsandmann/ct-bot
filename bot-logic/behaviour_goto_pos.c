@@ -44,6 +44,8 @@ uint16_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN}; /**< Fehlerwer
 #include "math_utils.h"
 #include "bot-local.h"
 #include "log.h"
+#include "map.h"
+#include "command.h"
 
 #ifndef DEBUG_GOTO_POS
 #undef LOG_DEBUG
@@ -184,7 +186,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		const float h7_2 = h6_2 / sin_beta;
 		float radius = (h5_2 + h7_2) / 2.f;
 		LOG_DEBUG("radius=%f", (double) radius);
-		if ((int16_t) radius == 0) {
+		int16_t rad_int = (int16_t) radius;
+		if (rad_int == 0) {
 			radius = 100000.f;	// geradeaus
 		}
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
@@ -323,6 +326,13 @@ Behaviour_t * bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t h
 	} else {
 		LOG_DEBUG("rueckwaerts");
 	}
+
+#if defined DEBUG_GOTO_POS && defined MAP_2_SIM_AVAILABLE
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 3, 0, 0);
+	position_t from = { x_pos, y_pos };
+	position_t to = { x, y };
+	map_draw_line_world(from, to, 0);
+#endif // DEBUG_GOTO_POS && MAP_2_SIM_AVAILABLE
 
 	return beh;
 }
