@@ -42,6 +42,10 @@ void LED_init() {
 	// NOP
 }
 
+uint8_t LED_get(void) {
+	return led;
+}
+
 /**
  * Schaltet einzelne LEDs an
  * andere werden nicht beeinflusst

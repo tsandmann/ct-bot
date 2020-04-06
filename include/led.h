@@ -62,9 +62,7 @@ void LED_init(void);
  * Gibt den aktuellen LED-Zustand zurueck
  * \return LED-Bitmaske
  */
-static inline uint8_t LED_get(void) {
-	return led;
-}
+uint8_t LED_get(void);
 
 /**
  * Zeigt eine 8-Bit Variable mit den LEDs an
