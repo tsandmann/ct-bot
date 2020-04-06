@@ -167,10 +167,10 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 		uint8_t count = f->count;
 		if (count == 0) {
 			/* blockieren */
-			LOG_DEBUG_FIFO("Fifo 0x%08x ist leer, blockiere", f);
+			LOG_DEBUG_FIFO("Fifo 0x%08x ist leer, blockiere", (unsigned int) f);
 			os_signal_lock(&f->signal);
 			os_signal_set(&f->signal);
-			LOG_DEBUG_FIFO("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
+			LOG_DEBUG_FIFO("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", (unsigned int) f);
 			os_signal_release(&f->signal);
 		}
 	}
