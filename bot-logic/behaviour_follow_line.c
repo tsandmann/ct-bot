@@ -280,6 +280,7 @@ void bot_follow_line_behaviour(Behaviour_t* data) {
 			/* Bot sieht keine Linie -> erstmal geradeaus */
 			speedWishLeft = BOT_SPEED_SLOW;
 			speedWishRight = BOT_SPEED_SLOW;
+			LOG_DEBUG("follow_line: keine Linie (%X %X) -> erstmal geradeaus.", sensLineL, sensLineR);
 		} else {
 			state = 10;
 		}
@@ -296,11 +297,13 @@ void bot_follow_line_behaviour(Behaviour_t* data) {
 			/* Bot fahert rechts neben der Linie */
 			speedWishLeft = -BOT_SPEED_FOLLOW;
 			speedWishRight = BOT_SPEED_FOLLOW;
+			LOG_DEBUG("follow_line: rechts neben der Linie (%X %X).", sensLineL, sensLineR);
 			correction = 1;
 		} else {
 			/* Bot faehrt auf der Linie */
 			speedWishLeft = BOT_SPEED_FOLLOW;
 			speedWishRight = -BOT_SPEED_SLOW;
+			LOG_DEBUG("follow_line: auf der Linie (%X %X).", sensLineL, sensLineR);
 			correction = 2;
 		}
 
