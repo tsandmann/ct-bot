@@ -258,10 +258,18 @@ void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color)
 /**
  * Zeichnet einen Kreis in die Map-Anzeige des Sim
  * \param center Korrdinaten des Kreismittelpunkts (Map-Koordinaten)
- * \param radius Radius des Kreies (in Map-Aufloesung)
+ * \param radius Radius des Kreises (in Map-Aufloesung)
  * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_circle(position_t center, int16_t radius, uint8_t color);
+
+/**
+ * Zeichnet einen Kreis in die Map-Anzeige des Sim
+ * \param center Korrdinaten des Kreismittelpunkts (Welt-Koordinaten)
+ * \param radius Radius des Kreises (in mm)
+ * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_circle_world(position_t center, int16_t radius, uint8_t color);
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef PC
