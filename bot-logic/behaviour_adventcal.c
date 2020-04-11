@@ -41,7 +41,9 @@ static uint8_t adventcal_state = 0;
 #define STATE_ADVENTCAL_DELIVER 4
 #define STATE_ADVENTCAL_FLAPOPEN 5
 #define STATE_ADVENTCAL_MOVEBACK 6
-#define STATE_ADVENTCAL_TURNTOSTARTPOS 7
+#define STATE_ADVENTCAL_TURNTOSTARTPOS_TURN1 7
+#define STATE_ADVENTCAL_TURNTOSTARTPOS_PASSLINE 8
+#define STATE_ADVENTCAL_TURNTOSTARTPOS_TURN2 9
 
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
 static uint8_t cancel_follow_line_object_catched(void) {
@@ -59,10 +61,10 @@ static uint8_t cancel_follow_line_object_catched(void) {
 //Abbruch-Funktion, die spaeter im Programm benoetigt wird, um zu pruefen, ob das Verhalten, einer Linie zu folgen, beendet werden kann...
 static uint8_t cancel_follow_line_on_border(void) {
 	//...und zwar in Abhaengigkeit davon, ob die Abgrund- bzw. Kanten-Sensoren eine schwarze Linie sehen oder nicht
-	//fuer Sim-Tests nur folgende Zeile nutzen
-	//if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
-	//fuer Real-Tests nur folgende Zeile nutzen und ggf. die Werte (0x2A0) an Schwarz-Werte des verwendeten Klebebandes anpassen, die der Bot uber die Linien-Sensoren meldet
-	if (sensBorderL>0x2A0 && sensBorderR>0x2A0) {
+	//fuer Sim-Tests nur die folgende Zeile nutzen
+	if (sensBorderL>BORDER_DANGEROUS && sensBorderR>BORDER_DANGEROUS) {
+	//fuer Real-Tests nur die folgende Zeile nutzen und ggf. die Werte (0x2A0) an Schwarz-Werte des verwendeten Klebebandes anpassen, die der Bot uber die Linien-Sensoren meldet
+	//if (sensBorderL>0x2A0 && sensBorderR>0x2A0) {
 		//wenn die Abbruch-Bedingung erfuellt ist, die beiden Kanten-Sensoren also eine schwarze Linie sehen, meldet die Abbruch-Funktion mittels "return", dass die Abbruch-Bedingung erfuellt ist und das Verhalten, einer Linie zu folgen, abgebrochen werden soll
 		return 1;
 
@@ -104,9 +106,9 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 	//Wende als Vorbereitung, um das Transportfach-Objekt zur Startposition zurueckzubringen
 	case STATE_ADVENTCAL_TURNTODELIVER:
 		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_BEGIN");
-		//nicht ganz 180 Grad, damit das Liniensuchverhalten nicht dazu tendiert, den Bot in die falsche Richtung zu drehen
+		//nicht ganz 180 Grad, damit die Linien-Sensoren nicht beide über der schwarzen Linie zum Stehen kommen
 		bot_turn(data, 170);
-		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_TURN_DONE");
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_TURN_STARTED");
 		//bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 1);
 		//LOG_DEBUG("STATE_ADVENTCAL_TURNTODELIVER_MOVE1CM_DONE");
 		adventcal_state = STATE_ADVENTCAL_DELIVER;
@@ -135,23 +137,36 @@ void bot_adventcal_behaviour(Behaviour_t * data) {
 	//Freigabe des Transportfach-Objekts...
 	case STATE_ADVENTCAL_MOVEBACK:
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_BEGIN");
-		//...durch rueckwaertiges Fahren
-		bot_drive_distance(data, 0, -BOT_SPEED_FOLLOW, 6);
-		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS;
+		//...durch rueckwaertiges Fahren von min. 8cm, um vor der letzten Drehung die Dose nicht zu beruehren
+		bot_drive_distance(data, 0, -BOT_SPEED_FOLLOW, 8);
+		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS_TURN1;
 		LOG_DEBUG("STATE_ADVENTCAL_MOVEBACK_END");
 		break;
-	//180Grad-Drehung zurueck in Ausgangsposition und schlieszen der Transportfach-Klappe
-	case STATE_ADVENTCAL_TURNTOSTARTPOS:
-		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_BEGIN");
-		//nicht ganz 180 Grad, damit das Liniensuchverhalten weniger dazu tendiert, den Bot beim Start am naechsten Tag nicht in die falsche Richtung zu drehen, sodass keine ideale Neuausrichtung des Bots noetig ist
-		bot_turn(data, 170);
-		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN_DONE");
-		//bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 1);
-		//LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_MOVE1CM_DONE");
-		bot_servo(data, SERVO1, DOOR_CLOSE);
-		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_FLAP_CLOSED");
+	//3 Drehungsmaneuver, um zurueck in Ausgangsposition zu kommen
+	 //Maneuver 1/3
+	case STATE_ADVENTCAL_TURNTOSTARTPOS_TURN1:
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN1_BEGIN");
+		//Bot 90Grad drehen, und...
+		bot_turn(data, 90);
+		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS_PASSLINE;
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN1_DONE");
+		break;
+	 //Maneuver 2/3
+	case STATE_ADVENTCAL_TURNTOSTARTPOS_PASSLINE:
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_PASSLINE_BEGIN");
+		//...anschliessend 4cm geradeaus knapp ueber Linie fahren lassen
+		//(Distanz je nach Breite der schwarzen Linie anpassen), damit...
+		bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 4);
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_PASSLINE_END");
+		adventcal_state = STATE_ADVENTCAL_TURNTOSTARTPOS_TURN2;
+		break;
+	 //Maneuver 3/3
+	case STATE_ADVENTCAL_TURNTOSTARTPOS_TURN2:
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN2_BEGIN");
+		//...sich der rechte Linien-Sensor nach einer zweiten Drehung rechts von der Linie befindet
+		bot_turn(data, 90);
 		adventcal_state = 99;
-		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_END");
+		LOG_DEBUG("STATE_ADVENTCAL_TURNTOSTARTPOS_TURN2_DONE");
 		break;
 	//Default-Verhalten, in diesem Fall: Gar nichts tun (Ende des Verhaltens)
 	default:
