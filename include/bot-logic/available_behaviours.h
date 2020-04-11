@@ -84,7 +84,7 @@
 #define BEHAVIOUR_SCAN_AVAILABLE 					/**< Gegend scannen */
 #define BEHAVIOUR_SERVO_AVAILABLE 					/**< Kontrollverhalten fuer die Servos */
 #define BEHAVIOUR_REMOTECALL_AVAILABLE 				/**< Remote-Kommandos */
-#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzsensorasuwertung */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzsensorauswertung */
 #define BEHAVIOUR_DELAY_AVAILABLE 					/**< Delay-Routine als Verhalten */
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/**< CPU-Auslastung eines Verhaltens messen */
