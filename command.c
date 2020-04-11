@@ -744,6 +744,7 @@ int8_t command_evaluate(void) {
 		case CMD_MAP:
 			switch (received_command.request.subcommand) {
 			case SUB_MAP_REQUEST:
+// FIXME: das ist gefaehrlich so, bei grossen Karten werden die Verhalten zu lange blockiert!
 				map_2_sim_send();
 				break;
 			}
