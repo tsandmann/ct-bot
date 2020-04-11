@@ -35,21 +35,20 @@
  * Verhalten für einen Adventskalender:
  * @param *data Der Verhaltensdatensatz
  *
- * Der Bot faehrt direkt nach dem Einschalten eine Linie ab, auf der 24 Fotodosen stehen.
- * Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und
- * gibt ihn frei.
+ * Der Bot faehrt direkt nach dem Einschalten (da in bot-logic/bot-logic.c unter BEHAVIOUR_ADVENTCAL_AVAILABLE "BEHAVIOUR_ACTIVE" statt "BEHAVIOUR_INACTIVE" gesetzt ist)
+ * eine Linie ab, auf der 24 Behaelter (bspw. Fotodosen) stehen.
+ * Faengt er einen Behaelter ein, bringt er diesen zum Startpunkt zurueck und gibt ihn frei.
  * Da der Bot noch kein Verdauungssystem besitzt, duerfen die Sueszigkeiten,
  * die zuvor in den Dosen platziert wurden, von der Person gegessen werden,
- * die den Bot angeschaltet hatte. ;)
+ * die den Bot eingeschaltet hatte. ;)
  *
  * Zur Aktivierung muss in include/bot-logic/available_behaviours.h neben
  * - "BEHAVIOUR_ADVENTCAL_AVAILABLE"
  * auch
  * - "BEHAVIOUR_FOLLOW_LINE_AVAILABLE" aktiviert sein, damit das Verhalten funktioniert.
  * Achtung: Im Default wird davon ausgegangen, dass das Verhalten zunaechst im Sim ausprobiert wird,
- * sodass fuer reale Tests in bot-logic/behaviour_adventcal.c fuer die Abbruch-Funktion "cancel_follow_line_on_border"
- * die entsprechend kommentierte Zeile deaktiviert bzw. aktiviert werden muss, damit der Bot die Linie findet.
- *
+ * weswegen fuer reale Tests in bot-logic/behaviour_adventcal.c fuer die Abbruch-Funktion "cancel_follow_line_on_border"
+ * die entsprechend kommentierte Zeile deaktiviert bzw. aktiviert werden muss, damit der Bot die Linie in einer realen Umgebung findet.
  *
  * Als Test-Parcours im ct-Sim dient parcours/adventcal.xml - beim Nachbau fuer den realen Kalender sollte Folgendes beachtet werden:
  * - zwischen Start-Position des Bots und erster Fotodose muss ein gewisser Abstand sein, falls gewuenscht ist,
@@ -72,8 +71,9 @@
  * - im Sim findet der Bot durch die optimalen Bedingungen die Linie auch in Aufruf-Position,
  * falls doch nicht, muss im Sim nach Aufruf und vor Start des Bots
  * fuer "X [m]" der Wert "0.363" und fuer "Richtung" der Wert "0" eingestellt werden.
- * Dies bedeutet leider auch, dass der Bot nach dem Abliefern der Dose neu ideal positioniert werden muss,
- * falls er am Ende des Verhaltens mit beiden Linien-Sensoren links von der Linie zum Stehen gekommen ist.
+ * Dies bedeutet leider auch, dass der Bot nach dem Abliefern der Dose evtl. neu ideal positioniert werden muss,
+ * falls er am Ende des Verhaltens nicht so zum Stehen gekommen ist, dass sich der linke Linien-Sensor auf der schwarzen Linie
+ * und der rechte Linien-Sensor nicht auf der schwarzen Linie befindet.
  */
 void bot_adventcal_behaviour(Behaviour_t * data);
 
