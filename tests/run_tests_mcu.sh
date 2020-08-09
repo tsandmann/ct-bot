@@ -2,32 +2,14 @@
 
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [[ "$TRAVIS" == "true" ]]; then
-
-if [[ "`uname`" == "Darwin" ]]; then
-	if [[ ! -e $MYDIR/avr8-gnu-toolchain-darwin_x86_64 ]]; then
-		mkdir $MYDIR/avr8-gnu-toolchain-darwin_x86_64; cd $MYDIR/avr8-gnu-toolchain-darwin_x86_64; curl -L -o avr8-gnu-toolchain-osx.tar.gz 'https://dl.bintray.com/platformio/dl-packages/toolchain-atmelavr-darwin_x86_64-1.70300.191015.tar.gz'; tar xzf avr8-gnu-toolchain-osx.tar.gz
-	fi
-
-	export PATH=$MYDIR/avr8-gnu-toolchain-darwin_x86_64/bin:$PATH
-fi
-
-if [[ "`uname`" == "Linux" ]]; then
-	if [[ ! -e $MYDIR/avr8-gnu-toolchain-linux_x86_64 ]]; then
-		mkdir $MYDIR/avr8-gnu-toolchain-linux_x86_64; cd $MYDIR/avr8-gnu-toolchain-linux_x86_64; curl -L -o avr8-gnu-toolchain-linux.tar.gz 'https://dl.bintray.com/platformio/dl-packages/toolchain-atmelavr-linux_x86_64-1.70300.191015.tar.gz'; tar xzf avr8-gnu-toolchain-linux.tar.gz
-	fi
-
-	export PATH=$MYDIR/avr8-gnu-toolchain-linux_x86_64/bin:$PATH
-fi
-
-fi
-
-for device in "atmega1284p" "atmega644p"; do
-	echo "building for $device"
+for environment in "1284p" "644p"; do
+	echo "building for $environment"
 
 	cd $MYDIR/../
 
 	for filename in $MYDIR/mcu/*.h; do
+		rm -rf .pio
+
 		if [ -e "$MYDIR/../bot-local-override.h" ]
 		then
 			echo "$MYDIR/../bot-local-override.h exists."
@@ -46,14 +28,13 @@ for device in "atmega1284p" "atmega644p"; do
 		if [ $? -ne 0 ]; then
 			echo "file \"$filename\" not found, abort."
 			echo ""; echo ""; echo "TEST $filename FOR PC $BUILD_TARGET FAILED."; echo ""; echo ""
-			make DEVICE=PC clean >/dev/null
+			rm -rf .pio
 			exit 1
 		fi
 
 		cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu)
 		echo "using $cores parallel jobs"
-
-		make DEVICE=MCU MCU=$device WERROR=1 WCONVERSION=1 TESTRUN=1 -j$cores
+		pio run -e $environment
 		rc=$?
 
 		rm $MYDIR/../bot-local-override.h
@@ -63,12 +44,11 @@ for device in "atmega1284p" "atmega644p"; do
 			echo "$MYDIR/../bot-local-override.h restored."
 		fi
 
+		rm -rf .pio
 		if [[ $rc != 0 ]]; then
 			echo ""; echo ""; echo "TEST $filename FOR MCU FAILED."; echo ""; echo ""
-			make DEVICE=MCU MCU=$device clean >/dev/null
 			exit $rc;
 		fi
-		make DEVICE=MCU MCU=$device clean >/dev/null
 
 		echo ""
 

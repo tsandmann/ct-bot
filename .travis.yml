@@ -4,6 +4,18 @@ sudo: true
 
 language: cpp
 
+cache:
+  directories:
+    - "~/.platformio"
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -y install python3-pip python-dev
+
+install:
+  - pip install -U platformio
+  - platformio update
+
 os:
   - linux
   - osx
@@ -13,7 +25,6 @@ env:
   - MINGW=true
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get -qq update; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$MINGW" == "true" ]]; then sudo apt-get install -y mingw-w64; fi
 
 script:
