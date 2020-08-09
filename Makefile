@@ -363,8 +363,12 @@ ifdef SAVE_TEMPS
 endif
 
 ifeq ($(WERROR), 1)
-    CFLAGS += -Werror -Wno-unknown-warning-option
-    CXXFLAGS += -Werror -Wno-unknown-warning-option
+    CFLAGS += -Werror 
+    CXXFLAGS += -Werror
+    ifeq ($(shell $(CC) -v 2>&1 | grep -c "clang version"), 1)
+        CFLAGS += -Wno-unknown-warning-option
+        CXXFLAGS += -Wno-unknown-warning-option
+    endif
     ifeq ($(GCCVERSION_GTEQ_8),1)
         CFLAGS += -Wno-error=format-truncation
         CXXFLASG += -Wno-error=format-truncation
