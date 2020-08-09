@@ -2,7 +2,7 @@
 
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-for environment in "1284p" "644p"; do
+for environment in "test_1284p" "test_644p"; do
 	echo "building for $environment"
 
 	cd $MYDIR/../
