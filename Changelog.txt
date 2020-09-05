@@ -1,5 +1,29 @@
 CHANGELOG fuer c't-Bot
 ======================
+2020-09-05: Release 28 (v1.28)
+    - error message for cancel-behaviour
+    - improvements for bot_follow_line():
+        - avoid endless turning, if bot starts right in the middle of the line
+        - drive straight, if not in search mode and no line sensors recognizes the line
+    - new adventcal-behavior bot_adventcal()
+    - behaviours sorted by priority value
+    - several comments improved:
+        - in bot-logic.c 
+        - for prototype behaviour
+    - improvements for SD cards
+        - allow usage of SD card without expansion board
+        - more checks for card initialization
+    - i2c driver improved: spec conform handling of stop-condition in case of i2c_wait()
+    - map remote viewer improved
+    - several debug outputs improved:
+        - visual debug output for bot_goto_pos()
+        - more debug output for bot_follow_line()
+        - fifo debug output improved
+    - 2 todos for bugs noted
+    - adventcal-behavior: 3 maneuvers for turning to start position
+    - support for build with PlatformIO (optional)
+    - support for using VSCode as IDE alternative to Eclipse
+
 2019-10-08: Release 27 (v1.27)
     - support for gcc version 8
     - support specifc gcc version used by makefile-build
