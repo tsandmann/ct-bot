@@ -1,5 +1,5 @@
 # ct-bot
-This repository contains the source code of the c't-Bot software framework. c't-Bot and c't-Sim belong together and represent a robot project that was initiated by the magazine [c't](www.heise.de/ct) in 2006.
+This repository contains the source code of the c't-Bot software framework. c't-Bot and c't-Sim belong together and represent a robot project that was initiated by the magazine [c't](https://www.heise.de/ct) in 2006.
 
 The project website can be found at [www.ct-bot.de](https://www.ct-bot.de).
 All related documentation is available at [here](https://github.com/Nightwalker-87/ct-bot-doku).
