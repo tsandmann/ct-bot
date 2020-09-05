@@ -86,6 +86,7 @@
 #define BEHAVIOUR_TEST_ENCODER_AVAILABLE 		/**< Encoder-Test Verhalten */
 
 /* Anwendungs-Verhalten */
+#define BEHAVIOUR_ADVENTCAL_AVAILABLE			/**< Adventskalender-Verhalten */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 			/**< Wandfolger */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
 #define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */

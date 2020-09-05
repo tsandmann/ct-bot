@@ -55,7 +55,7 @@
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70	/**< PID-Parameter proportional */
-#define PID_Ki				10	/**< PID-Parameter intergral */
+#define PID_Ki				10	/**< PID-Parameter integral */
 #define PID_Kd				20	/**< PID-Parameter differential */
 #define PID_Ta				1	/**< Abtastzeit */
 #define PID_SHIFT			4	/**< Rechtsshift der Stellgroessenkorrektur */
@@ -77,7 +77,7 @@
 #undef PID_Kp
 #define PID_Kp				30	/**< PID-Parameter proportional */
 #undef PID_Ki
-#define PID_Ki				10	/**< PID-Parameter intergral */
+#define PID_Ki				10	/**< PID-Parameter integral */
 #undef PID_Kd
 #define PID_Kd				0	/**< PID-Parameter differential */
 #undef PID_SPEED_THRESHOLD
@@ -117,7 +117,9 @@
 
 /* System-Konfiguration
    --> Diese Einstellungen sind von der lokalen Hardware abhaengig, Veraenderungen sind nur bei Hardware-Umbauten noetig */
+#ifndef F_CPU
 #define F_CPU	16000000UL		/**< CPU-Frequenz [Hz] (16000000UL oder 20000000UL) */
+#endif
 #define UART_BAUD	115200		/**< Baudrate fuer UART-Kommunikation (moegliche Werte sind 57600, 115200, 230400, 500000) */
 //#define ENABLE_RX0_PULLUP		/**< Aktiviert den internen Pullup fuer die RX-Leitung. Nicht aktivieren, falls entsprechender Hardware-Mod eingebaut ist! */
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */

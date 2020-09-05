@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/append=true
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/appendContributed=true
+environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/append=true
+environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/appendContributed=true
 indexer/filesToParseUpFront=stdarg.h, stddef.h, sys/resource.h, sys/types.h, signal.h
 indexer/indexAllFiles=true
 indexer/indexAllHeaderVersions=true

@@ -78,6 +78,10 @@ void bot_prototype(Behaviour_t * caller) {
  * und nutze dabei einen Uebergabeparameter
  * @param *caller Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param param Uebergabeparameter
+ *
+ * Der nachfolgende Code-Abschnitt wird benoetigt, wenn das geplante Verhalten einen oder mehrere Parameter bekommen soll,
+ * um bspw. wie im Verhalten behaviour_turn.c bei einem Dreh-Verhalten angeben zu koennen, wie weit sich der Bot drehen soll.
+ * Standardmaessig ist er durch Kommentar-Zeichen deaktiviert.
  */
 /*
 void bot_prototype(Behaviour_t * caller, int16_t param) {

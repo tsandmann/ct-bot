@@ -56,6 +56,7 @@
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
 
 /* Anwendungs-Verhalten */
+//#define BEHAVIOUR_ADVENTCAL_AVAILABLE 				/**< Adventskalender-Verhalten */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
@@ -83,7 +84,7 @@
 #define BEHAVIOUR_SCAN_AVAILABLE 					/**< Gegend scannen */
 #define BEHAVIOUR_SERVO_AVAILABLE 					/**< Kontrollverhalten fuer die Servos */
 #define BEHAVIOUR_REMOTECALL_AVAILABLE 				/**< Remote-Kommandos */
-#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzesensorasuwertung */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzsensorauswertung */
 #define BEHAVIOUR_DELAY_AVAILABLE 					/**< Delay-Routine als Verhalten */
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/**< CPU-Auslastung eines Verhaltens messen */
@@ -292,6 +293,7 @@
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
 #include "behaviour_prototype.h"
+#include "behaviour_adventcal.h"
 #include "behaviour_hw_test.h"
 #include "behaviour_simple.h"
 #include "behaviour_drive_square.h"

@@ -126,6 +126,9 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_prototype, 0, "", 0),
 //	PREPARE_REMOTE_CALL(bot_prototype, 1, "int16 param", 2),
 #endif
+#ifdef BEHAVIOUR_ADVENTCAL_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_adventcal, 0, "", 0),
+#endif
 	/* Demo-Verhalten fuer Einsteiger */
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_simple, 0, "", 0),
@@ -466,8 +469,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 	memcpy_P(parameter_length, &remotecall_beh_list[function_id].param_len, parameter_count);
 #endif // PC
 
-	LOG_DEBUG("func=%u param_count=%u Len= %u %u %u", remotecall_beh_list[function_id].name, parameter_count, parameter_length[0], parameter_length[1],
-		parameter_length[2]);
+	LOG_DEBUG("function_id=%u param_count=%u Len= %u %u %u", function_id, parameter_count, parameter_length[0], parameter_length[1], parameter_length[2]);
 
 	remotecall_convert_params(parameter_data, parameter_count, parameter_length, data);
 

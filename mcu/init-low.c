@@ -177,7 +177,9 @@ void ctbot_init_low_last(void) {
 	servo_set(SERVO1, DOOR_OPEN);
 	servo_set(SERVO2, CAM_CENTER);
 	if (os_delay_func(servo_init_stop, NULL, 3000)) {
+#ifdef LED_AVAILABLE
 		LED_on(LED_TUERKIS);
+#endif
 	}
 #endif // OS_AVAILABLE
 }
@@ -192,6 +194,7 @@ void ctbot_shutdown_low() {
 
 #ifdef UART_AVAILABLE
 	while (uart_outfifo.count > 0) {} // Commands flushen
+	uart_flush();
 #endif
 
 	__builtin_avr_cli();
@@ -201,7 +204,9 @@ void ctbot_shutdown_low() {
 	LED_off(0xff); // LEDs aus
 #endif
 
+#ifdef ENA_AVAILABLE
 	ENA_off(0xff); // Enable-Leitungen aus
+#endif
 
 	do {
 		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));

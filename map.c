@@ -47,6 +47,7 @@
 #include "command.h"
 #include "motor.h"
 #include "init.h"
+#include "uart.h"
 
 #if !defined MMC_AVAILABLE && defined MCU
 #error "Map geht auf dem MCU nicht ohne MMC"
@@ -1265,7 +1266,7 @@ void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color)
 /**
  * Zeichnet einen Kreis in die Map-Anzeige des Sim
  * \param center Korrdinaten des Kreismittelpunkts (Map-Koordinaten)
- * \param radius Radius des Kreies (in Map-Aufloesung)
+ * \param radius Radius des Kreises (in Map-Aufloesung)
  * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
@@ -1277,6 +1278,19 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
 	*ptr = center.y;
 	const int16_t c = color;
 	command_write_rawdata(CMD_MAP, SUB_MAP_CIRCLE, c, radius, sizeof(data), data);
+}
+
+/**
+ * Zeichnet einen Kreis in die Map-Anzeige des Sim
+ * \param center Korrdinaten des Kreismittelpunkts (Welt-Koordinaten)
+ * \param radius Radius des Kreises (in mm)
+ * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_circle_world(position_t center, int16_t radius, uint8_t color) {
+	center.x = world_to_map(center.x);
+	center.y = world_to_map(center.y);
+	radius = radius / (1000 / MAP_RESOLUTION);
+	map_draw_circle(center, radius, color);
 }
 #endif // MAP_2_SIM_AVAILABLE
 
@@ -1439,13 +1453,32 @@ void map_2_sim_main(void) {
 					continue;
 				}
 
-				os_thread_sleep(20);
+#ifdef MCU
+				while (uart_outfifo.size - uart_outfifo.count < (uint8_t) (128U + sizeof(command_t))) {
+					os_thread_sleep(12);
+				}
+#endif
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, map_2_sim_data.pos.x, 128, map_2_sim_buffer);
-				os_thread_sleep(20);
+
+#ifdef MCU
+				while (uart_outfifo.size - uart_outfifo.count < (uint8_t) (128U + sizeof(command_t))) {
+					os_thread_sleep(12);
+				}
+#endif
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
-				os_thread_sleep(20);
+
+#ifdef MCU
+				while (uart_outfifo.size - uart_outfifo.count < (uint8_t) (128U + sizeof(command_t))) {
+					os_thread_sleep(12);
+				}
+#endif
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, map_2_sim_data.heading, 128, &map_2_sim_buffer[256]);
-				os_thread_sleep(20);
+
+#ifdef MCU
+				while (uart_outfifo.size - uart_outfifo.count < (uint8_t) (128U + sizeof(command_t))) {
+					os_thread_sleep(12);
+				}
+#endif
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, block, 0, 128, &map_2_sim_buffer[384]);
 			}
 		}

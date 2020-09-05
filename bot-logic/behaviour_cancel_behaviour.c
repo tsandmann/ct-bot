@@ -93,7 +93,7 @@ void bot_behaviour_cancel_behaviour(Behaviour_t * data) {
 Behaviour_t * bot_add_behaviour_to_cancel(Behaviour_t * caller, Behaviour_t * behaviour, uint8_t (* check)(void)) {
 	(void) caller;
 	if (behaviour == NULL) {
-		LOG_DEBUG("Fehler, kein gueltiges Verhalten uebergeben");
+		LOG_ERROR("Fehler, kein gueltiges Verhalten uebergeben");
 		return NULL;
 	}
 

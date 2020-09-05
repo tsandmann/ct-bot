@@ -37,9 +37,13 @@ uint8_t led = 0; /**< Zustand der LEDs */
 /**
  * Initialisiert die LEDs
  */
-void LED_init() {
+void LED_init(void) {
 	shift_init();
 	LED_set(0);
+}
+
+uint8_t LED_get(void) {
+	return led;
 }
 
 /**

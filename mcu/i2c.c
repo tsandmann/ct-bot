@@ -20,7 +20,7 @@
 /**
  * \file 	i2c.c
  * \brief 	I2C-Treiber, derzeit nur Master, interruptbasiert
- * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \author 	Timo Sandmann
  * \date 	05.09.2007
  */
 
@@ -30,29 +30,28 @@
 #ifdef I2C_AVAILABLE
 #include <util/twi.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 #include <stdlib.h>
 #include "i2c.h"
 #include "timer.h"
 
-#define I2C_PRESCALER 0				/**< Prescaler fuer I2C-CLK */
 
-static uint8_t sl_addr = 0;			/**< Adresse des Slaves */
-static uint8_t * pTxData = NULL;	/**< Zeiger auf Puffer fuer Datenversand */
-static uint8_t * pRxData = NULL;	/**< Zeiger auf Puffer fuer Datenempfang */
-static uint8_t txSize = 0;			/**< Anzahl der zu sendenden Datenbytes */
-static uint8_t rxSize = 0;			/**< Anzahl der zu lesenden Datenbytes */
-static uint8_t i2c_error = 0;		/**< letzter Bus-Fehler */
-static volatile uint8_t i2c_complete = 0;	/**< Spin-Lock; 0: ready, 128: Transfer aktiv */
+#define I2C_PRESCALER 0					/**< Prescaler fuer I2C-CLK */
+
+static uint8_t sl_addr;					/**< Adresse des Slaves */
+static const uint8_t* pTxData;			/**< Zeiger auf Puffer fuer Datenversand */
+static uint8_t* pRxData;				/**< Zeiger auf Puffer fuer Datenempfang */
+static uint8_t txSize;					/**< Anzahl der zu sendenden Datenbytes */
+static uint8_t rxSize;					/**< Anzahl der zu lesenden Datenbytes */
+static uint8_t i2c_error;				/**< letzter Bus-Fehler */
+static volatile uint8_t i2c_complete;	/**< Spin-Lock; 0: ready, 128: Transfer aktiv */
 
 
 /**
  * ISR fuer I2C-Master
  */
 ISR(TWI_vect) {
-	uint8_t state = TWSR;
-#if I2C_PRESCALER != 0
-	state &= 0xf8;
-#endif
+	const uint8_t state = TWSR & 0xf8;
 	switch (state) {
 		/* Start gesendet */
 		case TW_START:
@@ -63,9 +62,9 @@ ISR(TWI_vect) {
 				TWDR = (uint8_t) (sl_addr & 0xfe); // W
 			} else {
 				/* Adresse+R senden */
-				TWDR = sl_addr | 0x1;	// R
+				TWDR = sl_addr | 0x1; // R
 			}
-			TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE);
+			TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE);
 			break;
 		}
 		/* Datum versandt, ACK empfangen */
@@ -73,12 +72,12 @@ ISR(TWI_vect) {
 			if (txSize == 0) {
 				if (rxSize == 0) {
 					/* Stopp Senden und beenden */
-					TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);	// Stopp senden
+					TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO); // Stopp senden
 					i2c_complete = 128;	// Lock freigeben
 					break;
 				}
  				/* ReStart senden */
-				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);	// ReStart senden
+				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA); // ReStart senden
 				break;
 			}
 			CASE_NO_BREAK;
@@ -89,16 +88,16 @@ ISR(TWI_vect) {
 			TWDR = *pTxData;
 			pTxData++;
 			txSize--;
-			TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE);
+			TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE);
 			break;
 		}
 		/* SLA+R, ACK empfangen */
 		case TW_MR_SLA_ACK: {
 			/* Auf Daten warten */
 			if (rxSize > 1) {
-				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWEA);	// ACK senden
+				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWEA); // ACK senden
 			} else {
-				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE);	// NACK senden
+				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE); // NACK senden
 			}
 			break;
 		}
@@ -110,10 +109,10 @@ ISR(TWI_vect) {
 			rxSize--;
 			if (rxSize > 0) {
 				/* es folgen noch weitere Daten, ACK senden */
-				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWEA);	// ACK senden
+				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWEA); // ACK senden
 			} else {
 				/* das letzte Byte ist schon unterwegs */
-				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE);	// NACK senden
+				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE); // NACK senden
 			}
 			break;
 		}
@@ -121,16 +120,16 @@ ISR(TWI_vect) {
 		case TW_MR_DATA_NACK: {
 			/* Letztes Datum speichern */
 			*pRxData = TWDR;
-			TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);	// Stopp-Code senden
-			i2c_complete = 128;	// Lock freigeben
+			TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO); // Stopp-Code senden
+			i2c_complete = 128; // Lock freigeben
 			break;
 		}
 		/* Fehler */
 		default: {
 			/* Abbruch */
 			i2c_error = state;
-			i2c_complete = 128;	// Lock freigeben
-			TWCR = (1<<TWINT);	// Int zuruecksetzen und I2C aus
+			i2c_complete = 128; // Lock freigeben
+			TWCR = _BV(TWINT); // Int zuruecksetzen und I2C aus
 		}
 	}
 }
@@ -141,8 +140,12 @@ ISR(TWI_vect) {
  */
 void i2c_init(uint8_t bitrate) {
 	TWBR = bitrate;
-	TWSR = I2C_PRESCALER;	// Prescaler s.o.
-	TWCR = 0;				// I2C aus
+	TWSR = I2C_PRESCALER; // Prescaler
+	TWCR = 0; // I2C aus
+	DDRC |= _BV(0) | _BV(1);
+#ifndef SHIFT_AVAILABLE
+	PORTC |= _BV(0) | _BV(1);
+#endif
 }
 
 /**
@@ -153,7 +156,7 @@ void i2c_init(uint8_t bitrate) {
  * \param *pRx	Zeiger auf Puffer fuer zu lesende Daten
  * \param nRx	Anzahl der zu lesenden Bytes, [0; 255]
  */
-void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nRx) {
+void i2c_write_read(uint8_t sla, const void* pTx, uint8_t nTx, void* pRx, uint8_t nRx) {
 	/* Inits */
 	i2c_complete = 0;
 	i2c_error = TW_NO_INFO;
@@ -163,7 +166,7 @@ void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nR
 	pRxData = pRx;
 	rxSize = nRx;
 	/* Start-Code senden */
-	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);
+	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA);
 }
 
 /**
@@ -173,7 +176,7 @@ void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nR
  * \param *pRx		Zeiger auf Puffer fuer zu lesende Daten
  * \param nRx		Anzahl der zu lesenden Bytes
  */
-void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
+void i2c_read(uint8_t sla, uint8_t txData, void* pRx, uint8_t nRx) {
 	static uint8_t data;
 	data = txData;
 	i2c_write_read(sla, &data, 1, pRx, nRx);
@@ -185,15 +188,18 @@ void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
  */
 uint8_t i2c_wait(void) {
 	uint8_t ticks = TIMER_GET_TICKCOUNT_8;
-	/* spinning bis Lock frei */
+	/* wait while i2c busy */
 	while (i2c_complete == 0) {
 		if (timer_ms_passed_8(&ticks, 3)) {
 			/* Timeout */
-			TWCR = 0;	// I2C aus
+			TWCR = 0; // I2C aus
 			return TW_BUS_ERROR;
 		}
 	}
-	TWCR = 0;	// I2C aus
+#ifdef SHIFT_AVAILABLE
+	_delay_us(10);
+	i2c_off();
+#endif
 	return i2c_error;
 }
 #endif // I2C_AVAILABLE

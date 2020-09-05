@@ -40,6 +40,13 @@ extern "C" {
 class SelectEna {
 protected:
 	/**
+	 * Inits the CS pin
+	 */
+	void init_cs() const {
+		// done by ENA_init()
+	}
+
+	/**
 	 * Sets CS the line
 	 * \param[in] status New status: true to set CS line high, false to set CS line low
 	 */
@@ -55,11 +62,47 @@ protected:
 class SelectPB4 {
 protected:
 	/**
+	 * Inits the CS pin
+	 */
+	void init_cs() const {
+#ifdef SPI_AVAILABLE
+		DDRB |= _BV(PB4);
+		PORTB |= _BV(PB4); // CS high
+#endif
+	}
+
+	/**
 	 * Sets CS the line
 	 * \param[in] status New status: true to set CS line high, false to set CS line low
 	 */
 	void set_cs(const bool status) const {
+#ifdef SPI_AVAILABLE
 		status ? PORTB |= _BV(PB4) : PORTB &= ~_BV(PB4);
+#else
+		(void) status;
+#endif
+	}
+};
+
+/**
+ * SPI slave select with PC2 pin
+ */
+class SelectPC2 {
+protected:
+	/**
+	 * Inits the CS pin
+	 */
+	void init_cs() const {
+		DDRC |= _BV(PC2);
+		PORTC |= _BV(PC2); // CS high
+	}
+
+	/**
+	 * Sets CS the line
+	 * \param[in] status New status: true to set CS line high, false to set CS line low
+	 */
+	void set_cs(const bool status) const {
+		status ? PORTC |= _BV(PC2) : PORTC &= ~_BV(PC2);
 	}
 };
 

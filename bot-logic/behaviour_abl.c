@@ -107,6 +107,7 @@ char EEPROM abl_eeprom_data[1536] = ABL_PROG; /**< 1536 Byte grosser EEPROM-Bere
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 
 //#define DEBUG_ABL			/**< Schalter um recht viel Debug-Code anzumachen */
@@ -231,11 +232,12 @@ static int8_t init(void) {
 static void load_program(int8_t dir) {
 #ifdef DEBUG_ABL
 	const int32_t pos = sdfat_tell(abl_file);
-	const int32_t size = sdfat_get_filesize(abl_file);
-	LOG_DEBUG("load_program(%d): file pos=%d size=%d", dir, pos, size);
+	const uint32_t size = sdfat_get_filesize(abl_file);
+	LOG_DEBUG("load_program(%" PRId8 "): file pos=%" PRId32 " size=%" PRIu32, dir, pos, size);
 #endif // DEBUG_ABL
 
 #ifdef SDFAT_AVAILABLE
+// FIXME: seek funktioniert nicht fuer Dateigroessen != N * SD_BLOCK_SIZE
 	if (dir > 0) {
 		sdfat_seek(abl_file, SD_BLOCK_SIZE, SEEK_CUR);
 	} else if (dir < 0) {
@@ -243,7 +245,7 @@ static void load_program(int8_t dir) {
 	}
 	const int16_t res = sdfat_read(abl_file, p_abl_i_data, SD_BLOCK_SIZE);
 	if (res != SD_BLOCK_SIZE) {
-		LOG_ERROR("load_program(): sdfat_read() failed: %d", res);
+		LOG_ERROR("load_program(): sdfat_read() failed: %" PRId16, res);
 		p_abl_i_data = NULL;
 		return;
 	}
@@ -294,8 +296,8 @@ static remote_call_data_t parameter_parse(const char * start, const char * end) 
 	}
 #endif // FLOAT_PARAMS
 
-	LOG_DEBUG("parsed parameter (d) is: %d", param.s16);
-	LOG_DEBUG("parsed parameter (x) is: 0x%x", param.u16);
+	LOG_DEBUG("parsed parameter (d) is: %" PRId16, param.s16);
+	LOG_DEBUG("parsed parameter (x) is: 0x%" PRIx16, param.u16);
 #if defined PC && defined FLOAT_PARAMS
 	LOG_DEBUG("parsed parameter (f) is: %f", (double) param.fl32);
 #endif
@@ -364,13 +366,13 @@ static instruction_t i_decode(void) {
 		LOG_DEBUG("function call decoded: \"%s()\"", abl_i_cache);
 		break;
 	case 1:
-		LOG_DEBUG("function call decoded: \"%s(%u)\"", abl_i_cache, abl_params[0].u32);
+		LOG_DEBUG("function call decoded: \"%s(%" PRIu32 ")\"", abl_i_cache, abl_params[0].u32);
 		break;
 	case 2:
-		LOG_DEBUG("function call decoded: \"%s(%u,%u)\"", abl_i_cache, abl_params[0].u32, abl_params[1].u32);
+		LOG_DEBUG("function call decoded: \"%s(%" PRIu32 ",%" PRIu32 ")\"", abl_i_cache, abl_params[0].u32, abl_params[1].u32);
 		break;
 	case 3:
-		LOG_DEBUG("function call decoded: \"%s(%u,%u,%u)\"", abl_i_cache, abl_params[0].u32, abl_params[1].u32, abl_params[2].u32);
+		LOG_DEBUG("function call decoded: \"%s(%" PRIu32 ",%" PRIu32 ",%" PRIu32 ")\"", abl_i_cache, abl_params[0].u32, abl_params[1].u32, abl_params[2].u32);
 		break;
 	}
 	return I_CALL;

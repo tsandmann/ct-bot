@@ -93,7 +93,8 @@ define SRCHIGHLEVEL
 endef
 
 define SRCLOGIC
-    bot-logic/behaviour_abl.c               bot-logic/behaviour_avoid_border.c          bot-logic/behaviour_avoid_col.c \
+    bot-logic/behaviour_abl.c               bot-logic/behaviour_adventcal.c \
+    bot-logic/behaviour_avoid_border.c      bot-logic/behaviour_avoid_col.c \
     bot-logic/behaviour_calibrate_pid.c     bot-logic/behaviour_calibrate_sharps.c      bot-logic/behaviour_cancel_behaviour.c \
     bot-logic/behaviour_catch_pillar.c      bot-logic/behaviour_classify_objects.c      bot-logic/behaviour_delay.c \
     bot-logic/behaviour_drive_area.c        bot-logic/behaviour_drive_chess.c           bot-logic/behaviour_drive_distance.c \
@@ -362,8 +363,12 @@ ifdef SAVE_TEMPS
 endif
 
 ifeq ($(WERROR), 1)
-    CFLAGS += -Werror
+    CFLAGS += -Werror 
     CXXFLAGS += -Werror
+    ifeq ($(shell $(CC) -v 2>&1 | grep -c "clang version"), 1)
+        CFLAGS += -Wno-unknown-warning-option
+        CXXFLAGS += -Wno-unknown-warning-option
+    endif
     ifeq ($(GCCVERSION_GTEQ_8),1)
         CFLAGS += -Wno-error=format-truncation
         CXXFLASG += -Wno-error=format-truncation
