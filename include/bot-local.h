@@ -185,7 +185,7 @@
 #endif // PC
 
 /* bot_catch_pillar_behaviour() */
-#define MAX_PILLAR_DISTANCE	500	/**< max. Entfernung zum Objekt [mm] */
+#define MAX_PILLAR_DISTANCE	300	/**< max. Entfernung zum Objekt [mm] */
 
 
 #include <bot-local-override.h>

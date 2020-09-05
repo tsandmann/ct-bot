@@ -213,7 +213,7 @@ static void rc5_number(uint8_t key) {
 #elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 		case 4: bot_follow_line(NULL, 0); break;
 #elif defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-		case 4: bot_catch_pillar(NULL); break;
+		case 4: bot_catch_pillar(NULL, 0); break;
 #elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 		case 4: bot_follow_object(NULL); break;
 #endif
