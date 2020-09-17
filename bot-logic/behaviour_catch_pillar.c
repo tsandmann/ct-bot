@@ -360,6 +360,8 @@ void bot_catch_pillar(Behaviour_t * caller) {
 
 #elif CATCH_PILLAR_VERSION == 3
 
+#define BEAM_WIDTH		4.f
+
 #define OBJECT_FOUND	5
 #define OPEN_DOOR		6
 #define GO_TO_POINT		7
@@ -389,7 +391,7 @@ static uint8_t turn_cancel_check(void) {
 	case 0:
 		/* Check mit linkem Sensor */
 		if (sensDistL <= MAX_PILLAR_DISTANCE) {
-			headingL = heading;
+			headingL = fmodf(heading + BEAM_WIDTH, 360.f);
 			posL = calc_point_in_distance(headingL, DISTSENSOR_POS_FW - 22 + 10 + sensDistL, DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
 			side = 1;
 			LOG_DEBUG("(%4d|%4d): Objekt links erkannt:", x_pos, y_pos);
@@ -401,7 +403,7 @@ static uint8_t turn_cancel_check(void) {
 		/* Check mit rechtem Sensor */
 		if (sensDistR <= MAX_PILLAR_DISTANCE) {
 			catch_pillar_state = state_after_cancel;
-			headingR = heading;
+			headingR = fmodf(heading + BEAM_WIDTH, 360.f);
 			posR = calc_point_in_distance(headingR, DISTSENSOR_POS_FW - 22 + 10 + sensDistR, -DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
 			LOG_DEBUG("(%4d|%4d): Objekt rechts erkannt:", x_pos, y_pos);
 			LOG_DEBUG(" sensDistR=%d headingR=%.2f posR=(%4d|%4d)", sensDistR, headingR, posR.x, posR.y);
@@ -468,6 +470,10 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 			int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.f) / dHead * (180.f / M_PI_F));
 			/* Objektkoordis berechnen */
 			LOG_DEBUG("heading=%.2f headingL=%.2f headingR=%.2f", heading, headingL, headingR);
+			if (dist > MAX_PILLAR_DISTANCE + 100) {
+				LOG_DEBUG("Objekt erkannt, aber Distanz zu gross");
+				catch_pillar_state = END;
+			}
 
 			obj_pos = calc_point_in_distance(headingL, DISTSENSOR_POS_FW - 22 + 10 + dist, DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
 			LOG_DEBUG("Objekt links erkannt, dist=%d obj_pos=(%4d|%4d)", dist, obj_pos.x, obj_pos.y);
