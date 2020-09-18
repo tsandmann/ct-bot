@@ -21,7 +21,7 @@
 /**
  * \file 	behaviour_catch_pillar.c
  * \brief 	Sucht nach einer Dose und faengt sie ein
- * \author 	Benjamin Benz (bbe@heise.de)
+ * \author 	Benjamin Benz
  * \date 	08.12.2006
  */
 
@@ -34,6 +34,7 @@
 
 #define CATCH_PILLAR_VERSION	3	/**< Version 1: Altes Verfahren; Version 2: Ermittlung der Objektkoordinaten mit measure_distance(); Version 3: Ermittlung der Objektkoordinaten aus dem Drehwinkel */
 #define OBJECT_WIDTH			30
+#define BEAM_WIDTH			4.f // TODO: Anpassung/Feintuning fuer reale Sensoren (GP2D12, GP2Y0A60, VL53L0X)
 
 //#define DEBUG_CATCH_PILLAR
 
@@ -63,6 +64,10 @@ static uint8_t unload_pillar_state = START;		/**< Statusvariable fuer das Auslad
 #define CATCH_PILLAR_VERSION	1
 #endif
 
+#ifdef PC
+#undef BEAM_WIDTH
+#define BEAM_WIDTH 1.5f // ct-Sim simuliert einen Oeffnungswinkel von 3 Grad
+#endif
 
 #if CATCH_PILLAR_VERSION == 1
 
@@ -359,8 +364,6 @@ void bot_catch_pillar(Behaviour_t * caller) {
 }
 
 #elif CATCH_PILLAR_VERSION == 3
-
-#define BEAM_WIDTH		4.f
 
 #define OBJECT_FOUND	5
 #define OPEN_DOOR		6
