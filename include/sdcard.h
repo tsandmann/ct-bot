@@ -47,6 +47,7 @@ extern "C" {
 #include "os_thread.h"
 }
 
+#ifdef MMC_AVAILABLE
 
 /**
  * Base class template for SdCard.
@@ -380,5 +381,6 @@ private:
 	uint32_t m_last_error_time;
 };
 
+#endif // MMC_AVAILABLE
 #endif // MCU
 #endif /* SPICARD_H_ */

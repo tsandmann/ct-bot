@@ -38,6 +38,8 @@ extern "C" {
 #include "log.h"
 }
 
+#ifdef SDFAT_AVAILABLE
+
 /** Macro for debug. */
 #define DEBUG_MODE 0
 #if DEBUG_MODE
@@ -401,5 +403,6 @@ protected:
 #endif // USE_MULTI_BLOCK_IO
 };
 
+#endif // SDFAT_AVAILABLE
 #endif // MCU
 #endif // FatVolume_h
