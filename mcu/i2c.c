@@ -34,17 +34,23 @@
 #include <stdlib.h>
 #include "i2c.h"
 #include "timer.h"
+#include "log.h"
 
 
+#define I2C_DEBUG
 #define I2C_PRESCALER 0					/**< Prescaler fuer I2C-CLK */
 
 static uint8_t sl_addr;					/**< Adresse des Slaves */
 static const uint8_t* pTxData;			/**< Zeiger auf Puffer fuer Datenversand */
 static uint8_t* pRxData;				/**< Zeiger auf Puffer fuer Datenempfang */
+static uint8_t* pRxEnd;
 static uint8_t txSize;					/**< Anzahl der zu sendenden Datenbytes */
 static uint8_t rxSize;					/**< Anzahl der zu lesenden Datenbytes */
 static uint8_t i2c_error;				/**< letzter Bus-Fehler */
-static volatile uint8_t i2c_complete;	/**< Spin-Lock; 0: ready, 128: Transfer aktiv */
+static volatile uint8_t i2c_complete;	/**< Spin-Lock; 0: Transfer aktiv, 128: idle */
+#ifdef I2C_DEBUG
+static uint8_t rx_overflow;
+#endif
 
 
 /**
@@ -74,6 +80,7 @@ ISR(TWI_vect) {
 					/* Stopp Senden und beenden */
 					TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO); // Stopp senden
 					i2c_complete = 128;	// Lock freigeben
+					pRxData = NULL;
 					break;
 				}
  				/* ReStart senden */
@@ -103,25 +110,40 @@ ISR(TWI_vect) {
 		}
 		/* Datum empfangen, ACK gesendet */
 		case TW_MR_DATA_ACK: {
+			const uint8_t tmp = TWDR;
 			/* Daten speichern */
-			*pRxData = TWDR;
-			pRxData++;
+			if (pRxData && pRxData < pRxEnd) {
+				*pRxData = tmp;
+				pRxData++;
+#ifdef I2C_DEBUG
+			} else {
+				rx_overflow = 1;
+#endif
+			}
 			rxSize--;
-			if (rxSize > 0) {
+			if (rxSize > 1) {
 				/* es folgen noch weitere Daten, ACK senden */
 				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWEA); // ACK senden
 			} else {
-				/* das letzte Byte ist schon unterwegs */
+				/* das letzte Byte folgt */
 				TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE); // NACK senden
 			}
 			break;
 		}
-		/* Datum empfangen, NACK gesendet */
+		/* Letztes Datum empfangen, NACK gesendet */
 		case TW_MR_DATA_NACK: {
-			/* Letztes Datum speichern */
-			*pRxData = TWDR;
+			const uint8_t tmp = TWDR;
+			if (pRxData && pRxData < pRxEnd) {
+				/* Letztes Datum speichern */
+				*pRxData = tmp;
+#ifdef I2C_DEBUG
+			} else {
+				rx_overflow = 1;
+#endif
+			}
 			TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO); // Stopp-Code senden
 			i2c_complete = 128; // Lock freigeben
+			pRxData = NULL;
 			break;
 		}
 		/* Fehler */
@@ -129,6 +151,7 @@ ISR(TWI_vect) {
 			/* Abbruch */
 			i2c_error = state;
 			i2c_complete = 128; // Lock freigeben
+			pRxData = NULL;
 			TWCR = _BV(TWINT); // Int zuruecksetzen und I2C aus
 		}
 	}
@@ -146,6 +169,8 @@ void i2c_init(uint8_t bitrate) {
 #ifndef SHIFT_AVAILABLE
 	PORTC |= _BV(0) | _BV(1);
 #endif
+	i2c_error = TW_NO_INFO;
+	i2c_complete = 128;
 }
 
 /**
@@ -157,6 +182,11 @@ void i2c_init(uint8_t bitrate) {
  * \param nRx	Anzahl der zu lesenden Bytes, [0; 255]
  */
 void i2c_write_read(uint8_t sla, const void* pTx, uint8_t nTx, void* pRx, uint8_t nRx) {
+	// LOG_DEBUG("i2c_write_read(0x%x, 0x%x, %u, 0x%x, %u)", sla, (uint16_t) pTx, nTx, (uint16_t) pRx, nRx);
+
+	if (i2c_complete != 128) {
+		return;
+	}
 	/* Inits */
 	i2c_complete = 0;
 	i2c_error = TW_NO_INFO;
@@ -165,6 +195,10 @@ void i2c_write_read(uint8_t sla, const void* pTx, uint8_t nTx, void* pRx, uint8_
 	txSize = nTx;
 	pRxData = pRx;
 	rxSize = nRx;
+	pRxEnd = pRxData + rxSize;
+#ifdef I2C_DEBUG
+	rx_overflow = 0;
+#endif
 	/* Start-Code senden */
 	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA);
 }
@@ -178,6 +212,8 @@ void i2c_write_read(uint8_t sla, const void* pTx, uint8_t nTx, void* pRx, uint8_
  */
 void i2c_read(uint8_t sla, uint8_t txData, void* pRx, uint8_t nRx) {
 	static uint8_t data;
+	// LOG_DEBUG("i2c_read(0x%x, %u, 0x%x, %u)", sla, txData, (uint16_t) pRx, nRx);
+
 	data = txData;
 	i2c_write_read(sla, &data, 1, pRx, nRx);
 }
@@ -192,13 +228,23 @@ uint8_t i2c_wait(void) {
 	while (i2c_complete == 0) {
 		if (timer_ms_passed_8(&ticks, 3)) {
 			/* Timeout */
-			TWCR = 0; // I2C aus
+			TWCR = _BV(TWINT); // I2C aus
+			pRxData = NULL;
+			i2c_complete = 128;
 			return TW_BUS_ERROR;
 		}
 	}
+
+ 	while (TWCR & _BV(TWSTO)) {}
 #ifdef SHIFT_AVAILABLE
 	_delay_us(10);
 	i2c_off();
+#endif
+	i2c_complete = 128;
+#ifdef I2C_DEBUG
+	if (rx_overflow) {
+		return 0xfe;
+	}
 #endif
 	return i2c_error;
 }
