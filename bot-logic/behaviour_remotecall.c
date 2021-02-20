@@ -23,7 +23,6 @@
  * \brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * \author 	Benjamin Benz (bbe@heise.de)
  * \date 	07.12.06
- * \see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
 #include "bot-logic.h"
@@ -165,7 +164,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_line_shortest_way, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_catch_pillar, 0, "", 0),
+	PREPARE_REMOTE_CALL(bot_catch_pillar, 1, "uint8 mode", 1),
 	PREPARE_REMOTE_CALL(bot_unload_pillar, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE

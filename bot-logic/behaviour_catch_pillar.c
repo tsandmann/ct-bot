@@ -21,7 +21,7 @@
 /**
  * \file 	behaviour_catch_pillar.c
  * \brief 	Sucht nach einer Dose und faengt sie ein
- * \author 	Benjamin Benz (bbe@heise.de)
+ * \author 	Benjamin Benz
  * \date 	08.12.2006
  */
 
@@ -33,6 +33,17 @@
 #include "log.h"
 
 #define CATCH_PILLAR_VERSION	3	/**< Version 1: Altes Verfahren; Version 2: Ermittlung der Objektkoordinaten mit measure_distance(); Version 3: Ermittlung der Objektkoordinaten aus dem Drehwinkel */
+#define OBJECT_WIDTH			30
+#define BEAM_WIDTH			4.f // TODO: Anpassung/Feintuning fuer reale Sensoren (GP2D12, GP2Y0A60, VL53L0X)
+
+//#define DEBUG_CATCH_PILLAR
+
+#ifdef DEBUG_CATCH_PILLAR
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#else
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif // DEBUG_CATCH_PILLAR
 
 #define START		0
 #define SEARCH_LEFT	1
@@ -53,6 +64,10 @@ static uint8_t unload_pillar_state = START;		/**< Statusvariable fuer das Auslad
 #define CATCH_PILLAR_VERSION	1
 #endif
 
+#ifdef PC
+#undef BEAM_WIDTH
+#define BEAM_WIDTH 1.5f // ct-Sim simuliert einen Oeffnungswinkel von 3 Grad
+#endif
 
 #if CATCH_PILLAR_VERSION == 1
 
@@ -353,12 +368,18 @@ void bot_catch_pillar(Behaviour_t * caller) {
 #define OBJECT_FOUND	5
 #define OPEN_DOOR		6
 #define GO_TO_POINT		7
+#define TURN			8
 
 static uint8_t state_after_cancel;	/**< Status, der nach einem Abbruch eingestellt wird */
-static uint8_t side; 				/**< Auswahl des Distanzsensors (0: links, 1: rechts */
-static int16_t headingL;			/**< heading bei Erkennung links [Grad] */
-static int16_t headingR;			/**< heading bei Erkennung rechts [Grad] */
+static uint8_t side; 				/**< Auswahl des Distanzsensors (0: links, 1: rechts) */
+static float headingL;				/**< heading bei Erkennung links [Grad] */
+static position_t posL;
+static float headingR;				/**< heading bei Erkennung rechts [Grad] */
+static position_t posR;
 static int16_t max_turn;			/**< Wie weit [Grad] maximal gedreht werden soll */
+/** Modus zur Berechnung der Objektposition: 0: Drehwinkel, 1: linker Distanzsensor, 2: rechter Distanzsensor,
+ * 3: Mittelwert linker und rechter Distanzsensor */
+static uint8_t dist_mode;
 
 /**
  * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum
@@ -373,8 +394,11 @@ static uint8_t turn_cancel_check(void) {
 	case 0:
 		/* Check mit linkem Sensor */
 		if (sensDistL <= MAX_PILLAR_DISTANCE) {
-			headingL = (int16_t) heading;
+			headingL = fmodf(heading + BEAM_WIDTH, 360.f);
+			posL = calc_point_in_distance(headingL, DISTSENSOR_POS_FW - 22 + 10 + sensDistL, DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
 			side = 1;
+			LOG_DEBUG("(%4d|%4d): Objekt links erkannt:", x_pos, y_pos);
+			LOG_DEBUG(" sensDistL=%d headingL=%.2f posL=(%4d|%4d)", sensDistL, headingL, posL.x, posL.y);
 			return False;
 		}
 		break;
@@ -382,7 +406,10 @@ static uint8_t turn_cancel_check(void) {
 		/* Check mit rechtem Sensor */
 		if (sensDistR <= MAX_PILLAR_DISTANCE) {
 			catch_pillar_state = state_after_cancel;
-			headingR = (int16_t) heading;
+			headingR = fmodf(heading + BEAM_WIDTH, 360.f);
+			posR = calc_point_in_distance(headingR, DISTSENSOR_POS_FW - 22 + 10 + sensDistR, -DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
+			LOG_DEBUG("(%4d|%4d): Objekt rechts erkannt:", x_pos, y_pos);
+			LOG_DEBUG(" sensDistR=%d headingR=%.2f posR=(%4d|%4d)", sensDistR, headingR, posR.x, posR.y);
 			return True;
 		}
 		break;
@@ -396,6 +423,9 @@ static uint8_t turn_cancel_check(void) {
  * \return	True, falls Transportfach voll, sonst False
  */
 static uint8_t goto_pos_cancel(void) {
+	if (sensTrans) {
+		LOG_DEBUG("Objekt im Fach erkannt");
+	}
 	return sensTrans;
 }
 
@@ -405,46 +435,83 @@ static uint8_t goto_pos_cancel(void) {
  */
 void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	static position_t obj_pos;
+	float dHead = 0.f;
 
 	switch (catch_pillar_state) {
 	/* Auf los geht's los */
 	case START:
 		/* Drehen mit Abbruch bei Objekterkennung */
+		LOG_DEBUG("Starte Drehung um max. %d Grad", max_turn);
 		bot_turn_maxspeed(data, max_turn, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		side = 0;
-		headingL = -1;
-		headingR = -1;
+		headingL = -1.f;
+		headingR = -1.f;
 		state_after_cancel = OBJECT_FOUND;
 		catch_pillar_state = END;
+		LOG_DEBUG("Pausiere catch_pillar() Verhalten");
 		break;
 
 		/* Objekt erkannt */
 	case OBJECT_FOUND:
+		LOG_DEBUG("catch_pillar() wurde reaktiviert");
 		if (headingL < 0 || headingR < 0) {
 			/* Erkennung fehlgeschlagen */
 			catch_pillar_state = END;
+			LOG_DEBUG("Erkennung fehlgeschlagen: headingL=%.2f headingR=%.2f", headingL, headingR);
 			return;
 		}
-		catch_pillar_state = OPEN_DOOR;
-		/* Abstand zum Objekt berechnen aus gedrehtem Winkel */
-		int16_t dHead = headingR - headingL;
-		if (dHead < 0) {
-			dHead += 360;
+		catch_pillar_state = TURN;
+
+		if (dist_mode == 0) {
+			/* Abstand zum Objekt berechnen aus gedrehtem Winkel */
+			dHead = headingR - headingL;
+			if (dHead < 0.f) {
+				dHead += 360.f;
+			}
+			LOG_DEBUG("dHead=%.2f", dHead);
+			int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.f) / dHead * (180.f / M_PI_F));
+			/* Objektkoordis berechnen */
+			LOG_DEBUG("heading=%.2f headingL=%.2f headingR=%.2f", heading, headingL, headingR);
+			if (dist > MAX_PILLAR_DISTANCE + 100) {
+				LOG_DEBUG("Objekt erkannt, aber Distanz zu gross");
+				catch_pillar_state = END;
+			}
+
+			obj_pos = calc_point_in_distance(headingL, DISTSENSOR_POS_FW - 22 + 10 + dist, DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
+			LOG_DEBUG("Objekt links erkannt, dist=%d obj_pos=(%4d|%4d)", dist, obj_pos.x, obj_pos.y);
+			obj_pos = calc_point_in_distance(headingR, DISTSENSOR_POS_FW - 22 + 10 + dist, -DISTSENSOR_POS_SW + OBJECT_WIDTH / 2);
+			LOG_DEBUG("Objekt rechts erkannt, dist=%d obj_pos=(%4d|%4d)", dist, obj_pos.x, obj_pos.y);
+		} else if (dist_mode == 1) {
+			obj_pos = posL;
+			LOG_DEBUG("Objekt erkannt (linker Sensor), obj_pos=(%4d|%4d)", obj_pos.x, obj_pos.y);
+		} else if (dist_mode == 2) {
+			obj_pos = posR;
+			LOG_DEBUG("Objekt erkannt (rechter Sensor), obj_pos=(%4d|%4d)", obj_pos.x, obj_pos.y);
+		} else if (dist_mode == 3) {
+			const int16_t dx = posL.x - posR.x;
+			obj_pos.x = posL.x - dx / 2;
+			const int16_t dy = posL.y - posR.y;
+			obj_pos.y = posL.y - dy / 2;
+			LOG_DEBUG("Objekt erkannt (Mittelwert), obj_pos=(%4d|%4d)", obj_pos.x, obj_pos.y);
 		}
-		int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.f) / dHead * (180.f / M_PI_F));
-		/* Objektkoordis berechnen */
-		obj_pos = calc_point_in_distance(headingR, DISTSENSOR_POS_FW + dist, -DISTSENSOR_POS_SW);
+		break;
+
+	case TURN:
+		//bot_goto_pos_rel(data, 0, 0, fmodf(headingR - 2.f, 360.f));
+		catch_pillar_state = OPEN_DOOR;
 		break;
 
 		/* Klappe auf */
 	case OPEN_DOOR:
 		catch_pillar_state = GO_TO_POINT;
 		bot_servo(data, SERVO1, DOOR_OPEN);
+		LOG_DEBUG("Oeffne Klappe...");
 		break;
 
 		/* zum Objekt fahren und Stopp, wenn das Objekt im Fach erkannt wird */
 	case GO_TO_POINT:
+		LOG_DEBUG("Fahre zu Punkt (%4d|%4d) ...", obj_pos.x, obj_pos.y);
 		bot_goto_pos(data, obj_pos.x, obj_pos.y, 999);
 		bot_cancel_behaviour(data, bot_goto_pos_behaviour, goto_pos_cancel);
 		catch_pillar_state = CLOSE_DOOR;
@@ -452,9 +519,11 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 		/* Klappe zu */
 	case CLOSE_DOOR:
+		LOG_DEBUG("Ziel erreicht: (%4d|%4d)", x_pos, y_pos);
 		if (sensTrans == 1) {
 			// Klappe schliessen falls Objekt eingefangen wurde
 			bot_servo(data, SERVO1, DOOR_CLOSE);
+			LOG_DEBUG("Schliesse Klappe...");
 		}
 		catch_pillar_state = END;
 		break;
@@ -462,6 +531,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		/* Ende */
 	default:
 		exit_behaviour(data, sensTrans); // == BEHAVIOUR_SUBSUCCESS, falls Objekt eingefangen
+		LOG_DEBUG("catch_pillar() wird beendet");
 		break;
 	}
 }
@@ -472,6 +542,9 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
  * \param degrees	Wie weit [Grad] soll maximal gedreht werden?
  */
 void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees) {
+	LOG_DEBUG("bot_catch_pillar_turn(%d)", degrees);
+	LOG_DEBUG("Startpunkt: (%4d|%4d)", x_pos, y_pos);
+	LOG_DEBUG("Modus: %u", dist_mode);
 	switch_to_behaviour(caller, bot_catch_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 	catch_pillar_state = START;
 	max_turn = degrees;
@@ -483,9 +556,12 @@ void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees) {
 
 /**
  * Fange ein Objekt ein
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param mode		Modus zur Berechnung der Objektposition: 0: Drehwinkel, 1: linker Distanzsensor, 2: rechter Distanzsensor,
+ * 					3: Durchschnitt linker und rechter Distanzsensor
  */
-void bot_catch_pillar(Behaviour_t * caller) {
+void bot_catch_pillar(Behaviour_t * caller, uint8_t mode) {
+	dist_mode = mode < 4 ? mode : 0;
 	bot_catch_pillar_turn(caller, 360);
 }
 

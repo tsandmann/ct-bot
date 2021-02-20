@@ -144,7 +144,9 @@ void bot_sens_init(void) {
 	adc_init(0xff); // Alle ADC-Ports aktivieren
 #endif // BPS_AVAILABLE
 
+#ifdef ENA_AVAILABLE
 	ENA_set(ENA_RADLED | ENA_ABSTAND); // Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
+#endif
 
 	SENS_DOOR_DDR = (uint8_t) (SENS_DOOR_DDR & ~_BV(SENS_DOOR)); // Input
 
@@ -196,7 +198,9 @@ void bot_sens_init(void) {
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void) {
+#ifdef ENA_AVAILABLE
 	ENA_on(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED); // Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum Booten brauchen
+#endif
 
 #ifdef CMPS03_AVAILABLE
 	cmps03_get_bearing(&sensCmps03);
@@ -397,7 +401,9 @@ void bot_sens(void) {
 
 #ifndef BEHAVIOUR_HW_TEST_AVAILABLE
 	// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus, nur in den Testmodi bleibt immer alles an
+#ifdef ENA_AVAILABLE
   	ENA_off(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED);
+#endif
 #endif
 
 #ifndef BOT_2_RPI_AVAILABLE

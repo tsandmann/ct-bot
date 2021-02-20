@@ -394,7 +394,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 		// bin jetzt auf dem Zielpad/ Koords angekommen und starte das Pillarverhalten falls es was zu holen gibt
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 #ifndef NO_PILLAR_BEHAVIOUR  // darf nicht explizit augeschaltet sein
-		bot_catch_pillar(data);
+		bot_catch_pillar(data, 0);
 #endif
 #endif
 

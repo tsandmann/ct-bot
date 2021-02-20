@@ -22,6 +22,8 @@
 #include <string.h>
 #include "FatVolume.h"
 
+#ifdef SDFAT_AVAILABLE
+
 cache_t* FatCache::read(uint32_t lbn_, uint8_t option) {
 	if (m_lbn != lbn_) {
 		if (! sync()) {
@@ -606,4 +608,5 @@ bool FatVolume::wipe(print_t* pr) {
 }
 #endif // SDFAT_PRINT_SUPPORT && SDFAT_WIPE_SUPPORT
 
+#endif // SDFAT_AVAILABLE
 #endif // MCU

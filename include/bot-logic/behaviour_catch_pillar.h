@@ -46,8 +46,10 @@ void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees);
 /**
  * Fange ein Objekt ein
  * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param mode		Modus zur Berechnung der Objektposition: 0: Drehwinkel, 1: linker Distanzsensor, 2: rechter Distanzsensor,
+ * 					3: Mittelwert linker und rechter Distanzsensor
  */
-void bot_catch_pillar(Behaviour_t * caller);
+void bot_catch_pillar(Behaviour_t * caller, uint8_t mode);
 
 /**
  * Gibt die Dose wieder aus, Entladevorgang

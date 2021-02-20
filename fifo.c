@@ -74,7 +74,9 @@ uint8_t fifo_put_data(fifo_t * f, const void * data, uint8_t length, const uint8
 		f->overflow = 1;
 		LOG_DEBUG_FIFO("FIFO 0x%08x overflow, size=%u", (unsigned int) f, f->size);
 		while (block && f->locked) {
+#ifdef OS_AVAILABLE
 			os_thread_yield();
+#endif
 		}
 
 		return 2;
@@ -174,6 +176,8 @@ int16_t fifo_get_data(fifo_t * f, void * data, int16_t length) {
 		os_signal_release(&f->signal);
 		count = f->count;
 	}
+#else
+	(void) count;
 #endif // OS_AVAILABLE
 //	if (count < l) {
 //		l = count;
