@@ -37,7 +37,7 @@
 #include "log.h"
 
 
-#define I2C_DEBUG
+//#define I2C_DEBUG
 #define I2C_PRESCALER 0					/**< Prescaler fuer I2C-CLK */
 
 static uint8_t sl_addr;					/**< Adresse des Slaves */
