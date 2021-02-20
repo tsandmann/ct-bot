@@ -1,5 +1,13 @@
 CHANGELOG fuer c't-Bot
 ======================
+2021-02-20: Release 29 (v1.29)
+    - catch pillar behaviour updated with new modes for object distance calculation, more robust distance sensor evaluations
+    - Readme updated
+    - Bugfixes for some x_AVAILABLE #defines
+    - Bugfix for i2c driver
+    - C++ wrapper for i2c driver added, allows an easier integration of drivers for i2c sensors in the future
+    - Fix for windows build: deploy pthread dll
+
 2020-09-05: Release 28 (v1.28)
     - error message for cancel-behaviour
     - improvements for bot_follow_line():
