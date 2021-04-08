@@ -15,5 +15,5 @@ You may need to repeat this for every branch you want to use.
 ### Continuous integration tests
 | Branch              | Build status  |
 |:------------------- |:------------- |
-| master              | [![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=master "Build status of branch master")](https://travis-ci.org/tsandmann/ct-bot) |
-| develop             | [![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=develop "Build status of branch develop")](https://travis-ci.org/tsandmann/ct-bot) |
+| master              | [![MCU CI](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml/badge.svg?branch=master "Build status of branch master")](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml) |
+| develop             | [![MCU CI](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml/badge.svg?branch=develop "Build status of branch develop")](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml) |
