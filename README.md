@@ -16,4 +16,4 @@ You may need to repeat this for every branch you want to use.
 | Branch              | Build status  |
 |:------------------- |:------------- |
 | master              | [![MCU CI](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml/badge.svg?branch=master "Build status of branch master")](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml) |
-| develop             | [![MCU CI](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml/badge.svg?branch=develop "Build status of branch develop")](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml) |
+| develop             | [![MCU CI](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml/badge.svg?branch=develop "Build status of branch develop for MCU")](https://github.com/tsandmann/ct-bot/actions/workflows/pio_build.yml) [![Native CI](https://github.com/tsandmann/ct-bot/actions/workflows/native_build.yml/badge.svg?branch=develop "Build status of branch develop for PC")](https://github.com/tsandmann/ct-bot/actions/workflows/native_build.yml) |
