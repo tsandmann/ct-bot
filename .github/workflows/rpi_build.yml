@@ -1,0 +1,13 @@
+name: RPi CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run RPi builds
+      run: ./tests/run_tests_rpi3-armhf.sh
