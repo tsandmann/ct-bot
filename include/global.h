@@ -72,7 +72,12 @@ int putchar(int);
 #undef PRIuPTR
 #endif
 #define PRIuPTR "I64u"
+
+#ifdef PRIxPTR
+#undef PRIxPTR
 #endif
+#define PRIxPTR "I64x"
+#endif // __MINGW64__ && ! __clang__
 
 #ifdef DOXYGEN
 #define PC
