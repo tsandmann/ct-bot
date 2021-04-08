@@ -28,7 +28,6 @@
 #include "sdcard_wrapper.h"
 #include "ctbot_comp.h"
 #include <stdio.h> // avr-g++ has no cstdio
-#include <inttypes.h> // avr-g++ has no cinttypes
 
 
 //#define DEBUG_SDFAT

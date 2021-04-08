@@ -63,7 +63,6 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "bot-2-atmega.h"
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
 
 /* Abhaengigkeiten */
 #ifndef SPEED_CONTROL_AVAILABLE

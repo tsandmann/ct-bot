@@ -31,7 +31,6 @@
 #include "log.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <inttypes.h>
 
 uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 	char* file_mode;

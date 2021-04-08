@@ -32,7 +32,6 @@
 #ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 #include "log.h"
 #include <stdlib.h>
-#include <inttypes.h>
 
 //#define DEBUG_CANCEL	/**< Schalter fuer Debug-Code */
 
