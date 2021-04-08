@@ -28,8 +28,7 @@ jobs:
       if: startsWith(matrix.os, 'windows')
       with:
         msystem: MINGW64
-    - run: pacman --noconfirm -S make mingw-w64-x86_64-gcc
-      if: startsWith(matrix.os, 'windows')
+        install: make mingw-w64-x86_64-gcc
     - run: ./tests/run_tests_pc.sh
       if: startsWith(matrix.os, 'windows') != true
     - run: msys2 -c './tests/run_tests_pc.sh'
