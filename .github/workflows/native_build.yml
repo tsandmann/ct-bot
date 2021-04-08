@@ -5,18 +5,18 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [macos-latest, ubuntu-latest]
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
 
-          include:
-            - os: ubuntu-latest
-              COMPILER: gcc
-              LINKER: gcc
+        include:
+          - os: ubuntu-latest
+            COMPILER: gcc
+            LINKER: gcc
 
-            - os: macos-latest
-              COMPILER: clang
-              LINKER: clang
+          - os: macos-latest
+            COMPILER: clang
+            LINKER: clang
 
     steps:
     - uses: actions/checkout@v2
