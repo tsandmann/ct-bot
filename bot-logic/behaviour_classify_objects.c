@@ -98,7 +98,7 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 			uint8_t i;
 			LOG_DEBUG("object_brightness=0x%x", object_brightness);
 			/* Klasse suchen */
-			for (i=0; i<sizeof(targets)/sizeof(int16_t)/3; i++) {
+			for (i=0; i<sizeof(targets)/sizeof(targets[0]); i++) {
 				if (object_brightness < targets[i].treshold) {
 					LOG_DEBUG("object_class=%u", i);
 					targets[i].y += 100;
