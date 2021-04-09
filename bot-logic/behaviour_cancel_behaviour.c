@@ -97,7 +97,7 @@ Behaviour_t * bot_add_behaviour_to_cancel(Behaviour_t * caller, Behaviour_t * be
 		return NULL;
 	}
 
-	LOG_DEBUG("cancel(0x%" PRIXPTR ", 0x%" PRIXPTR " (Prio %u), 0x%" PRIXPTR ")", (intptr_t) caller, (intptr_t) behaviour, behaviour->priority, (intptr_t) check);
+	LOG_DEBUG("cancel(0x%" PRIxPTR ", 0x%" PRIxPTR " (Prio %u), 0x%" PRIxPTR ")", (intptr_t) caller, (intptr_t) behaviour, behaviour->priority, (intptr_t) check);
 	uint8_t i;
 	for (i = 0; i < sizeof(jobs) / sizeof(jobs[0]); ++i) {
 		if (jobs[i].beh == NULL) {

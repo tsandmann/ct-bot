@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
+//#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_POS_STORE
@@ -71,7 +71,7 @@ pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_
 		return NULL;
 	}
 
-	LOG_DEBUG("Erzeuge Positionsspeicher (%u) fuer 0x%" PRIuPTR, size, (uintptr_t) owner);
+	LOG_DEBUG("Erzeuge Positionsspeicher (%u) fuer 0x%" PRIxPTR, size, (uintptr_t) owner);
 	pos_store_t * store = pos_store_from_beh(owner);
 	if (store && store->mask != size - 1) {
 		/* Positionsspeicher existiert bereits, aber mit anderer Groesse */
@@ -91,11 +91,11 @@ pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_
 				if (data == NULL) {
 					store->data = malloc(size * sizeof(position_t));
 					store->stat_data = 0;
-					LOG_DEBUG("verwende Heap-Speicher @ 0x%" PRIuPTR, (uintptr_t) store->data);
+					LOG_DEBUG("verwende Heap-Speicher @ 0x%" PRIxPTR, (uintptr_t) store->data);
 				} else {
 					store->data = data;
 					store->stat_data = 1;
-					LOG_DEBUG("verwende statischen Speicher @ 0x%" PRIuPTR, (uintptr_t) data);
+					LOG_DEBUG("verwende statischen Speicher @ 0x%" PRIxPTR, (uintptr_t) data);
 				}
 				if (store->data == NULL) {
 					LOG_ERROR("Kein Speicher zur Verfuegung, Abbruch!");
@@ -108,7 +108,7 @@ pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_
 	}
 
 	pos_store_clear(store);
-	LOG_DEBUG("Positionsspeicher @ 0x%" PRIuPTR " angelegt", (uintptr_t) store);
+	LOG_DEBUG("Positionsspeicher @ 0x%" PRIxPTR " angelegt", (uintptr_t) store);
 	return store;
 }
 
@@ -117,7 +117,7 @@ pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_
  * \param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_release(pos_store_t * store) {
-	LOG_DEBUG("Gebe Positionsspeicher 0x%" PRIuPTR " frei", (uintptr_t) store);
+	LOG_DEBUG("Gebe Positionsspeicher 0x%" PRIxPTR " frei", (uintptr_t) store);
 	if (store == NULL) {
 		return;
 	}
@@ -125,7 +125,7 @@ void pos_store_release(pos_store_t * store) {
 	if (store->stat_data == 0 && store->data != NULL) {
 		/* Datenspeicher freigeben */
 		free(store->data);
-		LOG_DEBUG("Heap-Speicher 0x%" PRIuPTR " freigegeben", (uintptr_t) store->data);
+		LOG_DEBUG("Heap-Speicher 0x%" PRIxPTR " freigegeben", (uintptr_t) store->data);
 		store->data = NULL;
 	}
 }
@@ -229,7 +229,7 @@ static uint8_t is_full(pos_store_t * store) {
  */
 uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
-		LOG_INFO("Pos-Store 0x%" PRIuPTR " voll, kein push moeglich", (uintptr_t) store);
+		LOG_INFO("Pos-Store 0x%" PRIxPTR " voll, kein push moeglich", (uintptr_t) store);
 		LOG_DEBUG(" count=%u", store->count);
 		return False;
 	}
@@ -250,7 +250,7 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
-		LOG_INFO("Pos-Store 0x%" PRIuPTR " voll, kein push moeglich", (uintptr_t) store);
+		LOG_INFO("Pos-Store 0x%" PRIxPTR " voll, kein push moeglich", (uintptr_t) store);
 		LOG_DEBUG(" count=%u", store->count);
 		return False;
 	}
@@ -388,7 +388,7 @@ void bot_2_bot_handle_pos_store_data(void) {
 	if (bot_2_bot_pos_store && bot_2_bot_pos_store->owner) {
 		LOG_DEBUG("Pos-Store fuer Verhalten %u empfangen", bot_2_bot_pos_store->owner->priority);
 		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1, bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
-		LOG_DEBUG(" data=0x%" PRIuPTR, (uintptr_t) (bot_2_bot_pos_store->data));
+		LOG_DEBUG(" data=0x%" PRIxPTR, (uintptr_t) (bot_2_bot_pos_store->data));
 #ifdef PC
 		pos_store_dump(bot_2_bot_pos_store);
 #endif // PC
