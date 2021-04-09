@@ -62,6 +62,27 @@ int putchar(int);
 
 #include <stdint.h>
 #include <math.h>
+#include <inttypes.h>
+
+/* Work around this bug in /mingw64/x86_64-w64-mingw64/include/inttypes.h:
+ * MS runtime does not yet understand C9x standard "ll" length specifier. It appears to treat "ll" as "l".
+ * The non-standard I64 length specifier causes warning in GCC, but understood by MS runtime functions. */
+#if defined(__MINGW64__) && !defined(__clang__)
+#ifdef PRIuPTR
+#undef PRIuPTR
+#endif
+#define PRIuPTR "I64u"
+
+#ifdef PRIxPTR
+#undef PRIxPTR
+#endif
+#define PRIxPTR "I64x"
+
+#ifdef PRIuMAX
+#undef PRIuMAX
+#endif
+#define PRIuMAX "I64u"
+#endif // __MINGW64__ && ! __clang__
 
 #ifdef DOXYGEN
 #define PC

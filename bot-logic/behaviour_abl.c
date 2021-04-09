@@ -107,7 +107,6 @@ char EEPROM abl_eeprom_data[1536] = ABL_PROG; /**< 1536 Byte grosser EEPROM-Bere
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <inttypes.h>
 
 
 //#define DEBUG_ABL			/**< Schalter um recht viel Debug-Code anzumachen */

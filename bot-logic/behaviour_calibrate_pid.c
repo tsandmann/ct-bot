@@ -30,7 +30,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
-#include <inttypes.h>
 
 #include "motor.h"
 #include "timer.h"

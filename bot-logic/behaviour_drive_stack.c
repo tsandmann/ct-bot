@@ -40,7 +40,6 @@
 #include "log.h"
 #include "bot-2-bot.h"
 #include <stdlib.h>
-#include <inttypes.h>
 
 #define DEBUG
 

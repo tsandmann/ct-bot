@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <inttypes.h>
 #include "sensor_correction.h"
 #include "map.h"
 #include "mmc.h"

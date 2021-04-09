@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2021-04-09: Release 29.1 (v1.29.1)
+    - Bugfix for several builds issues on Windows
+    - CI moved to GitHub Actions
+
 2021-02-20: Release 29 (v1.29)
     - catch pillar behaviour updated with new modes for object distance calculation, more robust distance sensor evaluations
     - Readme updated

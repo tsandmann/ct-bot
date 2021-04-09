@@ -347,7 +347,7 @@ static void D(void) { 														/* iterative Negamax search */
 			R0: _ = *J;
 			P = DD; 														/* load locals, return value */
 		}
-		m = (-P < l) | (R > 35) ? d > 2 ? -I : e : -P; 						/* Prune or stand-pat */
+		m = ((-P < l) | (R > 35)) ? d > 2 ? -I : e : -P; 						/* Prune or stand-pat */
 		++timer; 															/* node count (for timing) */
 		do {
 			u = b[x]; 														/* scan board looking for */
@@ -355,7 +355,7 @@ static void D(void) { 														/* iterative Negamax search */
 				p = (unsigned char) (u & 7); 								/* p = piece type (set r>0) */
 				r = (signed char) p;
 				j = (unsigned char) (o(p+16));								/* first step vector f.piece */
-				while ((r = (signed char) ((p > 2) & (r < 0) ? -r :
+				while ((r = (signed char) (((p > 2) & (r < 0)) ? -r :
 					-o(++j)))) {											/* loop over directions o[] */
 					A: 														/* resume normal after best */
 					y = x;
@@ -389,7 +389,7 @@ static void D(void) { 														/* iterative Negamax search */
 								b[F] = (unsigned char) (k + 6);				/* castling: put R & score */
 								v += 50;
 							}
-							v -= (p - 4) | (R > 29) ? 0 : 20; 				/* penalize mid-game K move */
+							v -= ((p - 4) | (R > 29)) ? 0 : 20; 			/* penalize mid-game K move */
 							if (p < 3) {									/* pawns: */
 								v -= 9 * (((x - 2 )& M || (b[x - 2] - u)) + /* structure, undefended */
 								((x + 2) & M || (b[x + 2] - u)) - 1 		/* squares plus bias */
@@ -463,7 +463,7 @@ static void D(void) { 														/* iterative Negamax search */
 		J: if ((m > I - M) | (m < M - I)) {
 			d = 98; 														/* mate holds to any depth */
 		}
-		m = (m + I) | (P == I) ? m : 0; 									/* best loses K: (stale)mate */
+		m = ((m + I) | (P == I)) ? m : 0; 									/* best loses K: (stale)mate */
 /*		if(z & hv & d > 2) {
 			print_move('a'+(X&7), '8'-(X>>4), 'a'+(Y&7), '8'-(Y>>4&7));
 		}

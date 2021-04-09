@@ -22,7 +22,7 @@ for filename in $MYDIR/pc/*.h; do
 	cp -v $filename $MYDIR/../bot-local-override.h
 	if [ $? -ne 0 ]; then
 		echo "file \"$filename\" not found, abort."
-		echo ""; echo ""; echo "TEST $filename FOR PC $BUILD_TARGET FAILED."; echo ""; echo ""
+		echo ""; echo ""; echo "TEST $filename FOR PC FAILED."; echo ""; echo ""
 		make DEVICE=PC clean >/dev/null
 		exit 1
 	fi
@@ -41,7 +41,7 @@ for filename in $MYDIR/pc/*.h; do
 	fi
 
 	if [[ $rc != 0 ]]; then
-		echo ""; echo ""; echo "TEST $filename FOR PC $BUILD_TARGET FAILED."; echo ""; echo ""
+		echo ""; echo ""; echo "TEST $filename FOR PC FAILED."; echo ""; echo ""
 		make DEVICE=PC clean >/dev/null
 		exit $rc;
 	fi
@@ -56,6 +56,6 @@ for filename in $MYDIR/pc/*.h; do
 
 done
 
-echo ""; echo ""; echo "ALL TESTS FOR PC $BUILD_TARGET PASSED."; echo ""; echo ""
+echo ""; echo ""; echo "ALL TESTS FOR PC PASSED."; echo ""; echo ""
 
 exit 0;
