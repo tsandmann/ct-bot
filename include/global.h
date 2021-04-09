@@ -77,6 +77,11 @@ int putchar(int);
 #undef PRIxPTR
 #endif
 #define PRIxPTR "I64x"
+
+#ifdef PRIuMAX
+#undef PRIuMAX
+#endif
+#define PRIuMAX "I64u"
 #endif // __MINGW64__ && ! __clang__
 
 #ifdef DOXYGEN
