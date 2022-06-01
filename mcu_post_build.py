@@ -16,15 +16,8 @@
 # MA 02111-1307, USA.
 
 
-from platformio.util import get_systype
-
 Import("env")
 
-env.Replace(PROGNAME="ct-Bot")
-
-if "windows" in get_systype():
-    env.Append(
-        LIBS=[
-            "ws2_32"
-        ]
-    )
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.elf", env.VerboseAction(" ".join(["$OBJCOPY", "-j", ".eeprom --set-section-flags=.eeprom='alloc,load'", 
+    "--change-section-lma", ".eeprom=0", "-O", "ihex", '"$BUILD_DIR/${PROGNAME}.elf"', '"$BUILD_DIR/${PROGNAME}.eep"']), "Building $BUILD_DIR/${PROGNAME}.eep")
+)
