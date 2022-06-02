@@ -18,6 +18,6 @@
 
 Import("env")
 
-env.AddPostAction("$BUILD_DIR/${PROGNAME}.elf", env.VerboseAction(" ".join(["$OBJCOPY", "-j", ".eeprom --set-section-flags=.eeprom='alloc,load'", 
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.elf", env.VerboseAction(" ".join(["$OBJCOPY", "-j", ".eeprom --set-section-flags=.eeprom=alloc,load", 
     "--change-section-lma", ".eeprom=0", "-O", "ihex", '"$BUILD_DIR/${PROGNAME}.elf"', '"$BUILD_DIR/${PROGNAME}.eep"']), "Building $BUILD_DIR/${PROGNAME}.eep")
 )
