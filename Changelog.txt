@@ -1,5 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
+2022-06-02: Release 29.2 (v1.29.2)
+    - Readme updated
+    - Typo in help message fixed
+    - Create eep file if using VSCode instead of Eclipse
+
 2021-04-09: Release 29.1 (v1.29.1)
     - Bugfix for several builds issues on Windows
     - CI moved to GitHub Actions
