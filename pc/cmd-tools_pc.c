@@ -54,7 +54,7 @@ static pthread_t cmd_thread; /**< Thread fuer die RemoteCall-Auswertung per Komm
  */
 static void usage(void) {
 	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-s] [-u RUNS] [-M FILE] [-m FILE] [-h]");
-	puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
+	puts("\t-t\tHostname oder IP Adresse zu der verbunden werden soll");
 	puts("\t-a\tAdresse des Bots (fuer Bot-2-Bot-Kommunikation), default: 0");
 	puts("\t-T\tTestClient");
 	puts("\t-s\tServermodus");
